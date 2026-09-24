@@ -18,11 +18,15 @@ concurrency:
   group: trusted-reviews-${{ github.event.pull_request.number || inputs.pr }}
   cancel-in-progress: true
 
-# PR titles/bodies are not review inputs, so their edits do not restart reviews.
-# Drafts receive real reviews; no expected provider is silently skipped.
+# Automatic reviews are only for PRs opened and updated by organization members.
+# Maintainers can explicitly dispatch a review for any other PR.
 jobs:
   start:
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.pull_request.author_association == 'MEMBER' &&
+        github.actor == github.event.pull_request.user.login))
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     permissions:

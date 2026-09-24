@@ -50,7 +50,7 @@ class GitHub:
             raise RuntimeError(f"GitHub API HTTP {error.code}: {message}") from None
 
 
-def metadata(api, repository, number, trusted_sha):
+def metadata(api, repository, number, trusted_sha, automatic=False):
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
         raise ValueError("Invalid repository identity")
     if type(number) is not int or number < 1:
@@ -59,6 +59,10 @@ def metadata(api, repository, number, trusted_sha):
     pr = api("GET", f"/repos/{repository}/pulls/{number}")
     if pr["state"] != "open" or pr["base"]["ref"] != "main" or pr["base"]["repo"]["full_name"] != repository:
         raise ValueError("Review requires an open PR targeting this repository's main")
+    if automatic and (pr.get("author_association") != "MEMBER" or
+                      pr.get("user", {}).get("login", "").casefold() !=
+                      os.environ.get("GITHUB_ACTOR", "").casefold()):
+        raise ValueError("Automatic reviews require an organization-member PR author and actor")
     base, head = pr["base"]["sha"], pr["head"]["sha"]
     gate.require_sha(base)
     gate.require_sha(head)
@@ -205,8 +209,12 @@ def main():
     api = GitHub(os.environ.get("GH_TOKEN"))
     if args.command == "start":
         event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
-        number = int(event["inputs"]["pr"] if os.environ["GITHUB_EVENT_NAME"] == "workflow_dispatch" else event["number"])
-        meta = metadata(api, os.environ["GITHUB_REPOSITORY"], number, os.environ["TRUSTED_SHA"])
+        event_name = os.environ["GITHUB_EVENT_NAME"]
+        if event_name not in {"workflow_dispatch", "pull_request_target"}:
+            raise ValueError("Unsupported review trigger")
+        number = int(event["inputs"]["pr"] if event_name == "workflow_dispatch" else event["number"])
+        meta = metadata(api, os.environ["GITHUB_REPOSITORY"], number, os.environ["TRUSTED_SHA"],
+                        automatic=event_name == "pull_request_target")
         set_status(api, meta, "pending")
         (args.directory / "metadata.json").write_text(json.dumps(meta) + "\n")
         with open(os.environ["GITHUB_OUTPUT"], "a") as output:
