@@ -1,9 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.0.0
 
-Local candidate remains private at package version `0.0.0`. A final package version
-and any publication require separate approval and coordinated lockfile changes.
+Initial public package release.
 Signed protocol version `1` and approved signing revision
 `5beae0d4f74dfc4ed9cc664db98d28e5c4f5b96a` are independent of package versioning.
 

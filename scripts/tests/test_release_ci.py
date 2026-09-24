@@ -29,7 +29,7 @@ class ReleaseCiTests(unittest.TestCase):
         self.assertIn("mkdir -p .tools/release-records", job)
         self.assertIn("'scripts/release/*.{mts,mjs}'", job)
         for path in ["ci-local-deployment.json", "ci-checked-sdk/checked-package.json",
-                     "ci-checked-sdk/provable-games-evm-starknet-address-registry-0.0.0.tgz"]:
+                     "ci-checked-sdk/provable-games-evm-starknet-address-registry-*.tgz"]:
             self.assertIn(path, job)
         self.assertIn("needs: [scope, lint, test, evidence, integration]", workflow)
 

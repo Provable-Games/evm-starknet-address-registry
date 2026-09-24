@@ -56,12 +56,14 @@ def check_stack_pins(manifest):
         expected_engines = {"node": f"^{versions['node_lts']} || ^{versions['node']}", "npm": versions["npm"]}
         if package.get("engines") != expected_engines or lock["packages"][""].get("engines") != expected_engines:
             raise ValueError("Root runtime constraints differ from approved primary/LTS pins")
-        for path in [root_package, ROOT / "packages/sdk/package.json"]:
-            data = json.loads(path.read_text())
-            if data.get("private") is not True:
-                raise ValueError("Scaffold packages must remain private")
+        if package.get("private") is not True:
+            raise ValueError("Root workspace must remain private")
+        sdk_package = json.loads((ROOT / "packages/sdk/package.json").read_text())
+        if sdk_package.get("private", False) is not False:
+            raise ValueError("SDK package must be publishable")
+        for data in [package, sdk_package]:
             # Public peer ranges require an explicit, tested compatibility policy.
-            # The private scaffold has no peers; do not permit unverified ranges.
+            # The SDK has no peers; do not permit unverified ranges.
             for category in ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"]:
                 for name, version in data.get(category, {}).items():
                     pin = manifest["packages"].get(name)

@@ -27,7 +27,7 @@ class StackPinTests(unittest.TestCase):
                                  "node_modules/fixture": self.manifest["packages"]["fixture"]}}
         self.write("package.json", self.package)
         self.write("package-lock.json", self.lock)
-        self.write("packages/sdk/package.json", {"private": True})
+        self.write("packages/sdk/package.json", {"version": "1.0.0"})
 
     def write(self, path, value):
         (self.root / path).write_text(json.dumps(value))

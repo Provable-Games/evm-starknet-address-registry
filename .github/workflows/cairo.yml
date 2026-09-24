@@ -202,7 +202,7 @@ jobs:
           path: |
             .tools/release-records/ci-local-deployment.json
             .tools/release-records/ci-checked-sdk/checked-package.json
-            .tools/release-records/ci-checked-sdk/provable-games-evm-starknet-address-registry-0.0.0.tgz
+            .tools/release-records/ci-checked-sdk/provable-games-evm-starknet-address-registry-*.tgz
             .tools/integration-evidence/*/source-hashes.json
             .tools/integration-evidence/*/artifact-hashes.json
             .tools/integration-evidence/*/commands.json

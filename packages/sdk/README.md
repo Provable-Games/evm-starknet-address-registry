@@ -1,16 +1,22 @@
 # Address registry SDK
 
-Private, framework-independent ESM SDK for signing revision
+Framework-independent ESM SDK for signing revision
 `5beae0d4f74dfc4ed9cc664db98d28e5c4f5b96a`. It authenticates registry reads,
 prepares link, move, and revoke requests, signs with a selected Ethereum provider,
 and can simulate, submit, and read back Starknet transactions through application
-adapters. The package is currently private at `0.0.0`.
+adapters.
+
+## Install
+
+```sh
+npm install @provable-games/evm-starknet-address-registry
+```
 
 The application supplies a reviewed `TrustedDeployment`, a `RegistryTransport`, an
 `AccountAdapter`, and the selected EIP-1193 provider. The SDK does not discover
 wallets, choose a registry, manage session policy, or set application eligibility.
-See the [client example](../../examples/client/README.md) and
-[public types](src/protocol.ts).
+See the [client example](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/examples/client/README.md) and
+[public types](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/packages/sdk/src/protocol.ts).
 
 ## Basic flow
 
@@ -58,7 +64,7 @@ Internal Ethereum addresses are lowercase 20-byte hex; account addresses and
 hashes use full 32-byte words with context-specific range checks. Numeric values
 are `bigint`. The exported address aliases are structural TypeScript types, so
 untrusted values still require runtime validation. The
-[protocol specification](../../protocol/spec.md) defines exact signed fields,
+[protocol specification](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/protocol/spec.md) defines exact signed fields,
 statements, and calldata.
 
 ## Signing and submission
@@ -82,7 +88,7 @@ that hash. Reconcile it before attempting another transaction.
 
 ## Local checks
 
-After the [repository setup](../../README.md#setup), run from the root:
+After the [repository setup](https://github.com/Provable-Games/evm-starknet-address-registry#setup), run from the root:
 
 ```sh
 npm run format:check
@@ -93,7 +99,7 @@ npm run test:coverage
 npm run check:package
 ```
 
-Unit tests use mocked adapters. The [local integration suite](../../scripts/integration/README.md)
+Unit tests use mocked adapters. The [local integration suite](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/scripts/integration/README.md)
 executes the built SDK with the contract and disposable software keys.
-[Mainnet](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337) and [Sepolia](../../deployments/sepolia.json)
+[Mainnet](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337) and [Sepolia](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/sepolia.json)
 deployments are recorded separately.
