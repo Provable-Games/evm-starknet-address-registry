@@ -4,7 +4,7 @@ An immutable Starknet registry and TypeScript SDK for associating Ethereum addre
 with Starknet accounts. Each Ethereum address has at most one active destination in a
 registry; a Starknet account can receive links from many Ethereum addresses.
 
-The [Starknet Mainnet registry](deployments/mainnet.json) uses the `Loot Survivor`
+The [Starknet Mainnet registry](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337) uses the `Loot Survivor`
 label at `0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337`.
 
 Ethereum signatures authorize link, move, and revoke requests. The destination
