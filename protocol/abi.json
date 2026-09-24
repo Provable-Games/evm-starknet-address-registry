@@ -1,0 +1,527 @@
+[
+  {
+    "type": "impl",
+    "name": "AddressRegistry",
+    "interface_name": "contracts::interface::IAddressRegistry"
+  },
+  {
+    "type": "struct",
+    "name": "core::starknet::eth_address::EthAddress",
+    "members": [
+      {
+        "name": "address",
+        "type": "core::felt252"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "contracts::interface::LinkRequest",
+    "members": [
+      {
+        "name": "ethereum_address",
+        "type": "core::starknet::eth_address::EthAddress"
+      },
+      {
+        "name": "account_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "ethereum_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "recipient_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "deadline",
+        "type": "core::integer::u64"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "contracts::interface::Signature",
+    "members": [
+      {
+        "name": "r",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "s",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "y_parity",
+        "type": "core::bool"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "contracts::interface::MoveRequest",
+    "members": [
+      {
+        "name": "ethereum_address",
+        "type": "core::starknet::eth_address::EthAddress"
+      },
+      {
+        "name": "account_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "previous_account_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "ethereum_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "recipient_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "deadline",
+        "type": "core::integer::u64"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "contracts::interface::RevokeRequest",
+    "members": [
+      {
+        "name": "ethereum_address",
+        "type": "core::starknet::eth_address::EthAddress"
+      },
+      {
+        "name": "current_account_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "ethereum_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "deadline",
+        "type": "core::integer::u64"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::byte_array::ByteArray",
+    "members": [
+      {
+        "name": "data",
+        "type": "core::array::Array::<core::bytes_31::bytes31>"
+      },
+      {
+        "name": "pending_word",
+        "type": "core::felt252"
+      },
+      {
+        "name": "pending_word_len",
+        "type": "core::internal::bounded_int::BoundedInt::<0, 30>"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "contracts::interface::SigningDomain",
+    "members": [
+      {
+        "name": "name",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "version",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "ethereum_chain_id",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "account_chain_id",
+        "type": "core::felt252"
+      },
+      {
+        "name": "registry_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "salt",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "domain_separator",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "account_label",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "link_statement",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "move_statement",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "revoke_statement",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "account_network_name",
+        "type": "core::byte_array::ByteArray"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "contracts::interface::IAddressRegistry",
+    "items": [
+      {
+        "type": "function",
+        "name": "link",
+        "inputs": [
+          {
+            "name": "request",
+            "type": "contracts::interface::LinkRequest"
+          },
+          {
+            "name": "signature",
+            "type": "contracts::interface::Signature"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "move",
+        "inputs": [
+          {
+            "name": "request",
+            "type": "contracts::interface::MoveRequest"
+          },
+          {
+            "name": "signature",
+            "type": "contracts::interface::Signature"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "unlink",
+        "inputs": [
+          {
+            "name": "ethereum_address",
+            "type": "core::starknet::eth_address::EthAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "revoke",
+        "inputs": [
+          {
+            "name": "request",
+            "type": "contracts::interface::RevokeRequest"
+          },
+          {
+            "name": "signature",
+            "type": "contracts::interface::Signature"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "invalidate_pending_incoming",
+        "inputs": [
+          {
+            "name": "ethereum_address",
+            "type": "core::starknet::eth_address::EthAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_starknet_address",
+        "inputs": [
+          {
+            "name": "ethereum_address",
+            "type": "core::starknet::eth_address::EthAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "is_associated",
+        "inputs": [
+          {
+            "name": "ethereum_address",
+            "type": "core::starknet::eth_address::EthAddress"
+          },
+          {
+            "name": "starknet_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_ethereum_address_count",
+        "inputs": [
+          {
+            "name": "starknet_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_ethereum_addresses",
+        "inputs": [
+          {
+            "name": "starknet_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "offset",
+            "type": "core::integer::u64"
+          },
+          {
+            "name": "limit",
+            "type": "core::integer::u32"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::starknet::eth_address::EthAddress>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_ethereum_nonce",
+        "inputs": [
+          {
+            "name": "ethereum_address",
+            "type": "core::starknet::eth_address::EthAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_recipient_nonce",
+        "inputs": [
+          {
+            "name": "starknet_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "ethereum_address",
+            "type": "core::starknet::eth_address::EthAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_signing_domain",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "contracts::interface::SigningDomain"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_version",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "name": "ethereum_chain_id",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "account_label",
+        "type": "core::byte_array::ByteArray"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "contracts::registry::EthereumAddressAssociationRegistry::AssociationChanged",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "ethereum_address",
+        "type": "core::starknet::eth_address::EthAddress",
+        "kind": "key"
+      },
+      {
+        "name": "previous_starknet_address",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "new_starknet_address",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "operation",
+        "type": "core::integer::u8",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "contracts::registry::EthereumAddressAssociationRegistry::EthereumNonceAdvanced",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "ethereum_address",
+        "type": "core::starknet::eth_address::EthAddress",
+        "kind": "key"
+      },
+      {
+        "name": "new_nonce",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "contracts::registry::EthereumAddressAssociationRegistry::RecipientNonceAdvanced",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "starknet_address",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
+      },
+      {
+        "name": "ethereum_address",
+        "type": "core::starknet::eth_address::EthAddress",
+        "kind": "key"
+      },
+      {
+        "name": "new_nonce",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "contracts::registry::EthereumAddressAssociationRegistry::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "AssociationChanged",
+        "type": "contracts::registry::EthereumAddressAssociationRegistry::AssociationChanged",
+        "kind": "nested"
+      },
+      {
+        "name": "EthereumNonceAdvanced",
+        "type": "contracts::registry::EthereumAddressAssociationRegistry::EthereumNonceAdvanced",
+        "kind": "nested"
+      },
+      {
+        "name": "RecipientNonceAdvanced",
+        "type": "contracts::registry::EthereumAddressAssociationRegistry::RecipientNonceAdvanced",
+        "kind": "nested"
+      }
+    ]
+  }
+]

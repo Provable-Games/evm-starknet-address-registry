@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "environment": "local-devnet",
+  "ethereum_chain_id": "11155111",
+  "account_chain_id": "0x534e5f5345504f4c4941",
+  "account_label": "Local Registry"
+}

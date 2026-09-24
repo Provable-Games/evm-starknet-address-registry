@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "production implementation of the frozen interface",
+  "approved_signing_revision": "5beae0d4f74dfc4ed9cc664db98d28e5c4f5b96a",
+  "module_path": "contracts::registry::EthereumAddressAssociationRegistry",
+  "scarb": "2.20.1",
+  "cairo": "2.20.0",
+  "abi_sha256": "7a5bfdd9bab5b56c78a403d964534ec2a5b8711705152b59094d5939820224eb",
+  "serialization": "UTF-8 JSON, two-space indentation, original compiler array/key order, final LF",
+  "sources_sha256": {
+    "contracts/src/eip712.cairo": "de30d4779530ea28877422591116e06271205ad716e22e505c7c45c9ff9de756",
+    "contracts/src/interface.cairo": "41054bbe0c7d21e0fe6418f226cce6bfb83b87cb3bcc22ab021f7b2b5ae2205d",
+    "contracts/src/labels.cairo": "6833cccdcfae72a7576ec3e351cc97daec90e3c8444f43ed07a00dd41d1dbc0d",
+    "contracts/src/lib.cairo": "a9c4501e12e5cd8ff78483bb941f293f8d7e0779e25f080586e8e54a2345b60c",
+    "contracts/src/registry.cairo": "cb3a153aeefd6823aa3d34c5ca17f80ef7bb6f63512f8e70a8065fd739ffd06c",
+    "contracts/src/signature.cairo": "fc89450fa7ac6f667f3c4cbc23892582f0acc10e50a5c0a72d1ac569a2a8c4aa",
+    "contracts/src/state.cairo": "791b747e36c17567ca8452212ba7d30b82ba4fcb314d869a21e45126ffe24610",
+    "contracts/Scarb.toml": "21b567d48e3d78c73a798329cede45e3d0688e505f476eaf608e57a59ebd2ef1",
+    "contracts/Scarb.lock": "fb2bbb1de071481282f4c1c4f8c24cb5ac442447bd12a0d5a850beac8c9a6c1c"
+  },
+  "excluded": [
+    "Sierra",
+    "CASM",
+    "class hash",
+    "function indices",
+    "debug metadata",
+    "resource estimates"
+  ]
+}

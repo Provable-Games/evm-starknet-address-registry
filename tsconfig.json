@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true
+  },
+  "include": [
+    "packages/sdk/src/**/*.ts",
+    "packages/sdk/tests/**/*.ts",
+    "vitest.config.ts",
+    "scripts/**/*.ts",
+    "examples/**/*.ts"
+  ]
+}

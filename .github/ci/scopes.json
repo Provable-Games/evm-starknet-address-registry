@@ -1,0 +1,26 @@
+{
+  "shared": [
+    "protocol/**",
+    "examples/**",
+    "scripts/**",
+    ".github/**",
+    "toolchain.json",
+    ".tool-versions",
+    "package.json",
+    "package-lock.json",
+    ".npmrc"
+  ],
+  "cairo": [
+    "contracts/**",
+    "packages/**"
+  ],
+  "sdk": [
+    "packages/**",
+    "contracts/**",
+    "tsconfig*",
+    "eslint*",
+    "vitest*",
+    ".prettier*",
+    "prettier*"
+  ]
+}

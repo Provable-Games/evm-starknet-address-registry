@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "CRITICAL",
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "file": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer"
+          },
+          "impact": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "file",
+          "line",
+          "impact",
+          "trigger",
+          "recommendation"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "findings"
+  ],
+  "additionalProperties": false
+}

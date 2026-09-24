@@ -1,0 +1,608 @@
+{
+  "packages/sdk/src/adapters.ts": [
+    {
+      "name": "signWithProvider",
+      "line": 14,
+      "column": 1
+    },
+    {
+      "name": "(anonymous)",
+      "line": 26,
+      "column": 38
+    },
+    {
+      "name": "invalidate",
+      "line": 32,
+      "column": 3
+    },
+    {
+      "name": "active",
+      "line": 36,
+      "column": 3
+    },
+    {
+      "name": "(anonymous)",
+      "line": 41,
+      "column": 22
+    },
+    {
+      "name": "(anonymous)",
+      "line": 42,
+      "column": 26
+    },
+    {
+      "name": "(anonymous)",
+      "line": 59,
+      "column": 24
+    },
+    {
+      "name": "(anonymous)",
+      "line": 76,
+      "column": 24
+    },
+    {
+      "name": "selection",
+      "line": 92,
+      "column": 3
+    },
+    {
+      "name": "sign",
+      "line": 118,
+      "column": 3
+    }
+  ],
+  "packages/sdk/src/addresses.ts": [
+    {
+      "name": "unsigned",
+      "line": 7,
+      "column": 1
+    },
+    {
+      "name": "ethereumAddress",
+      "line": 14,
+      "column": 1
+    },
+    {
+      "name": "hash32",
+      "line": 28,
+      "column": 1
+    },
+    {
+      "name": "accountAddress",
+      "line": 35,
+      "column": 1
+    },
+    {
+      "name": "feltHash",
+      "line": 40,
+      "column": 1
+    },
+    {
+      "name": "nonzero",
+      "line": 45,
+      "column": 1
+    },
+    {
+      "name": "word",
+      "line": 49,
+      "column": 1
+    },
+    {
+      "name": "rpcInteger",
+      "line": 52,
+      "column": 1
+    },
+    {
+      "name": "limbs",
+      "line": 62,
+      "column": 1
+    },
+    {
+      "name": "fromLimbs",
+      "line": 66,
+      "column": 1
+    }
+  ],
+  "packages/sdk/src/client.ts": [
+    {
+      "name": "accountAttempt",
+      "line": 61,
+      "column": 1
+    },
+    {
+      "name": "(anonymous)",
+      "line": 69,
+      "column": 40
+    },
+    {
+      "name": "(anonymous)",
+      "line": 72,
+      "column": 24
+    },
+    {
+      "name": "invalidate",
+      "line": 83,
+      "column": 5
+    },
+    {
+      "name": "active",
+      "line": 98,
+      "column": 5
+    },
+    {
+      "name": "finish",
+      "line": 105,
+      "column": 5
+    },
+    {
+      "name": "createRegistryClient",
+      "line": 134,
+      "column": 1
+    },
+    {
+      "name": "identity",
+      "line": 140,
+      "column": 3
+    },
+    {
+      "name": "snapshot",
+      "line": 156,
+      "column": 3
+    },
+    {
+      "name": "prepare",
+      "line": 183,
+      "column": 3
+    },
+    {
+      "name": "configured",
+      "line": 205,
+      "column": 3
+    },
+    {
+      "name": "(anonymous)",
+      "line": 210,
+      "column": 9
+    },
+    {
+      "name": "currentRequest",
+      "line": 216,
+      "column": 3
+    },
+    {
+      "name": "validate",
+      "line": 263,
+      "column": 3
+    },
+    {
+      "name": "pair",
+      "line": 277,
+      "column": 3
+    },
+    {
+      "name": "signedEffect",
+      "line": 287,
+      "column": 3
+    },
+    {
+      "name": "readback",
+      "line": 323,
+      "column": 3
+    },
+    {
+      "name": "(anonymous)",
+      "line": 335,
+      "column": 30
+    },
+    {
+      "name": "(anonymous)",
+      "line": 357,
+      "column": 13
+    },
+    {
+      "name": "execute",
+      "line": 381,
+      "column": 3
+    },
+    {
+      "name": "unsignedCall",
+      "line": 438,
+      "column": 3
+    },
+    {
+      "name": "unsignedSubmit",
+      "line": 448,
+      "column": 3
+    },
+    {
+      "name": "(anonymous)",
+      "line": 492,
+      "column": 18
+    },
+    {
+      "name": "(anonymous)",
+      "line": 493,
+      "column": 42
+    },
+    {
+      "name": "(anonymous)",
+      "line": 496,
+      "column": 18
+    },
+    {
+      "name": "(anonymous)",
+      "line": 497,
+      "column": 42
+    },
+    {
+      "name": "(anonymous)",
+      "line": 500,
+      "column": 20
+    },
+    {
+      "name": "(anonymous)",
+      "line": 501,
+      "column": 42
+    },
+    {
+      "name": "sign",
+      "line": 504,
+      "column": 5
+    },
+    {
+      "name": "(anonymous)",
+      "line": 505,
+      "column": 46
+    },
+    {
+      "name": "before",
+      "line": 511,
+      "column": 11
+    },
+    {
+      "name": "after",
+      "line": 518,
+      "column": 11
+    },
+    {
+      "name": "validate",
+      "line": 533,
+      "column": 5
+    },
+    {
+      "name": "(anonymous)",
+      "line": 534,
+      "column": 49
+    },
+    {
+      "name": "encode",
+      "line": 538,
+      "column": 5
+    },
+    {
+      "name": "(anonymous)",
+      "line": 542,
+      "column": 22
+    },
+    {
+      "name": "(anonymous)",
+      "line": 543,
+      "column": 41
+    },
+    {
+      "name": "submit",
+      "line": 545,
+      "column": 5
+    },
+    {
+      "name": "(anonymous)",
+      "line": 546,
+      "column": 50
+    },
+    {
+      "name": "(anonymous)",
+      "line": 547,
+      "column": 34
+    },
+    {
+      "name": "(anonymous)",
+      "line": 555,
+      "column": 26
+    },
+    {
+      "name": "(anonymous)",
+      "line": 581,
+      "column": 13
+    },
+    {
+      "name": "(anonymous)",
+      "line": 582,
+      "column": 43
+    },
+    {
+      "name": "(anonymous)",
+      "line": 585,
+      "column": 32
+    },
+    {
+      "name": "(anonymous)",
+      "line": 586,
+      "column": 43
+    }
+  ],
+  "packages/sdk/src/errors.ts": [
+    {
+      "name": "failure",
+      "line": 12,
+      "column": 1
+    },
+    {
+      "name": "confirmationUnavailable",
+      "line": 26,
+      "column": 1
+    },
+    {
+      "name": "requireInput",
+      "line": 46,
+      "column": 1
+    },
+    {
+      "name": "providerFailure",
+      "line": 52,
+      "column": 1
+    },
+    {
+      "name": "exactKeys",
+      "line": 72,
+      "column": 1
+    },
+    {
+      "name": "(anonymous)",
+      "line": 77,
+      "column": 18
+    },
+    {
+      "name": "isValue",
+      "line": 82,
+      "column": 1
+    }
+  ],
+  "packages/sdk/src/index.ts": [],
+  "packages/sdk/src/protocol.ts": [],
+  "packages/sdk/src/queries.ts": [
+    {
+      "name": "byteArray",
+      "line": 43,
+      "column": 1
+    },
+    {
+      "name": "ascii",
+      "line": 55,
+      "column": 1
+    },
+    {
+      "name": "domainCalldata",
+      "line": 61,
+      "column": 1
+    },
+    {
+      "name": "(anonymous)",
+      "line": 62,
+      "column": 16
+    },
+    {
+      "name": "createRegistryReader",
+      "line": 81,
+      "column": 1
+    },
+    {
+      "name": "raw",
+      "line": 87,
+      "column": 3
+    },
+    {
+      "name": "(anonymous)",
+      "line": 98,
+      "column": 25
+    },
+    {
+      "name": "authenticateOnce",
+      "line": 103,
+      "column": 3
+    },
+    {
+      "name": "authenticate",
+      "line": 128,
+      "column": 3
+    },
+    {
+      "name": "(anonymous)",
+      "line": 132,
+      "column": 52
+    },
+    {
+      "name": "read",
+      "line": 138,
+      "column": 3
+    },
+    {
+      "name": "single",
+      "line": 146,
+      "column": 3
+    },
+    {
+      "name": "nonce",
+      "line": 150,
+      "column": 3
+    },
+    {
+      "name": "countAt",
+      "line": 154,
+      "column": 3
+    },
+    {
+      "name": "pageAt",
+      "line": 169,
+      "column": 3
+    },
+    {
+      "name": "(anonymous)",
+      "line": 195,
+      "column": 12
+    },
+    {
+      "name": "getSigningDomain",
+      "line": 205,
+      "column": 5
+    },
+    {
+      "name": "getVersion",
+      "line": 209,
+      "column": 5
+    },
+    {
+      "name": "getStarknetAddress",
+      "line": 213,
+      "column": 5
+    },
+    {
+      "name": "getEthereumNonce",
+      "line": 226,
+      "column": 5
+    },
+    {
+      "name": "getRecipientNonce",
+      "line": 235,
+      "column": 5
+    },
+    {
+      "name": "isAssociated",
+      "line": 247,
+      "column": 5
+    },
+    {
+      "name": "getEthereumAddressCount",
+      "line": 261,
+      "column": 5
+    },
+    {
+      "name": "getEthereumAddresses",
+      "line": 265,
+      "column": 5
+    },
+    {
+      "name": "listAllEthereumAddresses",
+      "line": 269,
+      "column": 5
+    },
+    {
+      "name": "snapshot",
+      "line": 305,
+      "column": 5
+    },
+    {
+      "name": "(anonymous)",
+      "line": 309,
+      "column": 11
+    },
+    {
+      "name": "(anonymous)",
+      "line": 347,
+      "column": 63
+    },
+    {
+      "name": "(anonymous)",
+      "line": 362,
+      "column": 28
+    }
+  ],
+  "packages/sdk/src/signature.ts": [
+    {
+      "name": "checkedSignature",
+      "line": 16,
+      "column": 1
+    },
+    {
+      "name": "parseSignature",
+      "line": 30,
+      "column": 1
+    },
+    {
+      "name": "signatureHex",
+      "line": 52,
+      "column": 1
+    },
+    {
+      "name": "recoverSigner",
+      "line": 56,
+      "column": 1
+    },
+    {
+      "name": "encodeSigned",
+      "line": 85,
+      "column": 1
+    }
+  ],
+  "packages/sdk/src/typed-data.ts": [
+    {
+      "name": "deployment",
+      "line": 70,
+      "column": 1
+    },
+    {
+      "name": "signingDomain",
+      "line": 104,
+      "column": 1
+    },
+    {
+      "name": "authenticateDomain",
+      "line": 139,
+      "column": 1
+    },
+    {
+      "name": "(anonymous)",
+      "line": 147,
+      "column": 7
+    },
+    {
+      "name": "checkedSnapshot",
+      "line": 152,
+      "column": 1
+    },
+    {
+      "name": "prepareRequest",
+      "line": 184,
+      "column": 1
+    },
+    {
+      "name": "typedDigest",
+      "line": 305,
+      "column": 1
+    },
+    {
+      "name": "walletTypedData",
+      "line": 312,
+      "column": 1
+    },
+    {
+      "name": "equalData",
+      "line": 324,
+      "column": 1
+    },
+    {
+      "name": "(anonymous)",
+      "line": 337,
+      "column": 7
+    },
+    {
+      "name": "authenticatePrepared",
+      "line": 343,
+      "column": 1
+    },
+    {
+      "name": "immutable",
+      "line": 358,
+      "column": 1
+    }
+  ]
+}

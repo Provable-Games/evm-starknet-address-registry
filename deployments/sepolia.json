@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "kind": "public-registry-deployment",
+  "environment": "public-sepolia",
+  "rpc": "https://api.cartridge.gg/x/starknet/sepolia/rpc/v0_10",
+  "packet": {
+    "source_revision": "4357756217008cb3da46b35a4024788792c26e1d",
+    "baseline": "bb265ed845fd79ce5d51593bb3fb8973b59d08a2",
+    "account_label": "Loot Survivor",
+    "salt": "0x16c9d67cfabe196231098d8859542d6d4bc91a05e62ca0d2bc8bdc6f8386d63",
+    "unique": false,
+    "constructor_calldata": [
+      "11155111",
+      "0",
+      "0",
+      "0x4c6f6f74205375727669766f72",
+      "13"
+    ],
+    "artifact_sha256": "5122ab46d70e7fddb61ed016c0bc4f55c6d278f1e319db1564e5d89a74f3a85b",
+    "declare_transaction_hash": "0x01964ae135b68a33e555afc6ea01b6d0147abdaf545fe13e5695ebdb03a23695",
+    "deploy_resource_bounds": {
+      "l1_gas": {
+        "amount": 1,
+        "price_fri": 169945118614077
+      },
+      "l2_gas": {
+        "amount": 21611232,
+        "price_fri": 27626049183
+      },
+      "l1_data_gas": {
+        "amount": 1767,
+        "price_fri": 710998967025
+      }
+    },
+    "deploy_maximum_fee_fri": "598459238430570708",
+    "deploy_transaction_hash": "0x06faef33000c9b78248d862842ca1b1f23328e9467a94dd7a1309b6249b294c4",
+    "contract_address": "0x0183a01aaa693e247a344360ad18643dab41b0fbd4a3877763c5e0a9386dae7e"
+  },
+  "deployment": {
+    "ethereumChainId": "11155111",
+    "accountChainId": "393402133025997798000961",
+    "registryAddress": "0x0183a01aaa693e247a344360ad18643dab41b0fbd4a3877763c5e0a9386dae7e",
+    "classHash": "0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156",
+    "accountLabel": "Loot Survivor",
+    "abiSha256": "7a5bfdd9bab5b56c78a403d964534ec2a5b8711705152b59094d5939820224eb",
+    "protocolRevision": "5beae0d4f74dfc4ed9cc664db98d28e5c4f5b96a"
+  },
+  "domain": {
+    "name": "Account Address Association",
+    "version": "1",
+    "ethereumChainId": "11155111",
+    "accountChainId": "393402133025997798000961",
+    "registryAddress": "0x0183a01aaa693e247a344360ad18643dab41b0fbd4a3877763c5e0a9386dae7e",
+    "salt": "0x3c991719d1233027680aa622a850a9eef185fda8bc7c4560f69dbc54f065824d",
+    "domainSeparator": "0x5ec88e2486253df5612b82397980feced0f88d256583067e98ac4893a52a3d0d",
+    "accountLabel": "Loot Survivor",
+    "linkStatement": "Link my Ethereum address to this Loot Survivor account. This does not approve asset transfers.",
+    "moveStatement": "Move my Ethereum address link from the previous Loot Survivor account shown here to this account. This does not approve asset transfers.",
+    "revokeStatement": "Remove my Ethereum address link to the Loot Survivor account shown here, if any, and cancel requests using the current Ethereum nonce.",
+    "accountNetworkName": "Starknet Sepolia"
+  },
+  "receipts": [
+    {
+      "actual_fee": {
+        "amount": "0x1b193c40a3fd66cc0",
+        "unit": "FRI"
+      },
+      "block_hash": "0x36027af40c0c0a7f95d2f031f28e2ae434edeaca6f04de2db5422d3949fc947",
+      "block_number": 15542683,
+      "events": [
+        {
+          "data": [
+            "0x1b193c40a3fd66cc0",
+            "0x0"
+          ],
+          "from_address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+          "keys": [
+            "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9",
+            "0x1f1c3a3be4a63fe57c964046906a2e1913fd8a91f3e149816e76b2d9f97a2e8",
+            "0x1176a1bd84444c89232ec27754698e5d2e7e1a7f1539f12027f28b23ec9f3d8"
+          ]
+        }
+      ],
+      "execution_resources": {
+        "l1_data_gas": 192,
+        "l1_gas": 0,
+        "l2_gas": 1357085120
+      },
+      "execution_status": "SUCCEEDED",
+      "finality_status": "ACCEPTED_ON_L2",
+      "messages_sent": [],
+      "transaction_hash": "0x1964ae135b68a33e555afc6ea01b6d0147abdaf545fe13e5695ebdb03a23695",
+      "type": "DECLARE"
+    },
+    {
+      "actual_fee": {
+        "amount": "0x5b3b895a2dd8940",
+        "unit": "FRI"
+      },
+      "block_hash": "0x687cb6632e6fb3ceafe727f83eeed0c5b3e4e34ca307ca7fbd9072a79209483",
+      "block_number": 15542729,
+      "events": [
+        {
+          "data": [
+            "0x183a01aaa693e247a344360ad18643dab41b0fbd4a3877763c5e0a9386dae7e",
+            "0x1f1c3a3be4a63fe57c964046906a2e1913fd8a91f3e149816e76b2d9f97a2e8",
+            "0x0",
+            "0x125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156",
+            "0x5",
+            "0xaa36a7",
+            "0x0",
+            "0x0",
+            "0x4c6f6f74205375727669766f72",
+            "0xd",
+            "0x16c9d67cfabe196231098d8859542d6d4bc91a05e62ca0d2bc8bdc6f8386d63"
+          ],
+          "from_address": "0x2ceed65a4bd731034c01113685c831b01c15d7d432f71afb1cf1634b53a2125",
+          "keys": [
+            "0x26b160f10156dea0639bec90696772c640b9706a47f5b8c52ea1abe5858b34d"
+          ]
+        },
+        {
+          "data": [
+            "0x5b3b895a2dd8940",
+            "0x0"
+          ],
+          "from_address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+          "keys": [
+            "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9",
+            "0x1f1c3a3be4a63fe57c964046906a2e1913fd8a91f3e149816e76b2d9f97a2e8",
+            "0x1176a1bd84444c89232ec27754698e5d2e7e1a7f1539f12027f28b23ec9f3d8"
+          ]
+        }
+      ],
+      "execution_resources": {
+        "l1_data_gas": 1472,
+        "l1_gas": 0,
+        "l2_gas": 17809360
+      },
+      "execution_status": "SUCCEEDED",
+      "finality_status": "ACCEPTED_ON_L2",
+      "messages_sent": [],
+      "transaction_hash": "0x6faef33000c9b78248d862842ca1b1f23328e9467a94dd7a1309b6249b294c4",
+      "type": "INVOKE"
+    }
+  ],
+  "readback_block": "0x0687cb6632e6fb3ceafe727f83eeed0c5b3e4e34ca307ca7fbd9072a79209483",
+  "later_readback_block": "0x0197b93b48cc9503e6b92ac22eef62dd0a9d3a7b66c3bee2f1aa328ada456d8a",
+  "limitations": [
+    "Public lifecycle and wallet UI acceptance pending"
+  ],
+  "independent_provider_verification": {
+    "provider": "sncast 0.64.0 default ZAN public Sepolia",
+    "class_hash": true,
+    "raw_domain_and_version_equal": true,
+    "block": "0x0687cb6632e6fb3ceafe727f83eeed0c5b3e4e34ca307ca7fbd9072a79209483"
+  },
+  "fee_bounds_verified": true,
+  "declaration_resource_bounds": {
+    "l1_gas": {
+      "amount": 1,
+      "price_fri": 169918507763182
+    },
+    "l2_gas": {
+      "amount": 1628502144,
+      "price_fri": 27626049183
+    },
+    "l1_data_gas": {
+      "amount": 231,
+      "price_fri": 709528634493
+    }
+  },
+  "declaration_maximum_fee_fri": "44989414144387279417",
+  "actual_total_registry_fee_fri": "31653405532141909504"
+}

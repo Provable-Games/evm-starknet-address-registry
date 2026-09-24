@@ -1,0 +1,11 @@
+{
+  "providers": ["codex", "claude"],
+  "roles": [
+    {
+      "id": "general",
+      "prompt": "prompts/general.md",
+      "paths": ["**"],
+      "fallback": true
+    }
+  ]
+}

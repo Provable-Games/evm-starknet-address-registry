@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-09-22",
+  "policy": "Newest mutually compatible stable releases; exact installs; no forced peers.",
+  "versions": {
+    "scarb": "2.20.1",
+    "cairo": "2.20.0",
+    "starknet_foundry": "0.64.0",
+    "node": "26.10.0",
+    "node_lts": "24.21.0",
+    "npm": "12.1.0",
+    "actionlint": "1.7.12",
+    "codex": "0.156.1",
+    "claude": "2.1.281",
+    "usc": "2.10.1",
+    "python": "3.14.7",
+    "cairo_coverage": "0.6.1",
+    "starknet_devnet": "0.10.0"
+  },
+  "packages": {
+    "typescript": {
+      "version": "6.0.3",
+      "metadata_url": "https://registry.npmjs.org/typescript/6.0.3",
+      "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="
+    },
+    "typescript-eslint": {
+      "version": "8.70.1",
+      "metadata_url": "https://registry.npmjs.org/typescript-eslint/8.70.1",
+      "integrity": "sha512-AcWG7KDjZ2THNXsgwttMaGmzVi0VFRlFYfqFHYQRbDpF3owuYbuiL8c7UUrd2k8s3PoSfIQrWfrGXfcElrWLYA=="
+    },
+    "vitest": {
+      "version": "5.0.1",
+      "metadata_url": "https://registry.npmjs.org/vitest/5.0.1",
+      "integrity": "sha512-iA95lQbKEkvrtTkdAgnWbXfbipWiiWe/hDl2P5tMi6WFwD76G0NxXAGp/M9EOcYupeGJRr6wppMc7CoA41TQjg=="
+    },
+    "@vitest/coverage-v8": {
+      "version": "5.0.1",
+      "metadata_url": "https://registry.npmjs.org/@vitest/coverage-v8/5.0.1",
+      "integrity": "sha512-FRC8ACiudC3dI6MTplzRSYWHDRnIv2IPfbzs4FdoJNsMal/35sWV8hwIfV8ZcqzSPy+uXHeMVONt9CEqtOU17w=="
+    },
+    "eslint": {
+      "version": "10.11.0",
+      "metadata_url": "https://registry.npmjs.org/eslint/10.11.0",
+      "integrity": "sha512-P7a6UEEqb9G95MYAtqkmsTbVXIYyzIfl6NGOIJk162PaahFxFyeGcrlXYFSiagECg4sEm8IseJdZBKR3rx6MsQ=="
+    },
+    "@eslint/js": {
+      "version": "10.0.1",
+      "metadata_url": "https://registry.npmjs.org/@eslint/js/10.0.1",
+      "integrity": "sha512-zeR9k5pd4gxjZ0abRoIaxdc7I3nDktoXZk2qOv9gCNWx3mVwEn32VRhyLaRsDiJjTs0xq/T8mfPtyuXu7GWBcA=="
+    },
+    "prettier": {
+      "version": "3.9.8",
+      "metadata_url": "https://registry.npmjs.org/prettier/3.9.8",
+      "integrity": "sha512-WRFq3Wn3WId7LLROfMLdH7xaFr2jR62wU8nLO6rQUOLOxNZUviyJQs1M0iIhLexSFy+L+w0ch66wtoO2jRjG0A=="
+    },
+    "viem": {
+      "version": "2.56.8",
+      "metadata_url": "https://registry.npmjs.org/viem/2.56.8",
+      "integrity": "sha512-vD1DsnYxySMml5/02m/+boWQYfZtWug2VYzm6+hdVT+VDmULBZfpoh9gPDAENdMMBmQKW/2QJ/1DuZaslBJDAg=="
+    },
+    "starknet": {
+      "version": "10.8.0",
+      "metadata_url": "https://registry.npmjs.org/starknet/10.8.0",
+      "integrity": "sha512-skJ2tTmj/Qz/iXRRwDBmZQtymR020xZt4+4k3SBbPlHgELyiC3HnJjEO0hbUQsEsQVjjVbpWVQc9B+dLHvZvzQ=="
+    },
+    "@types/node": {
+      "version": "26.6.2",
+      "metadata_url": "https://registry.npmjs.org/@types/node/26.6.2",
+      "integrity": "sha512-X1P21scMv4zGKLYqjdGjaKa7COa0RKVYYZZN/NfvLQ1JegxFhdhpZG/Lyn8AXx6CDUavKAd11v6BvfpkDByK8g=="
+    },
+    "rolldown": {
+      "version": "1.2.9",
+      "metadata_url": "https://registry.npmjs.org/rolldown/1.2.9",
+      "integrity": "sha512-hx/Pv0N1haXRb11qkfnK5MXB/iqr7i0yjWQqmO9uHqZpBgQSqzc8UsSnEpalsh+j1I8qQ2CkXAkJC8Br3dKSlg==",
+      "verified_on": "2026-09-23",
+      "verification": "Exact version and SHA-512 integrity read from the official metadata_url on this date; this records metadata verification, not additional runtime validation."
+    }
+  },
+  "artifacts": {
+    "scarb": {
+      "linux-arm64": {
+        "url": "https://github.com/software-mansion/scarb/releases/download/v2.20.1/scarb-v2.20.1-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "162fecb99712dc732f7f4bc0cc499c04c1c72e75591d6bc5566d2ea856295033"
+      },
+      "linux-x64": {
+        "url": "https://github.com/software-mansion/scarb/releases/download/v2.20.1/scarb-v2.20.1-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "6795b268da13c8ff397a0f5e4b7a63f4b2b313d8a5e41fff36626087279c4804"
+      }
+    },
+    "foundry": {
+      "linux-arm64": {
+        "url": "https://github.com/foundry-rs/starknet-foundry/releases/download/v0.64.0/starknet-foundry-v0.64.0-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "97bbf407182a5e10be249ede6e4ddc1952a2b2805694ec56e28f10ca35464bbb"
+      },
+      "linux-x64": {
+        "url": "https://github.com/foundry-rs/starknet-foundry/releases/download/v0.64.0/starknet-foundry-v0.64.0-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "24c96491a1532431ccd9d1675b49d881eb3d09f209748199d91b4d4eed5030a0"
+      }
+    },
+    "actionlint": {
+      "linux-x64": {
+        "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz",
+        "sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+      },
+      "linux-arm64": {
+        "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_arm64.tar.gz",
+        "sha256": "325e971b6ba9bfa504672e29be93c24981eeb1c07576d730e9f7c8805afff0c6"
+      }
+    },
+    "node": {
+      "linux-x64": {
+        "url": "https://nodejs.org/dist/v26.10.0/node-v26.10.0-linux-x64.tar.xz",
+        "sha256": "ca70e9e349de048b9522abb3adc05b3bd6f43c5ffd3ec57916c7da292f59f022"
+      },
+      "linux-arm64": {
+        "url": "https://nodejs.org/dist/v26.10.0/node-v26.10.0-linux-arm64.tar.xz",
+        "sha256": "7a6353f63eb3d04765004b4adf172616243e4522434635cb1d26288658b04ab5"
+      }
+    },
+    "node_lts": {
+      "linux-x64": {
+        "url": "https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz",
+        "sha256": "fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6"
+      },
+      "linux-arm64": {
+        "url": "https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-arm64.tar.xz",
+        "sha256": "6ad1325edbdb5649c379b75a237147a666c95d4f9ae8d340fef2d1575d289ad2"
+      }
+    },
+    "npm": {
+      "any": {
+        "url": "https://registry.npmjs.org/npm/-/npm-12.1.0.tgz",
+        "sha256": "f08e674e31eb99931df2297aa55c274bf9bebd90679dad57fdbe9683907a3325"
+      }
+    },
+    "usc": {
+      "linux-arm64": {
+        "url": "https://github.com/software-mansion/universal-sierra-compiler/releases/download/v2.10.1/universal-sierra-compiler-v2.10.1-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "a329e34c5e9710f81a6b58ad100d6e509a52d194f4b566991d5a026411233a72"
+      },
+      "linux-x64": {
+        "url": "https://github.com/software-mansion/universal-sierra-compiler/releases/download/v2.10.1/universal-sierra-compiler-v2.10.1-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "8f6d9faf2ce644faa99e2acee7e855e3fbeb7919b99ec13d29f57c08089f2fb9"
+      }
+    },
+    "python": {
+      "linux-arm64": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260901/cpython-3.14.7%2B20260901-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+        "sha256": "8a0798baa8a2c27b5751d590aced543eaa85e20b3f73d93c1af049688acdc9c5"
+      },
+      "linux-x64": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260901/cpython-3.14.7%2B20260901-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+        "sha256": "3959f92825141e04adf44982d3a83ee57af0877e893b0796e04c1468749d9b04"
+      }
+    },
+    "cairo-coverage": {
+      "linux-arm64": {
+        "url": "https://github.com/software-mansion/cairo-coverage/releases/download/v0.6.1/cairo-coverage-v0.6.1-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "dc1b35b224a86472cb2dbeaf5794e43b52882ac0173209c6efb262b50bf024a1"
+      },
+      "linux-x64": {
+        "url": "https://github.com/software-mansion/cairo-coverage/releases/download/v0.6.1/cairo-coverage-v0.6.1-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "c9277efe800926f8ef1ddbb466f085d52cbae7026e52d17c0cfd6dd01d14532f"
+      }
+    },
+    "starknet-devnet": {
+      "linux-arm64": {
+        "url": "https://github.com/starknet-io/starknet-devnet/releases/download/v0.10.0/starknet-devnet-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "63c10e289143fde9332cec086129a18e91ff45e789ecd949c62b659188b4cdad"
+      },
+      "linux-x64": {
+        "url": "https://github.com/starknet-io/starknet-devnet/releases/download/v0.10.0/starknet-devnet-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "0d27863ec959dc74ec6de985c3ec8eb093d6670bacd7672b51dc71ec8528969b"
+      }
+    }
+  },
+  "actions": {
+    "actions/cache": {
+      "version": "v6.1.0",
+      "sha": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
+    },
+    "actions/checkout": {
+      "version": "v7.0.1",
+      "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1"
+    },
+    "actions/download-artifact": {
+      "version": "v8.0.1",
+      "sha": "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c"
+    },
+    "actions/github-script": {
+      "version": "v9.0.0",
+      "sha": "3a2844b7e9c422d3c10d287c895573f7108da1b3"
+    },
+    "actions/setup-node": {
+      "version": "v7.0.0",
+      "sha": "820762786026740c76f36085b0efc47a31fe5020"
+    },
+    "actions/upload-artifact": {
+      "version": "v7.0.1",
+      "sha": "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
+    },
+    "anthropics/claude-code-action": {
+      "version": "v1.0.231",
+      "sha": "cfc3eb22bfed5c26ef66e3223c982af27e4524de"
+    },
+    "openai/codex-action": {
+      "version": "v1.12",
+      "sha": "86365089eb2b84e0a8fb0717b304f8bdcb13b20e"
+    }
+  },
+  "compatibility_exceptions": [
+    {
+      "component": "typescript",
+      "selected": "6.0.3",
+      "latest_checked": "7.0.2",
+      "constraint": "typescript-eslint 8.70.1 supports >=4.8.4 <6.1.0",
+      "approved": "User approved this exception while current typed-ESLint support requires it."
+    }
+  ],
+  "sources": {
+    "node": "https://nodejs.org/dist/index.json",
+    "scarb": "https://github.com/software-mansion/scarb/releases/tag/v2.20.1",
+    "foundry": "https://github.com/foundry-rs/starknet-foundry/releases/tag/v0.64.0",
+    "foundry_tool_versions": "https://github.com/foundry-rs/starknet-foundry/blob/v0.64.0/.tool-versions",
+    "usc": "https://github.com/software-mansion/universal-sierra-compiler/releases/tag/v2.10.1"
+  },
+  "verification": {
+    "linux-x64": "Pinned artifact hashes and runtime versions verified on Linux x64.",
+    "linux-arm64": "Pinned artifact hashes and runtime versions verified in CI on Linux ARM64.",
+    "optional_tools": {
+      "cairo-coverage": {
+        "version": "0.6.1",
+        "verified_on": "2026-09-23",
+        "linux-x64": "Hash-verified fresh and repeated private installation/version checks passed.",
+        "linux-arm64": {
+          "run": "https://github.com/Provable-Games/evm-starknet-address-registry/actions/runs/35832746506",
+          "head": "14dc5945bc9909c72bbaae67a86e35d2f3812ae9",
+          "evidence": "Bootstrap installation and actual --version execution passed; not production coverage or final registry/SDK integration."
+        }
+      },
+      "starknet-devnet": {
+        "version": "0.10.0",
+        "verified_on": "2026-09-23",
+        "linux-x64": "Hash-verified fresh and repeated private installation/version checks passed.",
+        "linux-arm64": {
+          "run": "https://github.com/Provable-Games/evm-starknet-address-registry/actions/runs/35832746506",
+          "head": "14dc5945bc9909c72bbaae67a86e35d2f3812ae9",
+          "evidence": "Bootstrap installation and actual --version execution passed; not production coverage or final registry/SDK integration."
+        }
+      }
+    }
+  },
+  "cairo_packages": {
+    "snforge_std": {
+      "version": "0.64.0",
+      "registry": "https://scarbs.xyz/",
+      "sha256": "ea9ca83895fd0ae4b99c5cf93b384b8045dc0dca80a075ecef1ee9fdf5ffa6f5"
+    },
+    "snforge_scarb_plugin": {
+      "version": "0.64.0",
+      "registry": "https://scarbs.xyz/",
+      "sha256": "b6e330b8303add0d1a32e636e4e0d2b44a6b4ff5632bfe0ce66f136a701ae151"
+    }
+  },
+  "python_distribution": {
+    "publisher": "Astral (third-party CPython distribution)",
+    "release": "20260901",
+    "source_commit": "4bb01f09aaf362c71e891be4a41cb6d6ddf830b3",
+    "variant": "GNU glibc, GIL enabled, install_only_stripped",
+    "source": "https://github.com/astral-sh/python-build-standalone/releases/tag/20260901",
+    "verification": "Both archive payload SHA-256 values independently verified before installation; ARM execution requires CI."
+  },
+  "verified_on_scope": "Original toolchain baseline date; later optional-tool verification is recorded per entry in verification.optional_tools. This does not assert all historical pins were reverified on that later date.",
+  "compatibility_consumer_typescript": {
+    "version": "5.8.3",
+    "metadata_url": "https://registry.npmjs.org/typescript/5.8.3",
+    "url": "https://registry.npmjs.org/typescript/-/typescript-5.8.3.tgz",
+    "integrity": "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ=="
+  }
+}

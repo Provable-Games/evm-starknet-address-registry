@@ -1,0 +1,12 @@
+.tools/
+.tools-lts/
+.cache/
+__pycache__/
+*.pyc
+node_modules/
+target/
+dist/
+coverage/
+.snfoundry_cache/
+.ci-review-*/
+reviewed-source/
