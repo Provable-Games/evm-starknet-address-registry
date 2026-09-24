@@ -1,14 +1,24 @@
 {
   "name": "@provable-games/evm-starknet-address-registry",
-  "version": "0.0.0",
-  "description": "Private framework-independent EVM\u2013Starknet address registry SDK",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Framework-independent EVM\u2013Starknet address registry SDK",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Provable-Games/evm-starknet-address-registry.git",
+    "directory": "packages/sdk"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "sideEffects": false,
   "files": [
     "dist",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "types": "./dist/index.d.ts",
   "exports": {

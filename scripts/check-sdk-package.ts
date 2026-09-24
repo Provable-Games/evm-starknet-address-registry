@@ -35,6 +35,7 @@ function sourceIdentity() {
     'tsconfig.base.json',
     'packages/sdk/package.json',
     'packages/sdk/tsconfig.build.json',
+    'packages/sdk/LICENSE',
     'packages/sdk/README.md',
     'packages/sdk/CHANGELOG.md',
     'scripts/check-sdk-package.ts',
