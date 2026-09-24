@@ -7,8 +7,7 @@ class/ABI identity and SDK-authenticated reads.
 
 The run exercises signed link, move, and revoke; account-authorized unlink and
 pending-consent cancellation; pagination; nonce and signature rejection; and
-consumer policy during execution. It uses disposable software keys. It does not
-test a desktop or mobile wallet prompt.
+consumer policy during execution. It uses disposable software keys.
 
 ## Run locally
 

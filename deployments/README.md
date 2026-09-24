@@ -7,4 +7,4 @@ records its transaction and constructor readback. The
 has separate declaration evidence in `mainnet-class.json`.
 
 [Sepolia registry deployment](sepolia.json) records the testnet instance
-separately. Real wallet signing prompts remain unverified.
+separately.
