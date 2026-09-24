@@ -1,0 +1,5 @@
+# actionlint custom-label allowlist. This key does not mean the runner is
+# self-hosted; cairo-arm-4 is a GitHub-hosted larger runner.
+self-hosted-runner:
+  labels:
+    - cairo-arm-4

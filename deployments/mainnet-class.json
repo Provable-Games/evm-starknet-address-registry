@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "kind": "public-class-declaration",
+  "network": "Starknet Mainnet",
+  "rpc": "https://rpc.provable.games/rpc",
+  "observed_at_utc": "2026-09-24T17:05:44Z",
+  "chain_id": "0x534e5f4d41494e",
+  "class_hash": "0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156",
+  "declaration_transaction": {
+    "transaction_hash": "0x46b4bb17d3a029725032cbc8fbaccd96e4a729e52d042343b9647194f905a",
+    "type": "DECLARE",
+    "version": "0x3",
+    "sender_address": "0x11de265ce5b84c0471c9973ba027ab831955f448074e913a33e5f22e238c739",
+    "compiled_class_hash": "0x6ebac2d0ecf1266575811eedf62f01181e04a293f87601c70f0f2192f6497e2"
+  },
+  "declaration_receipt": {
+    "actual_fee": {
+      "amount": "0x1dbf33d67a4b852c0",
+      "unit": "FRI"
+    },
+    "block_hash": "0x46a47f32eab4ad7f8579d8032efb34a7d62c7dfd411228a9c22cf2a8e7bedf",
+    "block_number": 15354454,
+    "events": [
+      {
+        "data": ["0x1dbf33d67a4b852c0", "0x0"],
+        "from_address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+        "keys": [
+          "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9",
+          "0x11de265ce5b84c0471c9973ba027ab831955f448074e913a33e5f22e238c739",
+          "0x1176a1bd84444c89232ec27754698e5d2e7e1a7f1539f12027f28b23ec9f3d8"
+        ]
+      }
+    ],
+    "execution_resources": {
+      "l1_data_gas": 192,
+      "l1_gas": 0,
+      "l2_gas": 1357045120
+    },
+    "execution_status": "SUCCEEDED",
+    "finality_status": "ACCEPTED_ON_L1",
+    "messages_sent": [],
+    "transaction_hash": "0x46b4bb17d3a029725032cbc8fbaccd96e4a729e52d042343b9647194f905a",
+    "type": "DECLARE"
+  },
+  "class_readback": {
+    "method": "starknet_getClass",
+    "previous_block_number": 15354453,
+    "previous_block_error": {
+      "code": 28,
+      "message": "Class hash not found"
+    },
+    "declaration_block_number": 15354454,
+    "contract_class_version": "0.1.0",
+    "entry_point_counts": {
+      "CONSTRUCTOR": 1,
+      "EXTERNAL": 13,
+      "L1_HANDLER": 0
+    },
+    "abi_matches_frozen": true,
+    "frozen_abi_sha256": "7a5bfdd9bab5b56c78a403d964534ec2a5b8711705152b59094d5939820224eb"
+  }
+}

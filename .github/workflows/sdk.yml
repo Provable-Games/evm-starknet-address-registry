@@ -1,0 +1,112 @@
+name: SDK CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sdk-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scope:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    outputs:
+      changed: ${{ steps.scope.outputs.changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/ci_scope.py sdk
+  checks:
+    needs: scope
+    if: needs.scope.outputs.changed == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [primary, lts]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: test -f package-lock.json && test -f packages/sdk/package.json
+      - run: python3 scripts/check_bootstrap.py
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/downloads
+          key: sdk-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.runtime }}-${{ hashFiles('toolchain.json') }}
+          restore-keys: sdk-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.runtime }}-
+      - name: Install the selected pinned Node and npm
+        env:
+          SDK_RUNTIME: ${{ matrix.runtime }}
+        run: |
+          if [ "$SDK_RUNTIME" = lts ]; then
+            python3 scripts/setup.py --node-lts --components node npm
+          else
+            python3 scripts/setup.py --components node npm
+          fi
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/npm
+          key: npm-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.runtime }}-${{ hashFiles('toolchain.json') }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.runtime }}-${{ hashFiles('toolchain.json') }}-
+      - name: Locked install and all SDK checks
+        env:
+          npm_config_cache: ${{ github.workspace }}/.cache/npm
+        run: |
+          export PATH="$PWD/.tools/bin:$PATH"
+          npm ci --cache "$PWD/.cache/npm"
+          npm run format:check
+          # Integration examples consume the built package declarations.
+          npm run build
+          npm run lint
+          npm run typecheck
+          npm test -- --run
+          npm run test:coverage
+          npm run check:package
+          git diff --exit-code -- package-lock.json
+      - name: Retain production coverage and measured packed browser graph
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sdk-evidence-${{ matrix.runtime }}
+          path: |
+            coverage/coverage-final.json
+            coverage/coverage-summary.json
+            coverage/lcov.info
+            coverage/browser-bundle.json
+          if-no-files-found: error
+          retention-days: 7
+  required:
+    name: sdk/required
+    if: always()
+    needs: [scope, checks]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Require selected SDK jobs
+        env:
+          SCOPE_RESULT: ${{ needs.scope.result }}
+          CHANGED: ${{ needs.scope.outputs.changed }}
+          CHECKS_RESULT: ${{ needs.checks.result }}
+        run: |
+          test "$SCOPE_RESULT" = success
+          if [ "$CHANGED" = true ]; then
+            test "$CHECKS_RESULT" = success
+          else
+            test "$CHANGED" = false && test "$CHECKS_RESULT" = skipped
+          fi

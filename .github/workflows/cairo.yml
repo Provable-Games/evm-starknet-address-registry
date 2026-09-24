@@ -1,0 +1,282 @@
+name: Cairo CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cairo-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scope:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    outputs:
+      changed: ${{ steps.scope.outputs.changed }}
+      cairo_validation_changed: ${{ steps.scope.outputs.cairo_validation_changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/ci_scope.py cairo
+  lint:
+    needs: scope
+    if: needs.scope.outputs.changed == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The test job saves this downloads-only cache; lint only restores it.
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/downloads
+          key: cairo-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('toolchain.json') }}
+          restore-keys: cairo-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-
+      - run: test -f contracts/Scarb.toml && test -f contracts/Scarb.lock
+      - run: python3 scripts/check_bootstrap.py
+      - run: python3 scripts/setup.py --components scarb foundry
+      - name: Format and lint production and test sources
+        run: |
+          export PATH="$PWD/.tools/bin:/usr/bin:/bin"
+          unset UNIVERSAL_SIERRA_COMPILER
+          cd contracts
+          scarb fmt --check
+          scarb lint --deny-warnings --test
+          python3 test_validation.py
+          python3 generate_golden_tests.py --check
+          python3 generate_execution_tests.py --check
+          git diff --exit-code -- Scarb.lock
+  test:
+    needs: scope
+    if: needs.scope.outputs.cairo_validation_changed == 'true'
+    # GitHub-hosted larger runner with the cairo-ubuntu26-arm custom VM image.
+    runs-on: cairo-arm-4
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/downloads
+          key: cairo-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('toolchain.json') }}
+          restore-keys: cairo-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-
+      - run: test -f contracts/Scarb.toml && test -f contracts/Scarb.lock
+      - run: python3 scripts/setup.py --components scarb foundry
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/reference-wheels
+          key: reference-wheels-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/reference/wheels.lock.json') }}
+      - name: Verify compiler ABI and independent reference vectors
+        run: |
+          python3 scripts/setup.py --components python
+          python3 scripts/setup_reference.py
+          export PATH="$PWD/.tools/bin:/usr/bin:/bin"
+          unset UNIVERSAL_SIERRA_COMPILER
+          python3 scripts/check_protocol.py
+          .tools/reference-venv/bin/python -I scripts/reference/generate.py
+          .tools/reference-venv/bin/python -I scripts/reference/test_oracle.py
+      - name: Build and run nonempty Foundry tests
+        if: needs.scope.outputs.cairo_validation_changed == 'true'
+        env:
+          CAIRO_CI_MEMORY_DIR: .tools/cairo-ci-memory
+        run: |
+          export PATH="$PWD/.tools/bin:/usr/bin:/bin"
+          unset UNIVERSAL_SIERRA_COMPILER
+          scarb --manifest-path contracts/Scarb.toml build
+          python3 contracts/observe_test_memory.py --output .tools/cairo-ci-memory -- python3 scripts/run_cairo_tests.py
+          git diff --exit-code -- contracts/Scarb.lock
+      - name: Retain actual runner and test-memory observations
+        if: always() && needs.scope.outputs.cairo_validation_changed == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cairo-test-memory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tools/cairo-ci-memory/*.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+  evidence:
+    needs: scope
+    if: needs.scope.outputs.cairo_validation_changed == 'true'
+    # Use the verified standard ARM runner; no custom runner entitlement is assumed.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/downloads
+          key: cairo-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('toolchain.json') }}
+          restore-keys: cairo-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-
+      # Only evidence downloads cairo-coverage; it owns this separate archive cache.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/coverage-downloads
+          key: cairo-coverage-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('toolchain.json') }}
+          restore-keys: cairo-coverage-downloads-v1-${{ runner.os }}-${{ runner.arch }}-
+      - run: |
+          python3 scripts/setup.py --components scarb foundry
+          python3 scripts/setup.py --components cairo-coverage --cache .cache/coverage-downloads
+      - name: Measure isolated operation resources
+        run: python3 contracts/run_evidence.py resources --output .tools/cairo-evidence/resources
+      - name: Audit fresh deterministic production coverage
+        run: python3 contracts/run_evidence.py coverage --output .tools/cairo-evidence/coverage
+      - name: Retain raw traces and audited evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cairo-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            .tools/cairo-evidence/**/*.json
+            .tools/cairo-evidence/**/*.lcov
+            .tools/cairo-evidence/**/*.log
+            !.tools/cairo-evidence/**/target/**
+            !.tools/cairo-evidence/**/prior-traces-not-measured/**
+  integration:
+    needs: scope
+    if: needs.scope.outputs.changed == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: python3 scripts/setup.py --components node npm scarb foundry starknet-devnet
+      - name: Build SDK and validate integration sources
+        run: |
+          export PATH="$PWD/.tools/bin:/usr/bin:/bin"
+          unset UNIVERSAL_SIERRA_COMPILER
+          npm ci
+          npm run build
+          npm run typecheck
+          npm run lint
+          npx eslint scripts/integration/*.mjs scripts/release/class-hash.mjs --max-warnings=0
+          npx prettier --check 'scripts/integration/*.{ts,mts,mjs}' 'scripts/release/*.{mts,mjs}' 'examples/client/*.ts'
+          scarb --manifest-path examples/consumer/Scarb.toml fmt --check
+          scarb --manifest-path examples/consumer/Scarb.toml lint --deny-warnings
+          python3 scripts/integration/test_setup_consumer.py
+          python3 scripts/integration/test_server.py
+          python3 scripts/release/test_local.py
+      - name: Real local registry and consumer execution
+        run: |
+          export PATH="$PWD/.tools/bin:/usr/bin:/bin"
+          unset UNIVERSAL_SIERRA_COMPILER
+          python3 scripts/integration/run.py
+          mkdir -p .tools/release-records
+          python3 scripts/release/local.py deploy-local --config scripts/release/local.example.json --output .tools/release-records/ci-local-deployment.json
+          git diff --exit-code -- contracts/Scarb.lock examples/consumer/Scarb.lock
+      - name: Exact older compiler and packed browser consumer
+        run: |
+          export PATH="$PWD/.tools/bin:/usr/bin:/bin"
+          python3 scripts/integration/setup_consumer_typescript.py
+          export SDK_CONSUMER_TSC="$PWD/.tools/consumer-typescript/package/lib/tsc.js"
+          npm run check:package -- --output .tools/release-records/ci-checked-sdk
+          python3 scripts/release/check_ci_records.py --deployment .tools/release-records/ci-local-deployment.json --package-dir .tools/release-records/ci-checked-sdk
+      - name: Retain local integration and checked release evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: registry-integration-${{ github.run_id }}-${{ github.run_attempt }}
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            .tools/release-records/ci-local-deployment.json
+            .tools/release-records/ci-checked-sdk/checked-package.json
+            .tools/release-records/ci-checked-sdk/provable-games-evm-starknet-address-registry-0.0.0.tgz
+            .tools/integration-evidence/*/source-hashes.json
+            .tools/integration-evidence/*/artifact-hashes.json
+            .tools/integration-evidence/*/commands.json
+            .tools/integration-evidence/*/local-deployments.json
+            .tools/integration-evidence/*/lifecycle-results.json
+            .tools/integration-evidence/*/server-stopped.txt
+            .tools/integration-evidence/*/node-version.stdout
+            .tools/integration-evidence/*/node-version.stderr
+            .tools/integration-evidence/*/npm-version.stdout
+            .tools/integration-evidence/*/npm-version.stderr
+            .tools/integration-evidence/*/scarb-version.stdout
+            .tools/integration-evidence/*/scarb-version.stderr
+            .tools/integration-evidence/*/sncast-version.stdout
+            .tools/integration-evidence/*/sncast-version.stderr
+            .tools/integration-evidence/*/universal-sierra-compiler-version.stdout
+            .tools/integration-evidence/*/universal-sierra-compiler-version.stderr
+            .tools/integration-evidence/*/registry-build.stdout
+            .tools/integration-evidence/*/registry-build.stderr
+            .tools/integration-evidence/*/consumer-build.stdout
+            .tools/integration-evidence/*/consumer-build.stderr
+            .tools/integration-evidence/*/devnet-version.stdout
+            .tools/integration-evidence/*/devnet-version.stderr
+            .tools/integration-evidence/*/import.stdout
+            .tools/integration-evidence/*/import.stderr
+            .tools/integration-evidence/*/EthereumAddressAssociationRegistry-declare.stdout
+            .tools/integration-evidence/*/EthereumAddressAssociationRegistry-declare.stderr
+            .tools/integration-evidence/*/EthereumAddressAssociationRegistry-deploy.stdout
+            .tools/integration-evidence/*/EthereumAddressAssociationRegistry-deploy.stderr
+            .tools/integration-evidence/*/AssociationConsumer-declare.stdout
+            .tools/integration-evidence/*/AssociationConsumer-declare.stderr
+            .tools/integration-evidence/*/AssociationConsumer-deploy.stdout
+            .tools/integration-evidence/*/AssociationConsumer-deploy.stderr
+            .tools/integration-evidence/*/ConsumerForwarder-declare.stdout
+            .tools/integration-evidence/*/ConsumerForwarder-declare.stderr
+            .tools/integration-evidence/*/ConsumerForwarder-deploy.stdout
+            .tools/integration-evidence/*/ConsumerForwarder-deploy.stderr
+            .tools/integration-evidence/*/unsupported-chain-pair.stdout
+            .tools/integration-evidence/*/unsupported-chain-pair.stderr
+            .tools/integration-evidence/*/empty-label.stdout
+            .tools/integration-evidence/*/empty-label.stderr
+            .tools/integration-evidence/*/invalid-label.stdout
+            .tools/integration-evidence/*/invalid-label.stderr
+            .tools/integration-evidence/*/lifecycle.stdout
+            .tools/integration-evidence/*/lifecycle.stderr
+            .tools/consumer-typescript/installation.json
+            coverage/browser-bundle.json
+            !.tools/integration-evidence/*/accounts.json
+  required:
+    name: cairo/required
+    if: always()
+    needs: [scope, lint, test, evidence, integration]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Require selected Cairo jobs
+        env:
+          SCOPE_RESULT: ${{ needs.scope.result }}
+          CHANGED: ${{ needs.scope.outputs.changed }}
+          CAIRO_VALIDATION_CHANGED: ${{ needs.scope.outputs.cairo_validation_changed }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+          EVIDENCE_RESULT: ${{ needs.evidence.result }}
+          INTEGRATION_RESULT: ${{ needs.integration.result }}
+        run: |
+          test "$SCOPE_RESULT" = success
+          if [ "$CHANGED" = true ]; then
+            test "$LINT_RESULT" = success && test "$INTEGRATION_RESULT" = success
+            if [ "$CAIRO_VALIDATION_CHANGED" = true ]; then
+              test "$TEST_RESULT" = success && test "$EVIDENCE_RESULT" = success
+            else
+              test "$TEST_RESULT" = skipped && test "$EVIDENCE_RESULT" = skipped
+            fi
+          else
+            test "$CHANGED" = false
+            test "$CAIRO_VALIDATION_CHANGED" = false
+            test "$LINT_RESULT" = skipped && test "$TEST_RESULT" = skipped && test "$EVIDENCE_RESULT" = skipped && test "$INTEGRATION_RESULT" = skipped
+          fi

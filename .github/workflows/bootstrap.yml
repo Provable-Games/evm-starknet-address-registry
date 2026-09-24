@@ -1,0 +1,74 @@
+name: Bootstrap CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bootstrap-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  helpers:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: test "$(uname -m)" = aarch64
+      - run: python3 scripts/check_bootstrap.py
+      - run: python3 -m unittest discover -s scripts/tests -v
+      - run: python3 scripts/setup.py --components actionlint
+      - run: .tools/bin/actionlint -shellcheck=
+  toolchain:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/downloads
+          key: tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('toolchain.json') }}
+          restore-keys: tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-
+      - run: test "$(uname -m)" = aarch64
+      - run: python3 scripts/setup.py
+      - name: Install and probe optional local validation tools on ARM64
+        run: python3 scripts/setup.py --components cairo-coverage starknet-devnet
+      - run: .tools/bin/sncast --version
+      - name: Check pinned review CLI arguments without credentials
+        run: |
+          export PATH="$PWD/.tools/bin:$PATH"
+          npm ci --prefix .github/review/runtime --ignore-scripts --no-audit --no-fund
+          node .github/review/runtime/node_modules/@anthropic-ai/claude-code/install.cjs
+          python3 scripts/review_runtime.py --check-cli
+      - name: Exercise synthetic pinned Codex multi-turn review without credentials
+        run: python3 scripts/check_review_multiturn.py
+      - name: Enable namespaces on the disposable hosted runner
+        env:
+          RUNNER_KIND: ${{ runner.environment }}
+        run: bash scripts/enable_review_namespaces.sh
+      - name: Exercise the real review sandbox without credentials
+        run: |
+          export PATH="$PWD/.tools/bin:$PATH"
+          python3 scripts/review_runtime.py --check-sandbox
+      - run: python3 scripts/setup.py --node-lts --components node npm --destination .tools-lts
+  required:
+    name: ci/required
+    if: always()
+    needs: [helpers, toolchain]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Require all bootstrap jobs
+        env:
+          HELPERS_RESULT: ${{ needs.helpers.result }}
+          TOOLCHAIN_RESULT: ${{ needs.toolchain.result }}
+        run: test "$HELPERS_RESULT" = success && test "$TOOLCHAIN_RESULT" = success

@@ -1,0 +1,629 @@
+{
+  "schema_version": 1,
+  "production_functions": {
+    "contracts/src/eip712.cairo": [
+      {
+        "function": "contracts::eip712::conventional",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::hash_text",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::hash_words",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::account_word",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::ethereum_word",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::salt",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::domain",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::append_word",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::envelope",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::link_hash",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::move_hash",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      },
+      {
+        "function": "contracts::eip712::revoke_hash",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent expected statement/salt/domain/struct/envelope/calldata/signature values match.",
+          "Changed signing fields, digest and limb order reject."
+        ]
+      }
+    ],
+    "contracts/src/labels.cairo": [
+      {
+        "function": "contracts::labels::validate",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_constructor.cairo",
+          "contracts/tests/test_golden_execution.cairo"
+        ],
+        "outcomes": [
+          "Both permitted chain pairs and valid label boundaries succeed with exact seven discovery fixtures.",
+          "Invalid chain pairing and empty/long/non-ASCII/punctuation/space-position labels reject."
+        ]
+      },
+      {
+        "function": "contracts::labels::statements",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_constructor.cairo",
+          "contracts/tests/test_golden_execution.cairo"
+        ],
+        "outcomes": [
+          "Both permitted chain pairs and valid label boundaries succeed with exact seven discovery fixtures.",
+          "Invalid chain pairing and empty/long/non-ASCII/punctuation/space-position labels reject."
+        ]
+      }
+    ],
+    "contracts/src/registry.cairo": [
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::constructor",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_constructor.cairo",
+          "contracts/tests/test_golden_execution.cairo"
+        ],
+        "outcomes": [
+          "Both permitted chain pairs and valid label boundaries succeed with exact seven discovery fixtures.",
+          "Invalid chain pairing and empty/long/non-ASCII/punctuation/space-position labels reject."
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::Internal::check_signed",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::Internal::check_recipient",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::Internal::insert",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::Internal::remove",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::Internal::advance_ethereum",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::Internal::advance_recipient",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::link",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::move",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::unlink",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::revoke",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::invalidate_pending_incoming",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_golden_execution.cairo",
+          "contracts/tests/test_rejections.cairo",
+          "contracts/tests/test_races.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Authorized transition and exact ordered events/nonces; sole/first/middle/last removal, swap index repair and unrelated wallet isolation.",
+          "Applicable caller/state/zero/deadline/nonce/replay/cancel race/overflow failures preserve snapshots and events."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_starknet_address",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_rejections.cairo"
+        ],
+        "outcomes": [
+          "Zero/default and existing values; associated true/false; every wallet/account pair reconciled after each model operation."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::is_associated",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_rejections.cairo"
+        ],
+        "outcomes": [
+          "Zero/default and existing values; associated true/false; every wallet/account pair reconciled after each model operation."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_ethereum_address_count",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_rejections.cairo"
+        ],
+        "outcomes": [
+          "Zero/default and existing values; associated true/false; every wallet/account pair reconciled after each model operation."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_ethereum_addresses",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_rejections.cairo"
+        ],
+        "outcomes": [
+          "Empty/full/partial/end/beyond-end/u64-max pages; limits1/100 succeed and0/101 reject, including empty account."
+        ],
+        "resource_tests": [
+          "contracts/tests/test_resources.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_ethereum_nonce",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_rejections.cairo"
+        ],
+        "outcomes": [
+          "Zero/default and existing values; associated true/false; every wallet/account pair reconciled after each model operation."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_recipient_nonce",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_rejections.cairo"
+        ],
+        "outcomes": [
+          "Zero/default and existing values; associated true/false; every wallet/account pair reconciled after each model operation."
+        ],
+        "fuzz_tests": [
+          "contracts/tests/test_model.cairo"
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_signing_domain",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_constructor.cairo",
+          "contracts/tests/test_golden_execution.cairo"
+        ],
+        "outcomes": [
+          "Both permitted chain pairs and valid label boundaries succeed with exact seven discovery fixtures.",
+          "Invalid chain pairing and empty/long/non-ASCII/punctuation/space-position labels reject."
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_version",
+        "security": true,
+        "mapped": false,
+        "tests": [
+          "contracts/tests/test_registry.cairo"
+        ],
+        "outcomes": [
+          "Public call returns ASCII felt49; mapping exception approval recorded separately."
+        ]
+      }
+    ],
+    "contracts/src/signature.cairo": [
+      {
+        "function": "contracts::signature::verify",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_golden.cairo",
+          "contracts/tests/test_crypto_rejections.cairo",
+          "contracts/tests/test_rejections.cairo"
+        ],
+        "outcomes": [
+          "Independent valid signature verifies.",
+          "Zero/out-of-range/high-s/wrong parity/wrong signer/changed digest/non-point r reject."
+        ]
+      }
+    ],
+    "contracts/src/state.cairo": [
+      {
+        "function": "contracts::state::next_nonce",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Increment below maximum succeeds; maximum rejects without storage/event change."
+        ]
+      },
+      {
+        "function": "contracts::state::next_count",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_overflow.cairo"
+        ],
+        "outcomes": [
+          "Increment below maximum succeeds; maximum rejects without storage/event change."
+        ]
+      },
+      {
+        "function": "contracts::state::page_length",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_registry.cairo",
+          "contracts/tests/test_rejections.cairo"
+        ],
+        "outcomes": [
+          "Empty/full/partial/end/beyond-end/u64-max pages; limits1/100 succeed and0/101 reject, including empty account."
+        ],
+        "resource_tests": [
+          "contracts/tests/test_resources.cairo"
+        ]
+      }
+    ],
+    "contracts/src/interface.cairo": [
+      {
+        "function": "contracts::interface::SignatureSerde::serialize",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_interface.cairo",
+          "contracts/tests/test_crypto_rejections.cairo",
+          "contracts/tests/test_golden_execution.cairo"
+        ],
+        "outcomes": [
+          "Exact low/high r then s then canonical0/1 serialization; strict parity decode; all insufficient prefixes and out-of-range limbs reject; remainder preserved."
+        ]
+      },
+      {
+        "function": "contracts::interface::SignatureSerde::deserialize",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_interface.cairo",
+          "contracts/tests/test_crypto_rejections.cairo",
+          "contracts/tests/test_golden_execution.cairo"
+        ],
+        "outcomes": [
+          "Exact low/high r then s then canonical0/1 serialization; strict parity decode; all insufficient prefixes and out-of-range limbs reject; remainder preserved."
+        ]
+      }
+    ]
+  },
+  "unmapped_exception_request": {
+    "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_version",
+    "reason": "constant-only return ASCII felt 49; no source-mapped statements emitted",
+    "status": "approved",
+    "source_sha256": "cb3a153aeefd6823aa3d34c5ca17f80ef7bb6f63512f8e70a8065fd739ffd06c",
+    "approval": "Supervisor and independent reviewer verified this sole exception: 40 authored functions, 39 mapped functions, and 201 mapped production lines covered at revision 49857b541e5e88e71c50ad713f14e698164a0114.",
+    "raw_lcov_sha256": "21f0844b8db95e73329716db2caed2ab1f201e5ff6aee4487449809c76074d32",
+    "filtered_lcov_sha256": "5aed5cd59380d4912da7fdcf6254d591ac2754624cd78f7e0bdf89d73fa00d08"
+  },
+  "excluded": {
+    "contracts/src/lib.cairo": "module declarations only; no executable production functions"
+  },
+  "excluded_source_sha256": {
+    "contracts/src/lib.cairo": "a9c4501e12e5cd8ff78483bb941f293f8d7e0779e25f080586e8e54a2345b60c"
+  }
+}

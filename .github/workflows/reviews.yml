@@ -1,0 +1,175 @@
+name: Trusted reviews
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Open PR number to review against current main
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trusted-reviews-${{ github.event.pull_request.number || inputs.pr }}
+  cancel-in-progress: true
+
+# Automatic reviews are only for PRs opened and updated by organization members.
+# Maintainers can explicitly dispatch a review for any other PR.
+jobs:
+  start:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.pull_request.author_association == 'MEMBER' &&
+        github.actor == github.event.pull_request.user.login))
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: write
+    outputs:
+      base: ${{ steps.identity.outputs.base }}
+      head: ${{ steps.identity.outputs.head }}
+      number: ${{ steps.identity.outputs.number }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - id: identity
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRUSTED_SHA: ${{ github.workflow_sha }}
+        run: python3 scripts/review_ci.py start --directory "$RUNNER_TEMP/review-data"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: review-metadata
+          path: ${{ runner.temp }}/review-data/metadata.json
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+  prepare:
+    needs: start
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.context.outputs.matrix }}
+      has_reviews: ${{ steps.context.outputs.has_reviews }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: review-metadata
+          path: ${{ runner.temp }}/review-data
+      # Source is read only through trusted Git plumbing. No source code, hooks,
+      # dependency installs, instructions, or configuration are executed here.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.start.outputs.head }}
+          path: reviewed-source
+          fetch-depth: 0
+          persist-credentials: false
+          allow-unsafe-pr-checkout: true
+      - id: context
+        run: python3 scripts/review_ci.py prepare --directory "$RUNNER_TEMP/review-data" --source reviewed-source
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: review-context
+          path: ${{ runner.temp }}/review-data/context
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+  review:
+    needs: [start, prepare]
+    if: needs.prepare.outputs.has_reviews == 'true'
+    name: ${{ matrix.provider }} / ${{ matrix.role }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: review-context
+          path: ${{ runner.temp }}/review-context
+      - name: Install pinned runtime before credentials
+        run: |
+          python3 scripts/setup.py --components node npm
+          export PATH="$PWD/.tools/bin:$PATH"
+          npm ci --prefix .github/review/runtime --ignore-scripts --no-audit --no-fund
+          node .github/review/runtime/node_modules/@anthropic-ai/claude-code/install.cjs
+          .github/review/runtime/node_modules/.bin/codex --version
+          .github/review/runtime/node_modules/.bin/claude --version
+      - name: Enable namespaces on the disposable hosted runner
+        if: matrix.provider == 'codex'
+        env:
+          RUNNER_KIND: ${{ runner.environment }}
+        run: bash scripts/enable_review_namespaces.sh
+      - name: Run confined reviewer
+        env:
+          REVIEW_PROVIDER: ${{ matrix.provider }}
+          REVIEW_ROLE: ${{ matrix.role }}
+          CODEX_AUTH_DOT_JSON: ${{ matrix.provider == 'codex' && secrets.CODEX_AUTH_DOT_JSON || '' }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ matrix.provider == 'claude' && secrets.CLAUDE_CODE_OAUTH_TOKEN || '' }}
+        run: |
+          export PATH="$PWD/.tools/bin:$PATH"
+          python3 scripts/review_runtime.py --context "$RUNNER_TEMP/review-context" --output "$RUNNER_TEMP/review-result"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: review-result-${{ matrix.provider }}-${{ matrix.role }}
+          path: ${{ runner.temp }}/review-result/result.json
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+  publish:
+    if: always() && needs.start.result == 'success'
+    needs: [start, prepare, review]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: review-metadata
+          path: ${{ runner.temp }}/review-data
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        if: needs.prepare.result == 'success'
+        continue-on-error: true
+        with:
+          name: review-context
+          path: ${{ runner.temp }}/review-data/context
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        if: needs.prepare.outputs.has_reviews == 'true'
+        continue-on-error: true
+        with:
+          pattern: review-result-*
+          path: ${{ runner.temp }}/review-data/results
+      - name: Publish validated findings and required status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREPARE_STATUS: ${{ needs.prepare.result }}
+          REVIEW_STATUS: ${{ needs.review.result }}
+        run: python3 scripts/review_ci.py publish --directory "$RUNNER_TEMP/review-data"

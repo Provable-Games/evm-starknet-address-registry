@@ -1,0 +1,35 @@
+{
+  "name": "evm-starknet-address-registry",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@12.1.0",
+  "engines": {
+    "node": "^24.21.0 || ^26.10.0",
+    "npm": "12.1.0"
+  },
+  "workspaces": [
+    "packages/sdk"
+  ],
+  "scripts": {
+    "format:check": "prettier --check package.json package-lock.json 'tsconfig*.json' eslint.config.mjs vitest.config.ts .prettierrc.json 'packages/sdk/**/*.{ts,json,md}' 'scripts/**/*.ts' 'examples/**/*.{ts,json,md}'",
+    "lint": "eslint packages/sdk/src packages/sdk/tests vitest.config.ts 'scripts/**/*.ts' eslint.config.mjs 'examples/**/*.ts' --max-warnings=0",
+    "typecheck": "tsc -p packages/sdk/tsconfig.build.json --noEmit && tsc --noEmit",
+    "build": "npm run build --workspace @provable-games/evm-starknet-address-registry",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage && node scripts/check-sdk-coverage.ts",
+    "check:package": "node scripts/check-sdk-package.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.2",
+    "@vitest/coverage-v8": "5.0.1",
+    "eslint": "10.11.0",
+    "prettier": "3.9.8",
+    "rolldown": "1.2.9",
+    "starknet": "10.8.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "5.0.1"
+  }
+}

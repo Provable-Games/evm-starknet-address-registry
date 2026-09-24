@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "production registry and SDK coverage policy",
+  "cairo": {
+    "global_and_per_file": { "mapped_lines": 95, "mapped_functions": 100 },
+    "security": { "reliably_mapped_lines": 100, "reliably_mapped_functions": 100, "explicit_outcome_inventory": true },
+    "branch_percentage": null,
+    "planned_production_files": {
+      "contracts/src/registry.cairo": "security: constructor, every entrypoint, state transitions, authorization",
+      "contracts/src/state.cairo": "security: forward/reverse membership, checked counters and nonces",
+      "contracts/src/eip712.cairo": "security: domain, exact types, string/word encoding and digest",
+      "contracts/src/signature.cairo": "security: low-s, parity, recovery and claimed signer",
+      "contracts/src/labels.cairo": "security: immutable label grammar, bounds and statement construction",
+      "contracts/src/interface.cairo": "security: frozen public types and strict canonical Signature serialization/deserialization"
+    },
+    "type_only_files": [],
+    "raw_evidence": ["fresh per-test coverage traces", "raw LCOV or Cobertura", "audited production attribution", "explicit file/function and success/rejection outcome inventory"]
+  },
+  "sdk": {
+    "global": {
+      "statements": 98,
+      "lines": 98,
+      "branches": 95,
+      "functions": 100
+    },
+    "per_file": {
+      "statements": 95,
+      "lines": 95,
+      "branches": 90,
+      "functions": 100
+    },
+    "security": {
+      "statements": 100,
+      "lines": 100,
+      "branches": 100,
+      "functions": 100
+    },
+    "planned_production_files": {
+      "packages/sdk/src/addresses.ts": "security: lossless address/integer/word conversions",
+      "packages/sdk/src/typed-data.ts": "security: trusted deployment, exact types/statements/domain, current snapshot preparation",
+      "packages/sdk/src/signature.ts": "security: conventional/compact parsing, low-s, recovery and signer equality",
+      "packages/sdk/src/client.ts": "security: caller/network/nonce/deadline authorization and submission revalidation",
+      "packages/sdk/src/adapters.ts": "security: selected-provider signing, active attempt events and cancellation",
+      "packages/sdk/src/queries.ts": "security: deployment authentication, native decoding, pinned reads and pagination",
+      "packages/sdk/src/errors.ts": "security: structured errors, trusted error identity and retained provider diagnostics",
+      "packages/sdk/src/index.ts": "security: explicit public exports; availability marker is not registry behavior evidence"
+    },
+    "type_only_files": [
+      "packages/sdk/src/protocol.ts"
+    ],
+    "excluded_scaffold": [],
+    "runtime_enforcement": {
+      "statements": 100,
+      "lines": 100,
+      "branches": 100,
+      "functions": 100
+    },
+    "function_inventory": "packages/sdk/coverage-inventory.json"
+  },
+  "inventory_rules": [
+    "Freeze and audit every production file and function before its acceptance; planned paths may be refined only by explicit reviewed policy updates.",
+    "New production files must be classified, never silently excluded. Security classification follows behavior even when code moves.",
+    "Missing files, functions, counters or denominators fail the gate. Dead-code elimination does not establish coverage.",
+    "Mapping exceptions require raw evidence and supervisor review; thresholds must not be lowered after observing business-code failures.",
+    "Passing fuzz tests have no coverage traces; explicit deterministic outcome tests remain mandatory.",
+    "Type-only and generated dispatcher/test-helper attribution must be audited separately from production behavior."
+  ],
+  "resource_cases": {
+    "operations": ["link", "move", "unlink", "revoke-linked", "revoke-unlinked", "invalidate_pending_incoming", "get_ethereum_addresses"],
+    "page_limits": [1, 100, 0, 101],
+    "page_limit_outcomes": { "1": "success", "100": "success", "0": "rejection", "101": "rejection" },
+    "reverse_collection_sizes": [0, 1, 2, 10, 100, 1000],
+    "removal_positions": ["first", "middle", "last"],
+    "label_byte_lengths": [1, 30, 31, 32, 48],
+    "outcomes": ["success", "isolated validation rejection", "counter overflow", "nonce overflow"],
+    "measurements": ["L1 gas", "L1 data gas", "L2 gas", "steps where reported", "storage work versus collection size"],
+    "fee_ceiling": null
+  }
+}

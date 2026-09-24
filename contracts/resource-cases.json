@@ -1,0 +1,562 @@
+[
+  {
+    "name": "resource_link_size0_first",
+    "operation": "link",
+    "scenario": "link_size0_first",
+    "size": 0,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_size1_first",
+    "operation": "link",
+    "scenario": "link_size1_first",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_size2_first",
+    "operation": "link",
+    "scenario": "link_size2_first",
+    "size": 2,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_size10_first",
+    "operation": "link",
+    "scenario": "link_size10_first",
+    "size": 10,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_size100_first",
+    "operation": "link",
+    "scenario": "link_size100_first",
+    "size": 100,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_size1000_first",
+    "operation": "link",
+    "scenario": "link_size1000_first",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_move_size1_first",
+    "operation": "move",
+    "scenario": "move_size1_first",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_move_size2_first",
+    "operation": "move",
+    "scenario": "move_size2_first",
+    "size": 2,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_move_size10_first",
+    "operation": "move",
+    "scenario": "move_size10_first",
+    "size": 10,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_move_size100_first",
+    "operation": "move",
+    "scenario": "move_size100_first",
+    "size": 100,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_move_size1000_first",
+    "operation": "move",
+    "scenario": "move_size1000_first",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_unlink_size1_first",
+    "operation": "unlink",
+    "scenario": "unlink_size1_first",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_unlink_size2_first",
+    "operation": "unlink",
+    "scenario": "unlink_size2_first",
+    "size": 2,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_unlink_size10_first",
+    "operation": "unlink",
+    "scenario": "unlink_size10_first",
+    "size": 10,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_unlink_size100_first",
+    "operation": "unlink",
+    "scenario": "unlink_size100_first",
+    "size": 100,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_unlink_size1000_first",
+    "operation": "unlink",
+    "scenario": "unlink_size1000_first",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_linked_size1_first",
+    "operation": "revoke",
+    "scenario": "revoke_linked_size1_first",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_linked_size2_first",
+    "operation": "revoke",
+    "scenario": "revoke_linked_size2_first",
+    "size": 2,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_linked_size10_first",
+    "operation": "revoke",
+    "scenario": "revoke_linked_size10_first",
+    "size": 10,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_linked_size100_first",
+    "operation": "revoke",
+    "scenario": "revoke_linked_size100_first",
+    "size": 100,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_linked_size1000_first",
+    "operation": "revoke",
+    "scenario": "revoke_linked_size1000_first",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_unlinked_size0_first",
+    "operation": "revoke",
+    "scenario": "revoke_unlinked_size0_first",
+    "size": 0,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_unlinked_size1_first",
+    "operation": "revoke",
+    "scenario": "revoke_unlinked_size1_first",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_unlinked_size2_first",
+    "operation": "revoke",
+    "scenario": "revoke_unlinked_size2_first",
+    "size": 2,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_unlinked_size10_first",
+    "operation": "revoke",
+    "scenario": "revoke_unlinked_size10_first",
+    "size": 10,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_unlinked_size100_first",
+    "operation": "revoke",
+    "scenario": "revoke_unlinked_size100_first",
+    "size": 100,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_unlinked_size1000_first",
+    "operation": "revoke",
+    "scenario": "revoke_unlinked_size1000_first",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_cancel_size0_first",
+    "operation": "invalidate_pending_incoming",
+    "scenario": "cancel_size0_first",
+    "size": 0,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_cancel_size1_first",
+    "operation": "invalidate_pending_incoming",
+    "scenario": "cancel_size1_first",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_cancel_size2_first",
+    "operation": "invalidate_pending_incoming",
+    "scenario": "cancel_size2_first",
+    "size": 2,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_cancel_size10_first",
+    "operation": "invalidate_pending_incoming",
+    "scenario": "cancel_size10_first",
+    "size": 10,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_cancel_size100_first",
+    "operation": "invalidate_pending_incoming",
+    "scenario": "cancel_size100_first",
+    "size": 100,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_cancel_size1000_first",
+    "operation": "invalidate_pending_incoming",
+    "scenario": "cancel_size1000_first",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_page_size0_first",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size0_first",
+    "size": 0,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_page_size1_first",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size1_first",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_page_size2_first",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size2_first",
+    "size": 2,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_page_size10_first",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size10_first",
+    "size": 10,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_page_size100_first",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size100_first",
+    "size": 100,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_page_size1000_first",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size1000_first",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_move_size10_middle",
+    "operation": "move",
+    "scenario": "move_size10_middle",
+    "size": 10,
+    "position": 5,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_move_size10_last",
+    "operation": "move",
+    "scenario": "move_size10_last",
+    "size": 10,
+    "position": 9,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_unlink_size10_middle",
+    "operation": "unlink",
+    "scenario": "unlink_size10_middle",
+    "size": 10,
+    "position": 5,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_unlink_size10_last",
+    "operation": "unlink",
+    "scenario": "unlink_size10_last",
+    "size": 10,
+    "position": 9,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_linked_size10_middle",
+    "operation": "revoke",
+    "scenario": "revoke_linked_size10_middle",
+    "size": 10,
+    "position": 5,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_revoke_linked_size10_last",
+    "operation": "revoke",
+    "scenario": "revoke_linked_size10_last",
+    "size": 10,
+    "position": 9,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_label1",
+    "operation": "link",
+    "scenario": "link_label1",
+    "size": 1,
+    "position": 0,
+    "label_length": 1,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_label30",
+    "operation": "link",
+    "scenario": "link_label30",
+    "size": 1,
+    "position": 0,
+    "label_length": 30,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_label31",
+    "operation": "link",
+    "scenario": "link_label31",
+    "size": 1,
+    "position": 0,
+    "label_length": 31,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_label32",
+    "operation": "link",
+    "scenario": "link_label32",
+    "size": 1,
+    "position": 0,
+    "label_length": 32,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_link_label48",
+    "operation": "link",
+    "scenario": "link_label48",
+    "size": 1,
+    "position": 0,
+    "label_length": 48,
+    "limit": 100,
+    "expected": "success"
+  },
+  {
+    "name": "resource_page_size1000_limit0",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size1000_limit0",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 0,
+    "expected": "rejection"
+  },
+  {
+    "name": "resource_page_size1000_limit1",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size1000_limit1",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 1,
+    "expected": "success"
+  },
+  {
+    "name": "resource_page_size1000_limit101",
+    "operation": "get_ethereum_addresses",
+    "scenario": "page_size1000_limit101",
+    "size": 1000,
+    "position": 0,
+    "label_length": 13,
+    "limit": 101,
+    "expected": "rejection"
+  },
+  {
+    "name": "resource_nonce_overflow",
+    "operation": "link",
+    "scenario": "nonce_overflow",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "rejection"
+  },
+  {
+    "name": "resource_count_overflow",
+    "operation": "link",
+    "scenario": "count_overflow",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "rejection"
+  },
+  {
+    "name": "resource_signature_rejection",
+    "operation": "link",
+    "scenario": "signature_rejection",
+    "size": 1,
+    "position": 0,
+    "label_length": 13,
+    "limit": 100,
+    "expected": "rejection"
+  }
+]

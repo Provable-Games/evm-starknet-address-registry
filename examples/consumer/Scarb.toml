@@ -1,0 +1,15 @@
+[package]
+name = "registry_consumer_example"
+version = "0.1.0"
+edition = "2024_07"
+cairo-version = "=2.20.0"
+publish = false
+
+[dependencies]
+starknet = "=2.20.0"
+
+[[target.starknet-contract]]
+sierra = true
+
+[cairo]
+allow-warnings = false
