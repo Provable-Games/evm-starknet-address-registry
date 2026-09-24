@@ -1,10 +1,10 @@
 # Deployment records
 
-[Mainnet class declaration](mainnet-class.json) records the transaction and class
-readback. A class declaration does not create a registry instance.
+The [Mainnet registry](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337)
+uses the `Loot Survivor` label and an address ending in `1337`. `mainnet.json`
+records its transaction and constructor readback. The
+[verified class](https://voyager.online/class/0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156)
+has separate declaration evidence in `mainnet-class.json`.
 
-[Sepolia registry deployment](sepolia.json) preserves the original capture
-byte for byte. Its pending-lifecycle limitation reflects the state at capture.
-The later disposable-key lifecycle completed 17 public transactions and cleanup;
-its [record is archived at commit 3ee7361](https://github.com/Provable-Games/evm-starknet-address-registry/blob/3ee73617f39bc85303ea037481feda7333476921/deployments/sepolia/public-lifecycle-v1.json).
-Real wallet signing prompts remain unverified.
+[Sepolia registry deployment](sepolia.json) records the testnet instance
+separately.

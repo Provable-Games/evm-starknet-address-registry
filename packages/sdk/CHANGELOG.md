@@ -11,5 +11,4 @@ Signed protocol version `1` and approved signing revision
   and incoming-request cancellation, and adapter-owned submission/readback.
 - Exact tested archive retention is available through the local package gate.
 - Source-bound checks include packed imports, strict declarations and 13 browser
-  digest/recovery fixtures. Actual wallet prompt compatibility, final merged-main
-  acceptance, public deployment and publication remain separate gates.
+  digest/recovery fixtures.

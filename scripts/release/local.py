@@ -15,7 +15,7 @@ from run import local_deployment  # noqa: E402
 
 CONFIG_KEYS = {"schema_version", "environment", "ethereum_chain_id", "account_chain_id", "account_label"}
 ARTIFACT = "contracts/target/dev/contracts_EthereumAddressAssociationRegistry.contract_class.json"
-WARNING = "LOCAL DEVNET ONLY: disposable software accounts; no public Sepolia or wallet acceptance."
+WARNING = "LOCAL DEVNET ONLY: disposable software accounts; no public-chain transactions."
 
 
 def validate_config(value):

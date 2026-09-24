@@ -146,9 +146,6 @@
   ],
   "readback_block": "0x0687cb6632e6fb3ceafe727f83eeed0c5b3e4e34ca307ca7fbd9072a79209483",
   "later_readback_block": "0x0197b93b48cc9503e6b92ac22eef62dd0a9d3a7b66c3bee2f1aa328ada456d8a",
-  "limitations": [
-    "Public lifecycle and wallet UI acceptance pending"
-  ],
   "independent_provider_verification": {
     "provider": "sncast 0.64.0 default ZAN public Sepolia",
     "class_hash": true,
