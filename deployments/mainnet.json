@@ -20,7 +20,7 @@
   "transaction_hash": "0x07aa5631994aaf9b8a294b6d04d8e29763fb3109934742d5bbe9db80ec8bdb07",
   "receipt": {
     "block_number": 15382967,
-    "block_hash": "0x815c68a70c1814fda20f428af79331441647a760b431518e3c6fcdf96ee9d6",
+    "block_hash": "0x00815c68a70c1814fda20f428af79331441647a760b431518e3c6fcdf96ee9d6",
     "execution_status": "SUCCEEDED",
     "finality_status_at_capture": "ACCEPTED_ON_L2",
     "actual_fee_fri": "409508690142622640"
@@ -36,7 +36,7 @@
       "account_chain_id": "0x534e5f4d41494e",
       "registry_address": "0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337",
       "salt": "0x5b60d70dbdba452d6c5a8c9a84e37ae7e14e44e1b1d99834c265b8dd73f7d67b",
-      "domain_separator": "0x27756d25ab5db58e591bbe534235da02d808929c787c22df8860a79e86926cc",
+      "domain_separator": "0x027756d25ab5db58e591bbe534235da02d808929c787c22df8860a79e86926cc",
       "account_label": "Loot Survivor",
       "account_network_name": "Starknet Mainnet"
     }

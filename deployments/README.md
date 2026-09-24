@@ -6,6 +6,5 @@ records its transaction and constructor readback. The
 [verified class](https://voyager.online/class/0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156)
 has separate declaration evidence in `mainnet-class.json`.
 
-[Sepolia registry deployment](sepolia.json) preserves the original capture,
-including its pending-lifecycle note. Real wallet signing prompts remain
-unverified.
+[Sepolia registry deployment](sepolia.json) records the testnet instance
+separately. Real wallet signing prompts remain unverified.
