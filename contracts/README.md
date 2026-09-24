@@ -7,11 +7,13 @@ verifier.
 
 **Mainnet class hash:**
 `0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156`.
-The class is declared on Starknet Mainnet; each deployed instance has its own
-address and state. The [mainnet declaration record](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/mainnet-class.json)
-contains the transaction and class readback. A [Sepolia instance](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/sepolia.json)
-is recorded separately; its [deployment notes](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/README.md)
-link the later lifecycle evidence.
+The class is declared on Starknet Mainnet. The [Mainnet instance](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/mainnet.json)
+uses the `Loot Survivor` label at
+`0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337`.
+Each deployed instance has its own address and state. The
+[class declaration](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/mainnet-class.json)
+and [Sepolia instance](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/sepolia.json)
+are recorded separately.
 
 ## Interface
 

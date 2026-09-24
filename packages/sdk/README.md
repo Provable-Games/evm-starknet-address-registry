@@ -94,6 +94,7 @@ npm run check:package
 ```
 
 Unit tests use mocked adapters. The [local integration suite](../../scripts/integration/README.md)
-executes the built SDK with the contract and disposable software keys. A
-[Sepolia deployment](../../deployments/sepolia.json) is recorded separately.
+executes the built SDK with the contract and disposable software keys.
+[Mainnet](../../deployments/mainnet.json) and [Sepolia](../../deployments/sepolia.json)
+deployments are recorded separately.
 Real wallet signing prompts have not been verified.

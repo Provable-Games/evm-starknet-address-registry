@@ -1,10 +1,10 @@
 # Deployment records
 
-[Mainnet class declaration](mainnet-class.json) records the transaction and class
-readback. A class declaration does not create a registry instance.
+[Mainnet registry deployment](mainnet.json) records the `Loot Survivor` instance
+at `0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337`,
+including its `1337` address suffix, transaction, and constructor readback. The
+[class declaration](mainnet-class.json) is recorded separately.
 
-[Sepolia registry deployment](sepolia.json) preserves the original capture
-byte for byte. Its pending-lifecycle limitation reflects the state at capture.
-The later disposable-key lifecycle completed 17 public transactions and cleanup;
-its [record is archived at commit 3ee7361](https://github.com/Provable-Games/evm-starknet-address-registry/blob/3ee73617f39bc85303ea037481feda7333476921/deployments/sepolia/public-lifecycle-v1.json).
-Real wallet signing prompts remain unverified.
+[Sepolia registry deployment](sepolia.json) preserves the original capture,
+including its pending-lifecycle note. Real wallet signing prompts remain
+unverified.

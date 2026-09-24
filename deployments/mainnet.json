@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "public-registry-deployment",
+  "network": "Starknet Mainnet",
+  "rpc": "https://rpc.provable.games/rpc",
+  "observed_at_utc": "2026-09-24T18:24:35Z",
+  "source_revision": "fec1452abdba902a278c2bf6805a3d49a3bd7327",
+  "class_hash": "0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156",
+  "contract_address": "0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337",
+  "deployer_account": "0x0501d8cda9a1a84013a736eb808414af60940efc6e2c2039aef94f10a995505c",
+  "deployment_salt": "0xc30",
+  "unique": false,
+  "constructor_calldata": [
+    "1",
+    "0",
+    "0",
+    "0x4c6f6f74205375727669766f72",
+    "13"
+  ],
+  "transaction_hash": "0x07aa5631994aaf9b8a294b6d04d8e29763fb3109934742d5bbe9db80ec8bdb07",
+  "receipt": {
+    "block_number": 15382967,
+    "block_hash": "0x815c68a70c1814fda20f428af79331441647a760b431518e3c6fcdf96ee9d6",
+    "execution_status": "SUCCEEDED",
+    "finality_status_at_capture": "ACCEPTED_ON_L2",
+    "actual_fee_fri": "409508690142622640"
+  },
+  "readback_at_block": {
+    "block_number": 15382967,
+    "class_hash": "0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156",
+    "get_version": "0x31",
+    "get_signing_domain": {
+      "name": "Account Address Association",
+      "version": "1",
+      "ethereum_chain_id": "1",
+      "account_chain_id": "0x534e5f4d41494e",
+      "registry_address": "0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337",
+      "salt": "0x5b60d70dbdba452d6c5a8c9a84e37ae7e14e44e1b1d99834c265b8dd73f7d67b",
+      "domain_separator": "0x27756d25ab5db58e591bbe534235da02d808929c787c22df8860a79e86926cc",
+      "account_label": "Loot Survivor",
+      "account_network_name": "Starknet Mainnet"
+    }
+  },
+  "abi_sha256": "7a5bfdd9bab5b56c78a403d964534ec2a5b8711705152b59094d5939820224eb",
+  "protocol_revision": "5beae0d4f74dfc4ed9cc664db98d28e5c4f5b96a"
+}
