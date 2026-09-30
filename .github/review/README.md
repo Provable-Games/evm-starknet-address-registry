@@ -3,8 +3,8 @@
 Models and effort are required organization Actions variables exposed to this repository:
 `CODEX_REVIEW_MODEL`, `CODEX_REVIEW_EFFORT`, `CLAUDE_REVIEW_MODEL`, and
 `CLAUDE_REVIEW_EFFORT`. They control invocation and comment headings; missing or
-unsafe values fail before provider execution. Provider JSON retains routing,
-context limits, and credentials, rather than model defaults.
+unsafe values fail before provider execution. Provider JSON retains context limits and credential names, rather than model
+defaults. Specialist routing remains in its existing configuration.
 
 `CODEX_CLI_VERSION` selects an exact npm version or `latest` for review runs.
 The committed CLI manifests remain available for offline compatibility fixtures.

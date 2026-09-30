@@ -132,6 +132,13 @@ jobs:
         env:
           RUNNER_KIND: ${{ runner.environment }}
         run: bash scripts/enable_review_namespaces.sh
+      - name: Verify selected runtime before provider credentials
+        if: matrix.provider == 'codex'
+        run: |
+          export PATH="$PWD/.tools/bin:$PATH"
+          python3 scripts/review_runtime.py --check-cli
+          python3 scripts/review_runtime.py --check-sandbox
+          python3 scripts/check_review_multiturn.py
       - name: Run confined reviewer
         env:
           REVIEW_PROVIDER: ${{ matrix.provider }}

@@ -10,7 +10,7 @@ class SettingsTests(unittest.TestCase):
     def test_missing_and_unsafe_settings_fail(self):
         with patch.dict(os.environ, {}, clear=True):
             with self.assertRaises(ValueError): configure({"codex":{},"claude":{}})
-        settings = {"CODEX_REVIEW_MODEL":"bad;command", "CODEX_REVIEW_EFFORT":"high", "CLAUDE_REVIEW_MODEL":"claude-test", "CLAUDE_REVIEW_EFFORT":"medium"}
+        settings = {"CODEX_REVIEW_MODEL":"model_variant", "CODEX_REVIEW_EFFORT":"high", "CLAUDE_REVIEW_MODEL":"claude-test", "CLAUDE_REVIEW_EFFORT":"medium"}
         with patch.dict(os.environ, settings, clear=True):
             with self.assertRaises(ValueError): configure({"codex":{},"claude":{}})
     def test_org_settings_replace_provider_selection(self):

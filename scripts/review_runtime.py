@@ -49,6 +49,13 @@ def codex_native():
     return native
 
 
+
+def codex_version():
+    if "CODEX_RUNTIME" in os.environ:
+        return subprocess.check_output([str(codex_native()), "--version"], text=True).strip().split()[-1]
+    return json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"]
+
+
 def codex_config(prepared, private_home):
     # :minimal exposes system binaries/libraries, not the runner's home or checkout.
     # Bubblewrap provides fresh PID/network namespaces and procfs; host /proc is absent.
@@ -385,8 +392,7 @@ def execute(provider, role, context, output, credentials):
                                      else json_failure_diagnostic(completed.stdout, completed.stderr, submitted, secrets) if json_events
                                      else failure_diagnostic(provider, completed.stderr, submitted, secrets))}))
             if provider == "codex" and len(prompt) > transport.NATIVE_CHARS:
-                version = (subprocess.check_output([str(codex_native()), "--version"], text=True).strip().split()[-1]
-                           if "CODEX_RUNTIME" in os.environ else json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"])
+                version = codex_version()
                 verdict = transport.execute_turns(command, prompt, identity, prepared, auth, environment,
                                                   version, config[provider]["model"], config[provider]["effort"],
                                                   lambda result, submitted: failed(result, submitted, json_events=True))

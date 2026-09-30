@@ -24,10 +24,15 @@ META = {"repository": "example/registry", "number": 1, "base": BASE, "head": HEA
 EXPECTED = [{"provider": name, "role": "general"} for name in ["codex", "claude"]]
 
 
-__import__("os").environ.setdefault("CODEX_REVIEW_MODEL", "gpt-6.1-sol")
-__import__("os").environ.setdefault("CODEX_REVIEW_EFFORT", "high")
-__import__("os").environ.setdefault("CLAUDE_REVIEW_MODEL", "claude-opus-5-5")
-__import__("os").environ.setdefault("CLAUDE_REVIEW_EFFORT", "medium")
+
+def setUpModule():
+    patcher = mock.patch.dict(__import__("os").environ, {
+        "CODEX_REVIEW_MODEL": "gpt-6.1-sol", "CODEX_REVIEW_EFFORT": "high",
+        "CLAUDE_REVIEW_MODEL": "claude-opus-5-5", "CLAUDE_REVIEW_EFFORT": "medium",
+    })
+    patcher.start()
+    unittest.addModuleCleanup(patcher.stop)
+
 
 class FakeGitHub:
     def __init__(self):
