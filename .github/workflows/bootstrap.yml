@@ -13,6 +13,12 @@ concurrency:
   group: bootstrap-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  CODEX_REVIEW_MODEL: ${{ vars.CODEX_REVIEW_MODEL }}
+  CODEX_REVIEW_EFFORT: ${{ vars.CODEX_REVIEW_EFFORT }}
+  CLAUDE_REVIEW_MODEL: ${{ vars.CLAUDE_REVIEW_MODEL }}
+  CLAUDE_REVIEW_EFFORT: ${{ vars.CLAUDE_REVIEW_EFFORT }}
+
 jobs:
   helpers:
     runs-on: ubuntu-24.04-arm

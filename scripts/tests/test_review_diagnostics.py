@@ -13,6 +13,15 @@ import review_runtime as runtime
 import review_gate as gate
 
 
+def setUpModule():
+    patcher = mock.patch.dict(__import__("os").environ, {
+        "CODEX_REVIEW_MODEL": "gpt-6.1-sol", "CODEX_REVIEW_EFFORT": "high",
+        "CLAUDE_REVIEW_MODEL": "claude-opus-5-5", "CLAUDE_REVIEW_EFFORT": "medium",
+    })
+    patcher.start()
+    unittest.addModuleCleanup(patcher.stop)
+
+
 class ReviewDiagnosticsTests(unittest.TestCase):
     def test_claude_failure_emits_only_allowed_terminal_scalars(self):
         for subtype in runtime.CLAUDE_RESULT_SUBTYPES:
