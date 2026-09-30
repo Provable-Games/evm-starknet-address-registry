@@ -24,6 +24,11 @@ META = {"repository": "example/registry", "number": 1, "base": BASE, "head": HEA
 EXPECTED = [{"provider": name, "role": "general"} for name in ["codex", "claude"]]
 
 
+__import__("os").environ.setdefault("CODEX_REVIEW_MODEL", "gpt-6.1-sol")
+__import__("os").environ.setdefault("CODEX_REVIEW_EFFORT", "high")
+__import__("os").environ.setdefault("CLAUDE_REVIEW_MODEL", "claude-opus-5-5")
+__import__("os").environ.setdefault("CLAUDE_REVIEW_EFFORT", "medium")
+
 class FakeGitHub:
     def __init__(self):
         self.calls = []
@@ -85,7 +90,7 @@ class PublicationTests(unittest.TestCase):
             self.assertTrue(ci.publish(self.api, next_run, self.root, "success", "success"))
         self.assertEqual(len(self.api.comments), 6)
         self.assertFalse(any(call[0] == "PATCH" for call in self.api.calls))
-        providers = json.loads((ci.ROOT / ".github/review/providers.json").read_text())
+        providers = ci.configure(json.loads((ci.ROOT / ".github/review/providers.json").read_text()))
         for index, reviewer in enumerate(EXPECTED):
             config = providers[reviewer["provider"]]
             title = (f"## {config['model']}-{config['effort']} Code Review: [{HEAD[:7]}]("
@@ -235,7 +240,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_offline_check_parses_real_config_and_uses_production_paths(self):
         calls = []
-        config = json.loads((runtime.ROOT / ".github/review/providers.json").read_text())
+        config = runtime.configure(json.loads((runtime.ROOT / ".github/review/providers.json").read_text()))
         schema = (runtime.ROOT / ".github/review/result.schema.json").read_text()
         def inspect(command, **kwargs):
             prepared = Path(kwargs["cwd"])

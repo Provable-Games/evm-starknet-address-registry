@@ -20,6 +20,13 @@ concurrency:
 
 # Automatic reviews are only for PRs opened and updated by organization members.
 # Maintainers can explicitly dispatch a review for any other PR.
+env:
+  CODEX_REVIEW_MODEL: ${{ vars.CODEX_REVIEW_MODEL }}
+  CODEX_REVIEW_EFFORT: ${{ vars.CODEX_REVIEW_EFFORT }}
+  CODEX_CLI_VERSION: ${{ vars.CODEX_CLI_VERSION }}
+  CLAUDE_REVIEW_MODEL: ${{ vars.CLAUDE_REVIEW_MODEL }}
+  CLAUDE_REVIEW_EFFORT: ${{ vars.CLAUDE_REVIEW_EFFORT }}
+
 jobs:
   start:
     if: >-
@@ -106,13 +113,19 @@ jobs:
         with:
           name: review-context
           path: ${{ runner.temp }}/review-context
+      - name: Validate organization review configuration
+        run: |
+          python3 -c 'import sys; sys.path.insert(0,"scripts"); from review_settings import configure; configure({"codex":{},"claude":{}})'
+          [[ "$CODEX_CLI_VERSION" =~ ^(latest|[0-9]+\.[0-9]+\.[0-9]+)$ ]] || { echo '::error::Configure CODEX_CLI_VERSION'; exit 1; }
       - name: Install pinned runtime before credentials
         run: |
           python3 scripts/setup.py --components node npm
           export PATH="$PWD/.tools/bin:$PATH"
           npm ci --prefix .github/review/runtime --ignore-scripts --no-audit --no-fund
           node .github/review/runtime/node_modules/@anthropic-ai/claude-code/install.cjs
-          .github/review/runtime/node_modules/.bin/codex --version
+          npm install --prefix "$RUNNER_TEMP/org-codex-runtime" --ignore-scripts --no-audit --no-fund "@openai/codex@$CODEX_CLI_VERSION"
+          echo "CODEX_RUNTIME=$RUNNER_TEMP/org-codex-runtime" >> "$GITHUB_ENV"
+          "$RUNNER_TEMP/org-codex-runtime/node_modules/.bin/codex" --version
           .github/review/runtime/node_modules/.bin/claude --version
       - name: Enable namespaces on the disposable hosted runner
         if: matrix.provider == 'codex'

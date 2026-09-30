@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Trusted CI orchestration. PR contents are read through Git as data only."""
 
+from review_settings import configure
 import argparse
 import json
 import os
@@ -162,7 +163,7 @@ def publish(api, meta, directory, prepare_status, review_status):
         outcome["passed"] = False
     bot = api("GET", "/users/github-actions%5Bbot%5D")
     comments = all_comments(api, meta)
-    providers = json.loads((ROOT / ".github/review/providers.json").read_text())
+    providers = configure(json.loads((ROOT / ".github/review/providers.json").read_text()))
     for reviewer in manifest["expected"]:
         matches = [result for result in results if all(result.get(key) == value for key, value in reviewer.items())]
         single = gate.assess([reviewer], matches, meta["base"], meta["head"], routing_succeeded=True)
@@ -196,7 +197,7 @@ def main():
     parser.add_argument("--directory", type=Path, required=True)
     parser.add_argument("--source", type=Path)
     args = parser.parse_args()
-    providers = json.loads((ROOT / ".github/review/providers.json").read_text())
+    providers = configure(json.loads((ROOT / ".github/review/providers.json").read_text()))
     validate_capacity(providers)
     args.directory.mkdir(parents=True, exist_ok=True)
     if args.command == "prepare":

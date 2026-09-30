@@ -41,6 +41,11 @@ def fixture(auth, prepared, prompt):
             row("event_msg", {"type": "task_complete", "turn_id": TURN})]
 
 
+__import__("os").environ.setdefault("CODEX_REVIEW_MODEL", "gpt-6.1-sol")
+__import__("os").environ.setdefault("CODEX_REVIEW_EFFORT", "high")
+__import__("os").environ.setdefault("CLAUDE_REVIEW_MODEL", "claude-opus-5-5")
+__import__("os").environ.setdefault("CLAUDE_REVIEW_EFFORT", "medium")
+
 class HelperAliasTests(unittest.TestCase):
     def test_exact_owned_alias_directory_and_targets(self):
         with tempfile.TemporaryDirectory() as temporary:

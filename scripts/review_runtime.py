@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run pinned reviewers with isolated configuration and validated final output."""
 
+from review_settings import configure
 import argparse
 import json
 import os
@@ -26,7 +27,7 @@ def codex_native():
     if platform.system() != "Linux" or architecture is None:
         raise ValueError("Review sandbox requires a supported Linux architecture")
     arch, triple_arch = architecture
-    runtime = ROOT / ".github/review/runtime"
+    runtime = Path(os.environ.get("CODEX_RUNTIME", str(ROOT / ".github/review/runtime")))
     package_key = f"node_modules/@openai/codex-linux-{arch}"
     package = runtime / package_key
     native = package / f"vendor/{triple_arch}-unknown-linux-musl/bin/codex"
@@ -34,7 +35,8 @@ def codex_native():
     for path in [package / "package.json", native]:
         if path.resolve(strict=True) != path:
             raise ValueError("Codex native package must not redirect outside its fixed install path")
-    pin = json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"]
+    pin = (json.loads((runtime / "node_modules/@openai/codex/package.json").read_text())["version"]
+           if "CODEX_RUNTIME" in os.environ else json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"])
     expected = pin + "-linux-" + arch
     locked = json.loads((runtime / "package-lock.json").read_text())["packages"][package_key]
     installed = json.loads((package / "package.json").read_text())
@@ -50,7 +52,7 @@ def codex_native():
 def codex_config(prepared, private_home):
     # :minimal exposes system binaries/libraries, not the runner's home or checkout.
     # Bubblewrap provides fresh PID/network namespaces and procfs; host /proc is absent.
-    settings = json.loads((ROOT / ".github/review/providers.json").read_text())
+    settings = configure(json.loads((ROOT / ".github/review/providers.json").read_text()))
     validate_capacity(settings)
     return f'''model_context_window = {settings["codex"]["context_window_tokens"]}
 model_auto_compact_token_limit = {settings["codex"]["auto_compact_token_limit"]}
@@ -299,7 +301,7 @@ def review_command(provider, config, prepared, final):
 
 def check_cli_arguments():
     """Exercise the exact invocation against installed CLIs without a provider request."""
-    config = json.loads((ROOT / ".github/review/providers.json").read_text())
+    config = configure(json.loads((ROOT / ".github/review/providers.json").read_text()))
     with tempfile.TemporaryDirectory(prefix=".ci-review-", dir=ROOT) as directory:
         private = Path(directory)
         prepared, auth = private / "prepared", private / "auth"
@@ -337,7 +339,7 @@ def execute(provider, role, context, output, credentials):
     manifest = json.loads((context / "manifest.json").read_text())
     if {"provider": provider, "role": role} not in manifest["expected"]:
         raise ValueError("Reviewer is not in the trusted expected matrix")
-    config = json.loads((ROOT / ".github/review/providers.json").read_text())
+    config = configure(json.loads((ROOT / ".github/review/providers.json").read_text()))
     identity = {"provider": provider, "role": role, "base": manifest["base"], "head": manifest["head"]}
     record = {**identity, "exit_code": 1, "job_status": "failure", "output": ""}
     output.mkdir(parents=True, exist_ok=True)
@@ -383,7 +385,8 @@ def execute(provider, role, context, output, credentials):
                                      else json_failure_diagnostic(completed.stdout, completed.stderr, submitted, secrets) if json_events
                                      else failure_diagnostic(provider, completed.stderr, submitted, secrets))}))
             if provider == "codex" and len(prompt) > transport.NATIVE_CHARS:
-                version = json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"]
+                version = (subprocess.check_output([str(codex_native()), "--version"], text=True).strip().split()[-1]
+                           if "CODEX_RUNTIME" in os.environ else json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"])
                 verdict = transport.execute_turns(command, prompt, identity, prepared, auth, environment,
                                                   version, config[provider]["model"], config[provider]["effort"],
                                                   lambda result, submitted: failed(result, submitted, json_events=True))

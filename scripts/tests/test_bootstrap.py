@@ -3,6 +3,7 @@ import contextlib
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -136,7 +137,9 @@ class ReviewTests(unittest.TestCase):
             gate.publication_action([], 200, "codex", "general", BASE, HEAD, BASE, BASE, [], **options)
 
     def test_title_uses_configured_model_and_effort_for_clean_and_findings(self):
-        providers = json.loads((ROOT / ".github/review/providers.json").read_text())
+        from review_settings import configure
+        with mock.patch.dict(os.environ, {"CODEX_REVIEW_MODEL":"test-model", "CODEX_REVIEW_EFFORT":"high", "CLAUDE_REVIEW_MODEL":"claude-test", "CLAUDE_REVIEW_EFFORT":"medium"}):
+            providers = configure(json.loads((ROOT / ".github/review/providers.json").read_text()))
         for provider in ("codex", "claude"):
             for findings in ([], [self.finding()]):
                 with self.subTest(provider=provider, findings=bool(findings)):
