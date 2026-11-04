@@ -14,6 +14,11 @@ Each deployed instance has its own address and state. A
 [Sepolia instance](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/sepolia.json)
 is recorded separately.
 
+Those instances predate the rejection of
+`0x3f17f1962b36e491b30a40b2405849e597ba5fb5`, so this source no longer builds their
+class hash and they accept a keyless link for that address. See the
+[protocol specification](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/protocol/spec.md).
+
 ## Interface
 
 | Operation                     | Authorization                                             | Effect                                               |
