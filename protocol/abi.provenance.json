@@ -13,7 +13,7 @@
     "contracts/src/labels.cairo": "6833cccdcfae72a7576ec3e351cc97daec90e3c8444f43ed07a00dd41d1dbc0d",
     "contracts/src/lib.cairo": "a9c4501e12e5cd8ff78483bb941f293f8d7e0779e25f080586e8e54a2345b60c",
     "contracts/src/registry.cairo": "cb3a153aeefd6823aa3d34c5ca17f80ef7bb6f63512f8e70a8065fd739ffd06c",
-    "contracts/src/signature.cairo": "fc89450fa7ac6f667f3c4cbc23892582f0acc10e50a5c0a72d1ac569a2a8c4aa",
+    "contracts/src/signature.cairo": "11bff926b36d9f7dc2297d267ba22c18be193c2a37aa5bb9bc1036a7456a68c3",
     "contracts/src/state.cairo": "791b747e36c17567ca8452212ba7d30b82ba4fcb314d869a21e45126ffe24610",
     "contracts/Scarb.toml": "21b567d48e3d78c73a798329cede45e3d0688e505f476eaf608e57a59ebd2ef1",
     "contracts/Scarb.lock": "fb2bbb1de071481282f4c1c4f8c24cb5ac442447bd12a0d5a850beac8c9a6c1c"
