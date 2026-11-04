@@ -537,7 +537,8 @@
         ],
         "outcomes": [
           "Independent valid signature verifies.",
-          "Zero/out-of-range/high-s/wrong parity/wrong signer/changed digest/non-point r reject."
+          "Zero/out-of-range/high-s/wrong parity/wrong signer/changed digest/non-point r reject.",
+          "A keyless signature recovering to the point at infinity rejects on link, move and revoke."
         ]
       }
     ],
