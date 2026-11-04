@@ -97,6 +97,14 @@ without personal-sign, text, or digest fallback. Cairo accepts
 limb first. Parse 65-byte `r || s || v` with `v` in `{0,1,27,28}` and ERC-2098
 compact signatures. Require `1 <= r < n`, `1 <= s <= n/2`, valid secp256k1
 recovery, and recovered address `E` (`n` is the curve order).
+`E` must not be `0x3f17f1962b36e491b30a40b2405849e597ba5fb5`, the last 20 bytes
+of `keccak256` of 64 zero bytes: Cairo core derives it for a signature that recovers
+to the point at infinity, and such a signature exists for every digest without a
+key. Link, move and revoke reject that address as a bad signature.
+This applies to classes built from this source. The recorded Mainnet and Sepolia
+deployments of class `0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156`
+do not enforce it, so consumers of those instances must not treat a link for that
+address as authorized.
 
 ## State transitions
 
