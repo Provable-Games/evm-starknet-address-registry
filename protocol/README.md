@@ -18,6 +18,8 @@ class hash and an Ethereum Keccak digest. Generated Sierra and executable
 artifacts are not committed. A [Sepolia deployment](../deployments/sepolia.json)
 is recorded separately.
 
+The immutable native L1-link class adds the compiler entries in [abi.l1-link.json](abi.l1-link.json) to the frozen ABI. The original entry definitions and signing vectors are shared by both classes. The L1 wire format and consent checks are specified in [the protocol](spec.md#native-l1-first-link-proposal).
+
 ## Wire format and reads
 
 The production class is `contracts::registry::EthereumAddressAssociationRegistry`;

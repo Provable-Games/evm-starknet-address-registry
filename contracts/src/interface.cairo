@@ -70,6 +70,24 @@ pub struct SigningDomain {
     pub account_network_name: ByteArray,
 }
 
+/// Contents of a delivered L1 request. The zero deadline denotes an empty slot.
+#[derive(Copy, Drop, Serde, PartialEq, starknet::Store)]
+pub struct L1LinkProposal {
+    pub ethereum_nonce: u256,
+    pub recipient_nonce: u256,
+    pub deadline: u64,
+}
+
+#[starknet::interface]
+pub trait IL1LinkRegistry<TContractState> {
+    fn get_l1_link_proposal(
+        self: @TContractState, ethereum_address: EthAddress, account_address: ContractAddress,
+    ) -> L1LinkProposal;
+    fn accept_l1_link(
+        ref self: TContractState, ethereum_address: EthAddress, expected: L1LinkProposal,
+    );
+}
+
 #[starknet::interface]
 pub trait IAddressRegistry<TContractState> {
     fn link(ref self: TContractState, request: LinkRequest, signature: Signature);
