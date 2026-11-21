@@ -52,7 +52,11 @@ def produce():
         index, entry = production_registry(production_indexes)
         compiled = json.loads((index.parent / entry["artifacts"]["sierra"]).read_text())
         abi = encoded(compiled["abi"])
-        frozen = json.loads((ROOT / "protocol/abi.json").read_bytes())
+        frozen_bytes = (ROOT / "protocol/abi.json").read_bytes()
+        release = json.loads((ROOT / "protocol/abi.provenance.json").read_bytes())
+        if hashlib.sha256(frozen_bytes).hexdigest() != release["abi_sha256"]:
+            raise ValueError("Original ABI differs from its v1.0.0 release provenance")
+        frozen = json.loads(frozen_bytes)
         extension = json.loads((ROOT / "protocol/abi.l1-link.json").read_bytes())
         # The compiler orders shared type definitions by first use across interfaces.
         # Preserve each exact original entry, including the order of all interface items.
