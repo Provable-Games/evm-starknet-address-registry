@@ -67,6 +67,31 @@ fn l1_proposal_requires_destination_and_authenticated_origin() {
 
 #[test]
 #[feature("safe_dispatcher")]
+fn stored_l1_proposal_for_another_destination_stays_stale_after_unlink() {
+    let registry = deploy('SN_SEPOLIA', 11155111, "A");
+    let links = IAddressRegistryDispatcher { contract_address: registry };
+    let l1 = IL1LinkRegistryDispatcher { contract_address: registry };
+    let safe = IL1LinkRegistrySafeDispatcher { contract_address: registry };
+    let first: ContractAddress = 123.try_into().unwrap();
+    let second: ContractAddress = 321.try_into().unwrap();
+    let ethereum: EthAddress = 456.try_into().unwrap();
+    let proposal = L1LinkProposal { ethereum_nonce: 0, recipient_nonce: 0, deadline: 100 };
+    deliver(registry, ethereum.into(), first.into(), proposal).unwrap_syscall();
+    deliver(registry, ethereum.into(), second.into(), proposal).unwrap_syscall();
+    start_cheat_caller_address(registry, first);
+    l1.accept_l1_link(ethereum, proposal);
+    links.unlink(ethereum);
+    start_cheat_caller_address(registry, second);
+    assert(l1.get_l1_link_proposal(ethereum, second) == proposal, 'STILL_STORED');
+    assert(
+        *safe.accept_l1_link(ethereum, proposal).unwrap_err().at(0) == 'AR_STALE_ETH_NONCE',
+        'STALE_PROPOSAL',
+    );
+    assert(!links.is_associated(ethereum, second), 'NO_LINK');
+}
+
+#[test]
+#[feature("safe_dispatcher")]
 fn l1_cancel_in_flight_delivered_and_expired_proposals() {
     let registry = deploy('SN_SEPOLIA', 11155111, "A");
     let links = IAddressRegistryDispatcher { contract_address: registry };

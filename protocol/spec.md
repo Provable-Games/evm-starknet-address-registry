@@ -11,9 +11,11 @@ The immutable, permissionless Starknet registry maps each Ethereum address to at
 most one Starknet account. An account may receive many links. The registry checks
 Ethereum secp256k1 key signatures locally and uses the immediate Starknet caller
 for account-authorized operations. It has no owner, upgrade, registrar, asset
-policy, or backend verifier. A link records key authorization and account
-acceptance; it proves neither personal identity nor asset approval. ERC-1271,
-ERC-6492 and contract-wallet signature verification are outside this revision. The immutable L1-link class additionally supports the native message flow below.
+policy, or backend verifier. A link records Ethereum authorization and Starknet
+account acceptance. Consumers decide which contract-wallet policies qualify for
+their application. The immutable L1-link class authenticates native messages as
+described below. ERC-1271 and ERC-6492 signature verification remain outside
+this revision.
 
 The constructor accepts `ethereum_chain_id: u256` and immutable
 `account_label: ByteArray`. The label is 1–48 ASCII bytes matching
@@ -150,9 +152,13 @@ must be verified before advertising support for a wallet path.
 An Ethereum account or contract sends a transaction to its network's official
 Starknet Core `sendMessageToL2`. The target is the registry instance and the
 selector is `propose_link_from_l1`. The native L1 handler obtains `E` exclusively
-from its authenticated `from_address`. A Safe calls Core directly using its own
-configured threshold. The registry neither accepts a claimed Ethereum sender in
-the payload nor implements Safe-specific signature verification.
+from its authenticated `from_address`. In the standard Safe transaction path,
+the Safe checks its configured threshold and calls Core directly. The registry
+authenticates the immediate sender. Authorization within that sender depends on
+its own code and configuration, including any enabled Safe modules. Anyone who
+can direct a contract to make arbitrary outbound calls can nominate their own
+destination for that contract. Consumers crediting holdings on the strength of
+owner approval must exclude such permissionless contracts.
 
 The payload is exactly eleven felts, with no array length prefix:
 
@@ -181,6 +187,8 @@ and both nonce increments, atomically. Each rejection leaves state unchanged.
 `invalidate_pending_incoming(E)` invalidates delivered and in-flight messages
 using the old recipient nonce. A new delivery using the new pair nonce requires
 new matching acceptance calldata. `unlink` removes the accepted link normally.
-Messages cannot move or revoke an existing association. A new first-link
-transition after unlink requires fresh current nonces. The original EIP-712
+For a Safe, only the linked Starknet account can release the association by
+calling `unlink`. If that account becomes inaccessible or refuses to unlink,
+the Safe cannot recover or redirect this association in this registry. Linking
+again after unlink requires fresh current nonces. The original EIP-712
 domain, signed types, event codes, reads, vectors and SDK remain as specified.
