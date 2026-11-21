@@ -2,7 +2,7 @@
 
 This is the normative behavior of signing revision
 `5beae0d4f74dfc4ed9cc664db98d28e5c4f5b96a`. The compiler
-[`abi.json`](abi.json) fixes the public interface; independent
+[`abi.json`](abi.json) fixes the original public interface; independent
 [`vectors.json`](vectors.json) fixes serialized examples.
 
 ## Scope and identity
@@ -11,19 +11,21 @@ The immutable, permissionless Starknet registry maps each Ethereum address to at
 most one Starknet account. An account may receive many links. The registry checks
 Ethereum secp256k1 key signatures locally and uses the immediate Starknet caller
 for account-authorized operations. It has no owner, upgrade, registrar, asset
-policy, or backend verifier. A link records key authorization and account
-acceptance; it proves neither personal identity nor asset approval. ERC-1271,
-ERC-6492, messaging, and contract-wallet policy are outside this revision.
+policy, or backend verifier. A link records Ethereum authorization and Starknet
+account acceptance. Consumers decide which contract-wallet policies qualify for
+their application. The immutable L1-link class authenticates native messages as
+described below. ERC-1271 and ERC-6492 signature verification remain outside
+this revision.
 
 The constructor accepts `ethereum_chain_id: u256` and immutable
 `account_label: ByteArray`. The label is 1–48 ASCII bytes matching
 `[A-Za-z0-9]+(?: [A-Za-z0-9]+)*`, with case preserved and no normalization.
 Only these Ethereum signing / Starknet execution pairs are valid:
 
-| Ethereum chain ID | Starknet chain ID | Technical name |
-| --- | --- | --- |
-| `1` | ASCII felt `SN_MAIN` | Starknet Mainnet |
-| `11155111` | ASCII felt `SN_SEPOLIA` | Starknet Sepolia |
+| Ethereum chain ID | Starknet chain ID       | Technical name   |
+| ----------------- | ----------------------- | ---------------- |
+| `1`               | ASCII felt `SN_MAIN`    | Starknet Mainnet |
+| `11155111`        | ASCII felt `SN_SEPOLIA` | Starknet Sepolia |
 
 The account chain ID comes from Starknet execution context. The registry address
 is its own full `ContractAddress`, below `2^251`. Ethereum addresses are 20 bytes;
@@ -105,13 +107,13 @@ reverts. `N(E)` and `R(S,E)` start at zero and never reset. An active forward
 link appears once in the destination's reverse collection. Removal uses
 swap-and-pop and repairs the moved entry's index.
 
-| Operation | Required state and caller | Mapping effect | Nonces advanced |
-| --- | --- | --- | --- |
-| `link` | `E` unlinked; immediate caller is signed `S` | Add `E → S` | `N(E)`, `R(S,E)` |
-| `move` | Current account is signed `P`; immediate caller is signed `S` | Replace `E → P` with `E → S` | `N(E)`, `R(P,E)`, `R(S,E)` |
-| `unlink` | Immediate caller is current nonzero account | Remove link | `N(E)`, `R(caller,E)` |
-| Signed `revoke` | Signed current account matches state; any caller may relay | Remove link if present | `N(E)`, plus `R(P,E)` if linked |
-| `invalidate_pending_incoming(E)` | Nonzero immediate caller `S`, nonzero `E` | None | `R(S,E)` only |
+| Operation                        | Required state and caller                                     | Mapping effect               | Nonces advanced                 |
+| -------------------------------- | ------------------------------------------------------------- | ---------------------------- | ------------------------------- |
+| `link`                           | `E` unlinked; immediate caller is signed `S`                  | Add `E → S`                  | `N(E)`, `R(S,E)`                |
+| `move`                           | Current account is signed `P`; immediate caller is signed `S` | Replace `E → P` with `E → S` | `N(E)`, `R(P,E)`, `R(S,E)`      |
+| `unlink`                         | Immediate caller is current nonzero account                   | Remove link                  | `N(E)`, `R(caller,E)`           |
+| Signed `revoke`                  | Signed current account matches state; any caller may relay    | Remove link if present       | `N(E)`, plus `R(P,E)` if linked |
+| `invalidate_pending_incoming(E)` | Nonzero immediate caller `S`, nonzero `E`                     | None                         | `R(S,E)` only                   |
 
 Link and move require valid Ethereum signatures and the destination caller;
 unlink and pair cancellation need no Ethereum signature. Revoke requires a
@@ -144,3 +146,53 @@ block before signing; recheck and simulate before submission. Treat a dismissed
 wallet prompt as local abandonment, not on-chain cancellation. Claim completion
 only after successful execution and state readback. Real wallet signing displays
 must be verified before advertising support for a wallet path.
+
+## Native L1 first-link proposal
+
+An Ethereum account or contract sends a transaction to its network's official
+Starknet Core `sendMessageToL2`. The target is the registry instance and the
+selector is `propose_link_from_l1`. The native L1 handler obtains `E` exclusively
+from its authenticated `from_address`. In the standard Safe transaction path,
+the Safe checks its configured threshold and calls Core directly. The registry
+authenticates the immediate sender. Authorization within that sender depends on
+its own code and configuration, including any enabled Safe modules. Anyone who
+can direct a contract to make arbitrary outbound calls can nominate their own
+destination for that contract. Consumers crediting holdings on the strength of
+owner approval must exclude such permissionless contracts.
+
+The payload is exactly eleven felts, with no array length prefix:
+
+```text
+[1, ethereum_chain_id_low, ethereum_chain_id_high, account_chain_id,
+ registry_address, destination, ethereum_nonce_low, ethereum_nonce_high,
+ recipient_nonce_low, recipient_nonce_high, deadline]
+```
+
+The version is numeric 1. The handler validates both chains and its own full
+address, nonzero sender and destination, inclusive deadline and both current
+nonces. The sender must be unlinked. Delivery stores the proposal for the
+`(destination, E)` pair and changes no association or nonce. Delivery of another
+valid proposal for the same pair replaces that slot. Delivery emits no Starknet
+event. To discover nominations, indexers can scan the Ethereum Core contract's
+`LogMessageToL2` events for this registry and handler selector, then read the
+corresponding pair on Starknet to confirm delivery before displaying a proposal.
+A client that already knows the pair can query it directly. Proposals for distinct
+destinations may coexist until an acceptance advances the shared Ethereum nonce.
+
+`get_l1_link_proposal(E, destination)` returns the last stored Ethereum nonce,
+recipient nonce and deadline. Zero deadline means no stored proposal. Storage
+alone does not establish that a proposal is still valid. The nominated account
+calls `accept_l1_link(E, expected)` with that exact tuple. The registry looks up
+the pair using the immediate caller, matches the tuple and rechecks the deadline,
+both nonces and absence of an active link. Success clears the slot and performs
+the ordinary link transition, including reverse indexing, ordered link events
+and both nonce increments, atomically. Each rejection leaves state unchanged.
+
+`invalidate_pending_incoming(E)` invalidates delivered and in-flight messages
+using the old recipient nonce. A new delivery using the new pair nonce requires
+new matching acceptance calldata. `unlink` removes the accepted link normally.
+For a Safe, only the linked Starknet account can release the association by
+calling `unlink`. If that account becomes inaccessible or refuses to unlink,
+the Safe cannot recover or redirect this association in this registry. Linking
+again after unlink requires fresh current nonces. The original EIP-712
+domain, signed types, event codes, reads, vectors and SDK remain as specified.

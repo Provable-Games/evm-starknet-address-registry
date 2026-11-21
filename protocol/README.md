@@ -7,8 +7,10 @@ and state transitions. The files here fix the contract/SDK agreement:
 
 | Artifact                                           | Purpose                                                  |
 | -------------------------------------------------- | -------------------------------------------------------- |
-| [abi.json](abi.json)                               | Complete Cairo 2.20.0 / Scarb 2.20.1 compiler ABI        |
-| [abi.provenance.json](abi.provenance.json)         | ABI SHA-256 and source provenance                        |
+| [abi.json](abi.json)                               | Full compiler ABI of the original v1.0.0 class        |
+| [abi.provenance.json](abi.provenance.json)         | ABI SHA-256 and source hashes at tag v1.0.0              |
+| [abi.l1-link.json](abi.l1-link.json)               | Additional compiler entries in the native L1-link class  |
+| [abi.l1-link.provenance.json](abi.l1-link.provenance.json) | Full ABI SHA-256 and source hashes for the L1-link class |
 | [vectors.json](vectors.json)                       | Independent signing, calldata, event, and state examples |
 | [vectors.provenance.json](vectors.provenance.json) | Reference generator and dependency identity              |
 | [coverage-policy.json](coverage-policy.json)       | Contract and SDK coverage/resource policy                |
@@ -17,6 +19,8 @@ The ABI SHA-256 identifies the JSON artifact. It is distinct from a Starknet
 class hash and an Ethereum Keccak digest. Generated Sierra and executable
 artifacts are not committed. A [Sepolia deployment](../deployments/sepolia.json)
 is recorded separately.
+
+The immutable native L1-link class adds the compiler entries in [abi.l1-link.json](abi.l1-link.json) to the frozen ABI. The original entry definitions and signing vectors are shared by both classes. The L1 wire format and consent checks are specified in [the protocol](spec.md#native-l1-first-link-proposal).
 
 ## Wire format and reads
 
@@ -89,8 +93,8 @@ python3 scripts/check_protocol.py
 .tools/reference-venv/bin/python -I scripts/reference/test_oracle.py
 ```
 
-`check_protocol.py` rebuilds the frozen ABI, checks source provenance, and checks
-the vector-derived selector test. The reference commands check vector
+`check_protocol.py` checks the original ABI against its release digest, builds the
+complete L1-link ABI, verifies its source hashes and checks the vector-derived selector test. The reference commands check vector
 reproducibility. The [contract guide](../contracts/README.md) and
 [SDK guide](../packages/sdk/README.md) give the runtime checks. Consumers should
 supply a trusted deployment tuple and authenticate its class, chain, label, and

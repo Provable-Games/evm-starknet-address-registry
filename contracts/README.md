@@ -7,7 +7,8 @@ verifier.
 
 **Mainnet class hash:**
 [0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156](https://voyager.online/class/0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156).
-The class is declared on Starknet Mainnet. The [Mainnet instance](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337)
+Build this class from release tag `v1.0.0`. The current source builds the
+native L1-link class, `0x6266f1c64bc2a9900161112ef10d9ea2e901bd5344bbe3686ed7f52ab49e89e`. The [Mainnet instance](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337)
 uses the `Loot Survivor` label at
 `0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337`.
 Each deployed instance has its own address and state. A
@@ -23,6 +24,8 @@ is recorded separately.
 | `revoke`                      | Ethereum EIP-712 signature; any account may relay         | Remove an association, if present                    |
 | `unlink`                      | Current linked account caller                             | Remove an association                                |
 | `invalidate_pending_incoming` | Destination account caller                                | Advance nonce for that account/Ethereum-address pair |
+
+The native L1-link class adds a message handler `propose_link_from_l1`, a pending proposal read `get_l1_link_proposal`, and the destination-only `accept_l1_link` transaction. Consumers continue to call `is_associated` to check consent.
 
 Read methods expose forward and reverse associations, nonces, the signing domain,
 and version. Reverse pages have a limit of 1–100; removal can reorder them, so

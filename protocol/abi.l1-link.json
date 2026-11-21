@@ -1,0 +1,111 @@
+[
+  {
+    "type": "impl",
+    "name": "L1LinkRegistry",
+    "interface_name": "contracts::interface::IL1LinkRegistry"
+  },
+  {
+    "type": "struct",
+    "name": "contracts::interface::L1LinkProposal",
+    "members": [
+      {
+        "name": "ethereum_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "recipient_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "deadline",
+        "type": "core::integer::u64"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "contracts::interface::IL1LinkRegistry",
+    "items": [
+      {
+        "type": "function",
+        "name": "get_l1_link_proposal",
+        "inputs": [
+          {
+            "name": "ethereum_address",
+            "type": "core::starknet::eth_address::EthAddress"
+          },
+          {
+            "name": "account_address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "contracts::interface::L1LinkProposal"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "accept_l1_link",
+        "inputs": [
+          {
+            "name": "ethereum_address",
+            "type": "core::starknet::eth_address::EthAddress"
+          },
+          {
+            "name": "expected",
+            "type": "contracts::interface::L1LinkProposal"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "l1_handler",
+    "name": "propose_link_from_l1",
+    "inputs": [
+      {
+        "name": "from_address",
+        "type": "core::felt252"
+      },
+      {
+        "name": "version",
+        "type": "core::felt252"
+      },
+      {
+        "name": "ethereum_chain_id",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "account_chain_id",
+        "type": "core::felt252"
+      },
+      {
+        "name": "registry_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "account_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "ethereum_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "recipient_nonce",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "deadline",
+        "type": "core::integer::u64"
+      }
+    ],
+    "outputs": [],
+    "state_mutability": "external"
+  }
+]

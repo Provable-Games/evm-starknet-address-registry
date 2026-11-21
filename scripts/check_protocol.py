@@ -52,8 +52,17 @@ def produce():
         index, entry = production_registry(production_indexes)
         compiled = json.loads((index.parent / entry["artifacts"]["sierra"]).read_text())
         abi = encoded(compiled["abi"])
-        if abi != (ROOT / "protocol/abi.json").read_bytes():
-            raise ValueError("Production ABI differs from the frozen agreement; --write cannot replace it")
+        frozen_bytes = (ROOT / "protocol/abi.json").read_bytes()
+        release = json.loads((ROOT / "protocol/abi.provenance.json").read_bytes())
+        if hashlib.sha256(frozen_bytes).hexdigest() != release["abi_sha256"]:
+            raise ValueError("Original ABI differs from its v1.0.0 release provenance")
+        frozen = json.loads(frozen_bytes)
+        extension = json.loads((ROOT / "protocol/abi.l1-link.json").read_bytes())
+        # The compiler orders shared type definitions by first use across interfaces.
+        # Preserve each exact original entry, including the order of all interface items.
+        actual = compiled["abi"]
+        if sorted(map(encoded, actual)) != sorted(map(encoded, frozen + extension)):
+            raise ValueError("Production ABI differs from the frozen and native L1 agreements")
         if any("ABI_HARNESS_ONLY" in (ROOT / name).read_text() for name in source_inventory()):
             raise ValueError("Constructor-panicking ABI harness remains in production inputs")
         build(target / "test", True)
@@ -66,7 +75,7 @@ def produce():
         if encoded(test_compiled["abi"]) != abi:
             raise ValueError("Test and production registry ABI differ")
     provenance = {
-        "schema_version": 1, "status": "production implementation of the frozen interface",
+        "schema_version": 1, "status": "production implementation of the frozen interface and native L1 extension",
         "approved_signing_revision": "5beae0d4f74dfc4ed9cc664db98d28e5c4f5b96a",
         "module_path": MODULE, "scarb": manifest["versions"]["scarb"],
         "cairo": manifest["versions"]["cairo"], "abi_sha256": hashlib.sha256(abi).hexdigest(),
@@ -74,7 +83,7 @@ def produce():
         "sources_sha256": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in source_inventory()},
         "excluded": ["Sierra", "CASM", "class hash", "function indices", "debug metadata", "resource estimates"],
     }
-    return {"abi.provenance.json": encoded(provenance)}
+    return {"abi.l1-link.provenance.json": encoded(provenance)}
 
 
 def main():

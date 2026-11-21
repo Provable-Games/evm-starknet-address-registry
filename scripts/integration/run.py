@@ -60,10 +60,13 @@ def local_deployment(*, registry_only=False, constructor_calldata=None, expected
         run(["scarb", "--manifest-path", str(ROOT / "examples/consumer/Scarb.toml"), "build"], "consumer-build")
     compiled_path = ROOT / "contracts/target/dev/contracts_EthereumAddressAssociationRegistry.contract_class.json"
     compiled = json.loads(compiled_path.read_text())
-    assert compiled["abi"] == json.loads((ROOT / "protocol/abi.json").read_text())
+    class_abi = (json.dumps(compiled["abi"], indent=2) + "\n").encode()
+    provenance = json.loads((ROOT / "protocol/abi.l1-link.provenance.json").read_text())
+    assert hashlib.sha256(class_abi).hexdigest() == provenance["abi_sha256"]
     (EVIDENCE / "artifact-hashes.json").write_text(json.dumps({
         str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in [compiled_path, ROOT / "protocol/abi.json", ROOT / "package-lock.json",
+        for path in [compiled_path, ROOT / "protocol/abi.json", ROOT / "protocol/abi.l1-link.json",
+                     ROOT / "protocol/abi.l1-link.provenance.json", ROOT / "package-lock.json",
                      ROOT / "scripts/integration/lifecycle.ts", ROOT / "scripts/integration/transport.ts",
                      ROOT / "examples/consumer/src/lib.cairo"]}, indent=2))
     devnet = shutil.which("starknet-devnet")
