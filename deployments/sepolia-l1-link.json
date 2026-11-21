@@ -1,0 +1,243 @@
+{
+  "purpose": "Native Safe nomination, ordinary Starknet account consent, and LootDungeon LinkedAccount entry on Sepolia.",
+  "registryImplementation": "9b383162c03081c5e46dba1e097a72d206353d03",
+  "networks": {
+    "ethereumChainId": 11155111,
+    "starknetChainId": "SN_SEPOLIA"
+  },
+  "registry": {
+    "address": "0x5c6fa0c6a52a277b9f38099c1c65515134fc16e243c633b81c5bb65cf65a479",
+    "classHash": "0x6266f1c64bc2a9900161112ef10d9ea2e901bd5344bbe3686ed7f52ab49e89e",
+    "declare": "0xbd8775430faacfc3285399db36a4fa4a6fbb85868fcd7defbe3123443c7ce6",
+    "deploy": "0x5a58a570f58a95fdbe432ae760c970908928aa576e7f92f294aa5ad780fbfc2",
+    "label": "Loot Survivor",
+    "declarationReceipt": "https://sepolia.starkscan.co/tx/0xbd8775430faacfc3285399db36a4fa4a6fbb85868fcd7defbe3123443c7ce6",
+    "deploymentReceipt": "https://sepolia.starkscan.co/tx/0x5a58a570f58a95fdbe432ae760c970908928aa576e7f92f294aa5ad780fbfc2"
+  },
+  "safe": {
+    "address": "0x0342837764d7a3bc68e43eA644B2761264314082",
+    "singleton": "0x41675C099F32341bf84BFc5382aF534df5C7461a",
+    "factory": "0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67",
+    "owners": [
+      "0x34bb4263862B481834AEe81F72BB428980325d61",
+      "0x4ea00F66C3854ea48493836B207C68A95941DB0b",
+      "0xB72f1e9fab52a734aB0fb25b829F97aCE454d636"
+    ],
+    "threshold": "2",
+    "deploy": "0x18f382c2ec632176a627bb60a2fbf66fa1791dd9fe02292c68b70b6ede2c5d83",
+    "modules": [],
+    "funding": "0x9f0cc05fb885e1aed9c8a94cded7e041b16dec058af333da92139e02a100f47b",
+    "setupReceipt": "https://sepolia.etherscan.io/tx/0x18f382c2ec632176a627bb60a2fbf66fa1791dd9fe02292c68b70b6ede2c5d83",
+    "version": "1.4.1",
+    "oneSignatureSimulation": "GS020",
+    "twoSignatureSimulation": true,
+    "operation": "CALL",
+    "target": "0xE2Bb56ee936fd6433DC0F6e7e3b8365C906AA057"
+  },
+  "ethereumFixture": {
+    "address": "0x1626e16897a3f15ffa0b2aa6e48eab60c6a4e966",
+    "deploy": "0x15df10958fada750af6cf72ed2e56cbeacfbf676feb6e9f3f372653ec95406b4",
+    "block": "12181477",
+    "blockHash": "0x0128750999a41837e2960ccb487fdb3975119d023e35661717e49d86f52590ad",
+    "bags": [
+      71,
+      72
+    ],
+    "owners": [
+      "0x0342837764d7a3bc68e43eA644B2761264314082",
+      "0x0342837764d7a3bc68e43eA644B2761264314082"
+    ],
+    "solidity": "0.8.30+commit.73712a01.Emscripten.clang",
+    "openzeppelin": "5.4.0",
+    "source": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.30; import \"@openzeppelin/contracts/token/ERC721/ERC721.sol\"; contract FixtureBag is ERC721 { constructor(address safe) ERC721(\"Sepolia Fixture Bag\", \"BAG\") { _mint(safe, 71); _mint(safe, 72); } }",
+    "receipt": "https://sepolia.etherscan.io/tx/0x15df10958fada750af6cf72ed2e56cbeacfbf676feb6e9f3f372653ec95406b4",
+    "ownerSource": "ERC-721 ownerOf(71) and ownerOf(72) at the recorded Ethereum block hash",
+    "compilerSettings": {
+      "optimizer": true,
+      "runs": 200,
+      "evmVersion": "cancun"
+    }
+  },
+  "dungeon": {
+    "address": "0x1152776e9b969741508ebc8f95ff217daf6ba51570cc9bf7bcd4e90b38d496a",
+    "deploy": "0x350eec2e685f913f9553fee1bee1cce7052cf935ee6c2c96b0ae21ebc48c3bb",
+    "classHash": "0x01411f5b3163be817bd2f4e26306e41f032b8690a0f232ba5ee543a291ccfb84",
+    "deploymentReceipt": "https://sepolia.starkscan.co/tx/0x350eec2e685f913f9553fee1bee1cce7052cf935ee6c2c96b0ae21ebc48c3bb",
+    "method": "enter_dungeon",
+    "verification": "LinkedAccount",
+    "source": "Sepolia class identified in Provable-Games/super-death-mountain contracts/deployments/private-entry-sepolia-20261010.json",
+    "gameCore": {
+      "address": "0x32f0755891560822c49ce030c3051205b331be68ad6a86ba321ac7939f40934",
+      "deploy": "0x6d902c1d9a80c3357e7fb57486b000fc9ddc0d53dc13cc97fbc6f024c03742f",
+      "classHash": "0x22501e6d16771b08db668dd8ab5c5e82015c3ccb45900bb340a46b1b89d8285",
+      "settingsInitialization": "0x7032b40119770e3f41ef9a76e23cdc9578181e04b1acc74bee052e12c660a3a",
+      "settingsId": 1,
+      "settingsReadFrom": "0xd807a8a909dac836da4b19ded0b9a2648aed3dde857c6d3c7004a27041794b",
+      "renderer": "0x0"
+    },
+    "starkLoot": {
+      "address": "0x1b6dac0858ed23fb3c2f545a8748b27f89617a685626b9422d2c36f06315f43",
+      "use": "Existing Sepolia bag-data contract, read-only"
+    },
+    "otherStarknetAccount": {
+      "address": "0x64618fc2828cd90d81f2250912624d6e7d1d9283d21f797fa43959904e18270",
+      "deploy": "0x3d1c884dd8291aaa8543fc4f3c902f62dcb53a03287e74abe0722e554243118",
+      "classHash": "0x5b4b537eaa2399e3aa99c4e2e0208ebd6c71bc1467938cd52c798c601e43564"
+    }
+  },
+  "snapshot": {
+    "sourceCommit": "6d1d804e28ff3942a26d6eb48894193c1443b274",
+    "leafEncoder": "super-death-mountain/snapshot/src/leaf.ts#hashLootBagLeaf",
+    "treeEncoder": "super-death-mountain/snapshot/src/tree.ts#buildTree",
+    "root": "0x14623a754142aa4bf7cdcf45a51add69d18938dc35007b61b53062b52a6f2c0",
+    "leaves": [
+      {
+        "bag": 71,
+        "ownerOf": "0x0342837764d7a3bc68e43eA644B2761264314082",
+        "leaf": "0x66aa583f34215d4fbea070995d1f3e060432dfc0a2efd3d138f0a163bd7b3e5",
+        "proof": [
+          "0x44bec3408601c3aea68cb0e227614b2f7f21d3ddeef255984c19c4e5b4bea9b"
+        ]
+      },
+      {
+        "bag": 72,
+        "ownerOf": "0x0342837764d7a3bc68e43eA644B2761264314082",
+        "leaf": "0x44bec3408601c3aea68cb0e227614b2f7f21d3ddeef255984c19c4e5b4bea9b",
+        "proof": [
+          "0x66aa583f34215d4fbea070995d1f3e060432dfc0a2efd3d138f0a163bd7b3e5"
+        ]
+      }
+    ],
+    "dungeonLeafHashMatched": true,
+    "setRegistryAndRoot": "https://sepolia.starkscan.co/tx/0x739e218c686537faecb8d36a536d095a52dce4c442030f8aac465bcc49bd748"
+  },
+  "message": {
+    "ethereumTransaction": "0xa115bb166ce1c9b0962c4dd8eb8d7f96a912cc282805d85d99636ab09f7851e2",
+    "block": "12181479",
+    "timestamp": "2026-11-21T11:12:48Z",
+    "core": "0xE2Bb56ee936fd6433DC0F6e7e3b8365C906AA057",
+    "selector": "0x1b651f8a27bcf57cfd2ec9a29fb52a76005694a9902ec3fc2298a686dca53eb",
+    "payload": [
+      "1",
+      "11155111",
+      "0",
+      "393402133025997798000961",
+      "2613125733045606521668582604542512820487302424150814190208697132250984457337",
+      "436261355545638592541114194629340180749734052068896979464397171322076105437",
+      "0",
+      "0",
+      "0",
+      "0",
+      "1795281143"
+    ],
+    "from": "0x0342837764d7a3bc68e43eA644B2761264314082",
+    "to": "0x5c6fa0c6a52a277b9f38099c1c65515134fc16e243c633b81c5bb65cf65a479",
+    "recipient": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+    "nonce": "83162",
+    "fee": "100000000000001",
+    "hash": "0x604781ad59e77b641e6ce24ed899772a46a85551588affb274022be77efeb72c",
+    "deadline": "1795281143",
+    "ethereumReceipt": "https://sepolia.etherscan.io/tx/0xa115bb166ce1c9b0962c4dd8eb8d7f96a912cc282805d85d99636ab09f7851e2",
+    "entrypoint": "propose_link_from_l1",
+    "verified": "The single LogMessageToL2 from Core and native L1_HANDLER calldata agree on the authenticated Safe, registry, selector and every payload felt."
+  },
+  "handler": {
+    "transaction": "0x6fef298194d640e60fab598fa1d12c067b89835aca8ec2998f611e058cff1fc",
+    "receipt": "https://sepolia.starkscan.co/tx/0x6fef298194d640e60fab598fa1d12c067b89835aca8ec2998f611e058cff1fc",
+    "block": 18479778,
+    "timestamp": "2026-11-21T11:16:23Z",
+    "execution": "SUCCEEDED",
+    "pending": [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x6b01d0f7"
+    ],
+    "associated": false
+  },
+  "negativeChecks": [
+    {
+      "reason": "Loot owner not linked",
+      "block": 18479682,
+      "blockHash": "0x6457a10a560e8b0f936383c6fe70fd33375e3229a59acb7db94efc33cea30a7",
+      "address": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+      "bag": 71,
+      "kind": "starknet_estimateFee, signed query invoke, validation enabled at the recorded block hash"
+    },
+    {
+      "reason": "Loot owner not linked",
+      "block": 18479791,
+      "blockHash": "0x13d94ecf14dcfdc5a64d1edbd34cd48e0fd09c6eaf52627acf3f518f58dc6f8",
+      "address": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+      "bag": 71,
+      "kind": "starknet_estimateFee, signed query invoke, validation enabled at the recorded block hash"
+    },
+    {
+      "reason": "Loot owner not linked",
+      "block": 18479796,
+      "blockHash": "0x274f6d4d0ff71f6c083bdd9e698d6b9b92ecbd9e0076ca57b08d32846d88ac0",
+      "address": "0x64618fc2828cd90d81f2250912624d6e7d1d9283d21f797fa43959904e18270",
+      "bag": 72,
+      "kind": "starknet_estimateFee, signed query invoke, validation enabled at the recorded block hash"
+    }
+  ],
+  "consent": {
+    "transaction": "0xd85fa44dc75ada3e264f78f97a1cb4f0e3c45ac9ed69a24e5cf00a3fe7a7e2",
+    "receipt": "https://sepolia.starkscan.co/tx/0xd85fa44dc75ada3e264f78f97a1cb4f0e3c45ac9ed69a24e5cf00a3fe7a7e2",
+    "block": 18479793,
+    "timestamp": "2026-11-21T11:16:48Z",
+    "execution": "SUCCEEDED",
+    "starknetAccount": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+    "associated": true,
+    "pending": [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0"
+    ],
+    "ethereumNonce": 1,
+    "recipientNonce": 1,
+    "reverse": [
+      "0x0342837764d7a3bc68e43eA644B2761264314082"
+    ]
+  },
+  "claim": {
+    "transaction": "0x260e86b9d3b440110b659ccd450e8723678fd3395df7363ba54e6d653c07632",
+    "receipt": "https://sepolia.starkscan.co/tx/0x260e86b9d3b440110b659ccd450e8723678fd3395df7363ba54e6d653c07632",
+    "block": 18479795,
+    "timestamp": "2026-11-21T11:16:52Z",
+    "execution": "SUCCEEDED",
+    "bag": 71,
+    "ownerOf": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+    "gameTokenId": "0x1000000000000470000010000000001021c000001c88ee40119fab3000ec641",
+    "gameTokenContract": "0x32f0755891560822c49ce030c3051205b331be68ad6a86ba321ac7939f40934",
+    "dungeonEnteredEvent": {
+      "data": [
+        "0x342837764d7a3bc68e43ea644b2761264314082",
+        "0x1000000000000470000010000000001021c000001c88ee40119fab3000ec641",
+        "0x6b017da4",
+        "0x6b017de0"
+      ],
+      "from_address": "0x1152776e9b969741508ebc8f95ff217daf6ba51570cc9bf7bcd4e90b38d496a",
+      "keys": [
+        "0x24c54617ee37fdf9bfab4d978ff07b44e8e29ebf89a50a6af77a311bb83a389",
+        "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+        "0x47"
+      ]
+    }
+  },
+  "freshBagControl": {
+    "bag": 72,
+    "blockHash": "0x274f6d4d0ff71f6c083bdd9e698d6b9b92ecbd9e0076ca57b08d32846d88ac0",
+    "nominatedAccount": "Signed invoke fee estimate succeeded on the identical proof and block used for the wrong-account denial."
+  },
+  "observedSeconds": {
+    "ethereumInclusionToL2Pending": 215,
+    "ethereumInclusionToConsent": 240,
+    "consentToClaim": 4,
+    "ethereumInclusionToClaim": 244,
+    "basis": "Block timestamps. The interval includes the pending-state negative claim simulation and submission time."
+  }
+}
