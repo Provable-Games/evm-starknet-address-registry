@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from review_settings import offline_review_settings
 import review_capacity as capacity
 import review_ci as ci
 
@@ -53,7 +54,7 @@ class CapacityTests(unittest.TestCase):
             head = git("rev-parse", "HEAD")
             meta = {"base": base, "head": head}
             output = root / "context"
-            expected = ci.prepare_context(repo, meta, output, SETTINGS["maximum_context_bytes"])
+            expected = ci.prepare_context(repo, meta, output, SETTINGS["maximum_context_bytes"], offline_review_settings())
             self.assertEqual({item["provider"] for item in expected}, {"codex", "claude"})
             self.assertEqual({item["role"] for item in expected}, {"general"})
             diff = ci.git(repo, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
@@ -69,9 +70,9 @@ class CapacityTests(unittest.TestCase):
                                  {"protocol/large.txt": text, "unchanged.txt": "UNCHANGED_SENTINEL\n"})
             self.assertEqual(len(sizes), 1)
             # Count the composed policy+role+JSON bytes, including Unicode escaping.
-            ci.prepare_context(repo, meta, root / "exact", max(sizes))
+            ci.prepare_context(repo, meta, root / "exact", max(sizes), offline_review_settings())
             with self.assertRaisesRegex(ValueError, "no content was silently omitted"):
-                ci.prepare_context(repo, meta, root / "oversized", min(sizes) - 1)
+                ci.prepare_context(repo, meta, root / "oversized", min(sizes) - 1, offline_review_settings())
             self.assertFalse((root / "oversized/manifest.json").exists())
 
 

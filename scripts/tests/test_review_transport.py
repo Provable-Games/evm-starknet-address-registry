@@ -10,6 +10,7 @@ import unittest
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from review_settings import offline_review_settings
 import review_transport as transport
 import review_runtime as runtime
 
@@ -276,7 +277,7 @@ class ResourceTests(unittest.TestCase):
             root = Path(directory); p = root / "large"; p.write_bytes(b"x" * 20)
             with self.assertRaises(ValueError):transport.read_bounded(p, 10)
             context = root / "context"; context.mkdir()
-            (context / "manifest.json").write_text(json.dumps({**IDENTITY, "expected": [{"provider": "codex", "role": "general"}]}))
+            (context / "manifest.json").write_text(json.dumps({**IDENTITY, "review_settings": offline_review_settings(), "expected": [{"provider": "codex", "role": "general"}]}))
             (context / "general.txt").write_text("x" * (transport.NATIVE_CHARS + 1))
             paths = []
             def fail(command, prompt, identity, prepared, auth, *args):

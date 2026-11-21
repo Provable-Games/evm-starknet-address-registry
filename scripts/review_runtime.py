@@ -14,6 +14,7 @@ import tempfile
 import review_gate as gate
 import review_transport as transport
 from review_capacity import validate_capacity, require_context_size
+from review_settings import offline_review_settings
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -299,7 +300,7 @@ def review_command(provider, config, prepared, final):
 
 def check_cli_arguments():
     """Exercise the exact invocation against installed CLIs without a provider request."""
-    config = json.loads((ROOT / ".github/review/providers.json").read_text())
+    config = offline_review_settings()
     with tempfile.TemporaryDirectory(prefix=".ci-review-", dir=ROOT) as directory:
         private = Path(directory)
         prepared, auth = private / "prepared", private / "auth"
@@ -374,7 +375,8 @@ def execute(provider, role, context, output, credentials):
                 environment.update(CLAUDE_CODE_OAUTH_TOKEN=credentials, CLAUDE_CONFIG_DIR=str(auth),
                                    DISABLE_AUTOUPDATER="1", CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1",
                                    DISABLE_COMPACT="1", DISABLE_AUTO_COMPACT="1")
-            command = review_command(provider, config, prepared, private / "final.json")
+            settings = manifest["review_settings"]
+            command = review_command(provider, settings, prepared, private / "final.json")
             prompt = (prepared / "prompt.txt").read_bytes().decode("utf-8", errors="strict")
             def failed(completed, submitted, json_events=False):
                 record["exit_code"] = completed.returncode
@@ -385,7 +387,7 @@ def execute(provider, role, context, output, credentials):
             if provider == "codex" and len(prompt) > transport.NATIVE_CHARS:
                 version = json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"]
                 verdict = transport.execute_turns(command, prompt, identity, prepared, auth, environment,
-                                                  version, config[provider]["model"], config[provider]["effort"],
+                                                  version, settings[provider]["model"], settings[provider]["effort"],
                                                   lambda result, submitted: failed(result, submitted, json_events=True))
                 normalized = json.dumps({"findings": gate.parse_review(verdict)})
             else:

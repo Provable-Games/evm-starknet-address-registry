@@ -12,6 +12,7 @@ import unittest
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from review_settings import offline_review_settings
 import review_gate as gate
 import setup
 
@@ -136,7 +137,7 @@ class ReviewTests(unittest.TestCase):
             gate.publication_action([], 200, "codex", "general", BASE, HEAD, BASE, BASE, [], **options)
 
     def test_title_uses_configured_model_and_effort_for_clean_and_findings(self):
-        providers = json.loads((ROOT / ".github/review/providers.json").read_text())
+        providers = offline_review_settings()
         for provider in ("codex", "claude"):
             for findings in ([], [self.finding()]):
                 with self.subTest(provider=provider, findings=bool(findings)):

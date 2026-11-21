@@ -12,6 +12,7 @@ import urllib.request
 
 import review_gate as gate
 from review_capacity import validate_capacity, require_context_size
+from review_settings import review_settings
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -76,7 +77,7 @@ def git(repo, *args):
     return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True).stdout
 
 
-def prepare_context(repo, meta, output, maximum_bytes):
+def prepare_context(repo, meta, output, maximum_bytes, reviewers):
     if git(repo, "rev-parse", "HEAD").decode().strip() != meta["head"]:
         raise ValueError("Source checkout does not match the recorded PR head")
     paths = gate.changed_paths(repo, meta["base"], meta["head"])
@@ -111,7 +112,8 @@ def prepare_context(repo, meta, output, maximum_bytes):
                   + "\n" + serialized)
         require_context_size(prompt.encode(), maximum_bytes)
         (output / f"{role}.txt").write_text(prompt)
-    manifest = {**meta, "merge_base": merge_base, "expected": expected, "routing_succeeded": True}
+    manifest = {**meta, "merge_base": merge_base, "expected": expected, "routing_succeeded": True,
+                "review_settings": reviewers}
     (output / "manifest.json").write_text(json.dumps(manifest) + "\n")
     return expected
 
@@ -162,7 +164,7 @@ def publish(api, meta, directory, prepare_status, review_status):
         outcome["passed"] = False
     bot = api("GET", "/users/github-actions%5Bbot%5D")
     comments = all_comments(api, meta)
-    providers = json.loads((ROOT / ".github/review/providers.json").read_text())
+    providers = manifest["review_settings"]
     for reviewer in manifest["expected"]:
         matches = [result for result in results if all(result.get(key) == value for key, value in reviewer.items())]
         single = gate.assess([reviewer], matches, meta["base"], meta["head"], routing_succeeded=True)
@@ -201,7 +203,8 @@ def main():
     args.directory.mkdir(parents=True, exist_ok=True)
     if args.command == "prepare":
         meta = json.loads((args.directory / "metadata.json").read_text())
-        expected = prepare_context(args.source, meta, args.directory / "context", providers["maximum_context_bytes"])
+        expected = prepare_context(args.source, meta, args.directory / "context", providers["maximum_context_bytes"],
+                                   review_settings(os.environ))
         with open(os.environ["GITHUB_OUTPUT"], "a") as output:
             output.write("matrix=" + json.dumps({"include": expected}) + "\n")
             output.write("has_reviews=" + str(bool(expected)).lower() + "\n")
