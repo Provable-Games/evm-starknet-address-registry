@@ -8,3 +8,9 @@ has separate declaration evidence in `mainnet-class.json`.
 
 [Sepolia registry deployment](sepolia.json) records the testnet instance
 separately.
+
+[Native L1 link on Sepolia](sepolia-l1-link.json) records a Safe v1.4.1
+with two required signatures out of three owners, the canonical bridge
+message, the destination account's consent, and a successful Loot Dungeon
+`LinkedAccount` entry. The isolated dungeon used an ERC-721 fixture held by
+the Safe and a root built with the game's snapshot encoder.
