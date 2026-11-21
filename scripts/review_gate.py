@@ -8,6 +8,8 @@ from pathlib import Path, PurePosixPath
 import re
 import subprocess
 
+from review_settings import EFFORT, MODEL
+
 
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 SLUG = re.compile(r"[a-z][a-z0-9-]*\Z")
@@ -145,8 +147,8 @@ def comment_body(provider, role, base, head, findings, *, repository, model, eff
         raise ValueError("Invalid reviewer identity")
     if (not isinstance(repository, str)
             or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository)
-            or not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9.-]+", model)
-            or not isinstance(effort, str) or not re.fullmatch(r"[a-z]+", effort)
+            or not isinstance(model, str) or not MODEL.fullmatch(model)
+            or not isinstance(effort, str) or not EFFORT.fullmatch(effort)
             or not isinstance(run_id, str) or not re.fullmatch(r"[A-Za-z0-9-]+", run_id)):
         raise ValueError("Invalid review heading or run identity")
     require_sha(base)

@@ -13,7 +13,7 @@ import review_transport as transport
 
 
 def main(aliases=False):
-    settings = json.loads((runtime.ROOT / ".github/review/providers.json").read_text())
+    settings = runtime.offline_review_settings()
     version = json.loads((runtime.ROOT / "toolchain.json").read_text())["versions"]["codex"]
     original = "Synthetic original input with α😀 and literal context_compacted text.\n" + "x" * transport.NATIVE_CHARS
     identity = {"base": "a" * 40, "head": "b" * 40}

@@ -9,6 +9,7 @@ import unittest
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from review_settings import offline_review_settings
 import review_runtime as runtime
 import review_gate as gate
 
@@ -76,7 +77,7 @@ class ReviewDiagnosticsTests(unittest.TestCase):
                 context, output = root / "context", root / "output"
                 context.mkdir()
                 expected = [{"provider": "claude", "role": "general"}]
-                (context / "manifest.json").write_text(json.dumps({"base": "a" * 40, "head": "b" * 40, "expected": expected}))
+                (context / "manifest.json").write_text(json.dumps({"base": "a" * 40, "head": "b" * 40, "expected": expected, "review_settings": offline_review_settings()}))
                 prompt = "PRIVATE PROMPT\n::error::spoofed diagnostic"
                 secret = "dummy-private-token"
                 (context / "general.txt").write_text(prompt)
@@ -190,7 +191,7 @@ class ReviewDiagnosticsTests(unittest.TestCase):
                 context, output = root / "context", root / "output"
                 context.mkdir()
                 expected = [{"provider": "codex", "role": "general"}]
-                (context / "manifest.json").write_text(json.dumps({"base": "a" * 40, "head": "b" * 40, "expected": expected}))
+                (context / "manifest.json").write_text(json.dumps({"base": "a" * 40, "head": "b" * 40, "expected": expected, "review_settings": offline_review_settings()}))
                 prompt = "Review fixture\r\nexact bytes\rlone CR\n"
                 (context / "general.txt").write_bytes(prompt.encode())
                 secret = "dummy-access-token"
