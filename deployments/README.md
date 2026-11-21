@@ -14,3 +14,8 @@ with two required signatures out of three owners, the canonical bridge
 message, the destination account's consent, and a successful Loot Dungeon
 `LinkedAccount` entry. The isolated dungeon used an ERC-721 fixture held by
 the Safe and a root built with the game's snapshot encoder.
+
+[Combined Safe pilot on Sepolia](sepolia-safe-pilot.json) records the registry
+with both native L1 linking and the signed-EOA guard. It also records the
+immutable allowlist adapter, the EOA lifecycle, and the Safe's successful
+`LinkedAccount` entry through the adapter.

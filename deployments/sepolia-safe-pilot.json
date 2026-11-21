@@ -1,0 +1,242 @@
+{
+  "purpose": "Combined native L1 link, signed EOA guard, and Safe-only Loot Dungeon pilot rehearsal on Sepolia.",
+  "source": {
+    "pr6": "4548e4e7797b32ff0c082b61dd24b43fab56a77c",
+    "pr7": "234d62b12d33a9b21ab5513c2198b16a1e5525a2"
+  },
+  "networks": {
+    "ethereumChainId": 11155111,
+    "starknetChainId": "SN_SEPOLIA"
+  },
+  "registry": {
+    "address": "0x570c440917e5fe1d90ffffc7a66391ebab91ee480344e78f2ac2fc31d1f7d50",
+    "classHash": "0x732a98ebf83f2fca98fad41f0a0af5dbcc8b56aa55adf21c7a598607d9a2838",
+    "declare": "0x2ebe5156e0d768ddb886ac6631bafe44fa8704dfdcedb930a9fc19eb165e7e8",
+    "deploy": "0xe1549c4816cc50658a8c2fdf7f9513aeb5335a6388a39c60c7d19f5d848429"
+  },
+  "adapter": {
+    "address": "0x57fffc9cbe6ae01ac8224a974278bf63459b40181e4ed86e8510e9b908a8316",
+    "classHash": "0x691db971ec0c9b8b118b59152593131f36ffddcd13c7f02f2eaadca0aa970df",
+    "deploy": "0x42b475a551335e8729ccc6bdf97b82e894ece3ca43abe4ce29a08845acd27b0",
+    "registryAddress": "0x570c440917e5fe1d90ffffc7a66391ebab91ee480344e78f2ac2fc31d1f7d50",
+    "allowed": [
+      "0xDE8053CaDCFe150428540E0c9284BFc9B1FFac68"
+    ]
+  },
+  "eoa": {
+    "ethereumAddress": "0x34bb4263862B481834AEe81F72BB428980325d61",
+    "destination": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+    "secondDestination": "0x64618fc2828cd90d81f2250912624d6e7d1d9283d21f797fa43959904e18270",
+    "wrongCaller": "AR_BAD_CALLER",
+    "wrongDomain": "AR_BAD_SIGNATURE",
+    "link": {
+      "transaction": "0x7b3bc287ee5e9157d288bdb2a7366b991f70551acefaeeed6e89c73b024ba08",
+      "block": 18487288,
+      "blockHash": "0x3cf3f34427798359dc5e116fb9705ee6496e4ec89215d3d52dd4605d9affb8f",
+      "timestamp": 1795272637
+    },
+    "validEoaExcludedByAdapter": true,
+    "move": {
+      "transaction": "0x77411478ea5ff37ae11e24dfb89114633f1e8f9bb5ea5ec792411368a5e164d",
+      "block": 18487351,
+      "blockHash": "0x2ceba908b04081c81d204ec4e4778bc832186523e02f3efe4fc23745bbc4725",
+      "timestamp": 1795272745
+    },
+    "revoke": {
+      "transaction": "0x51ba72b7462dc89ffc60875655941d50f250da3bfbc5927e22641a94fb96dbf",
+      "block": 18487353,
+      "blockHash": "0x133e5b93c8f420f0170817065365d958e018f1efa02e8234bccc9c2a8da2730",
+      "timestamp": 1795272749
+    }
+  },
+  "ethereum": {
+    "safe": {
+      "address": "0xDE8053CaDCFe150428540E0c9284BFc9B1FFac68",
+      "singleton": "0x41675C099F32341bf84BFc5382aF534df5C7461a",
+      "factory": "0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67",
+      "owners": [
+        "0x34bb4263862B481834AEe81F72BB428980325d61",
+        "0xF3415902d8442D6E2fe83DE779633F59aa29EE4F",
+        "0xF82C4cDBb4d7f47Af6d30172422428303dfb960b"
+      ],
+      "threshold": "2",
+      "deploy": "0x73cd2ae0899170de655d9718417e1d3ecba027958c710d78a03fcae317ddb1d3",
+      "modules": [],
+      "version": "1.4.1",
+      "funding": "0x2fed654c4e91aec84ecf7855a155a823a567b815bd893089e8102fa46d167f10"
+    },
+    "erc721": {
+      "address": "0x812909ee7c2793b2d4d687f89c041b89d15b47f1",
+      "deploy": "0xd6e44b31499b7b27aeb767e6b8c07338e166f8e58c2781c6edea550b8fd1810b",
+      "block": "12182508",
+      "blockHash": "0xba0a79120489cb40bb5e3f557247fb8af763aa1a55e2c91ec5ef29fff85769b3",
+      "bags": [
+        71,
+        72
+      ],
+      "owners": [
+        "0xDE8053CaDCFe150428540E0c9284BFc9B1FFac68",
+        "0xDE8053CaDCFe150428540E0c9284BFc9B1FFac68"
+      ],
+      "solidity": "0.8.30+commit.73712a01.Emscripten.clang",
+      "openzeppelin": "5.4.0",
+      "source": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.30; import \"@openzeppelin/contracts/token/ERC721/ERC721.sol\"; contract FixtureBag is ERC721 { constructor(address safe) ERC721(\"Sepolia Fixture Bag\", \"BAG\") { _mint(safe, 71); _mint(safe, 72); } }"
+    },
+    "oneSignature": "GS020",
+    "twoSignatureSimulation": true,
+    "message": {
+      "ethereumTransaction": "0x286b7404d1cf4334e778a47a6e2ed95fdd96909da0f92da6df000629095a9103",
+      "block": "12182512",
+      "timestamp": "1795272540",
+      "core": "0xE2Bb56ee936fd6433DC0F6e7e3b8365C906AA057",
+      "selector": "0x1b651f8a27bcf57cfd2ec9a29fb52a76005694a9902ec3fc2298a686dca53eb",
+      "payload": [
+        "1",
+        "11155111",
+        "0",
+        "393402133025997798000961",
+        "2460805597214338397204096327757460314773715798573765469138813695277202898256",
+        "436261355545638592541114194629340180749734052068896979464397171322076105437",
+        "0",
+        "0",
+        "0",
+        "0",
+        "1795294123"
+      ],
+      "from": "0xDE8053CaDCFe150428540E0c9284BFc9B1FFac68",
+      "to": "0x570c440917e5fe1d90ffffc7a66391ebab91ee480344e78f2ac2fc31d1f7d50",
+      "recipient": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+      "nonce": "83163",
+      "fee": "100000000000001",
+      "hash": "0xa77f3d65fe54067015cd1de0c3ee0d124e825c42f1c6c8359332d8c31addb3fe",
+      "deadline": "1795294123"
+    },
+    "historicalThresholdControl": {
+      "method": "eth_call",
+      "block": "12182511",
+      "blockHash": "0x5d057eedcdc41e4b59916c6777c57f662cc5b5ab29b3baed8958cf4f0f586037",
+      "sourceTransactionHash": "0x286b7404d1cf4334e778a47a6e2ed95fdd96909da0f92da6df000629095a9103",
+      "oneSignature": "GS020",
+      "twoSignatures": true
+    }
+  },
+  "dungeon": {
+    "gameCore": {
+      "address": "0x2087e5704d12383e88f24de139c7d0c282ac32f366bcd98f2ec83c3772e7329",
+      "deploy": "0x66f0c1f185dfe4651860c3e16b2a5ab89f8b8159e0fa0b69d2d8ebdbba1552f",
+      "classHash": "0x22501e6d16771b08db668dd8ab5c5e82015c3ccb45900bb340a46b1b89d8285"
+    },
+    "settingsTx": "0x57f0f799c83bbe78b25afeec080bc30a39e6af554a0ad692ca7667d9326b52b",
+    "dungeon": {
+      "address": "0x7d73e4f3f93478de45016d03d70aacc4b841bb79b3f2c4fb5493898056a0a4a",
+      "deploy": "0x68c287d9c32ac42acaa49d9405f799b2ba6809bc6a99e6641eb599d2301add7",
+      "classHash": "0x01411f5b3163be817bd2f4e26306e41f032b8690a0f232ba5ee543a291ccfb84"
+    },
+    "snapshot": {
+      "root": "1188108722949168127310492559102418509092524343693158476699812900822027486345",
+      "leaves": [
+        "2464169607609680811766892668176463820774620821315409959445255609090982981216",
+        "1732841307225228121468905652977879288268835622866146357452404495004988848002"
+      ],
+      "proofs": [
+        [
+          "1732841307225228121468905652977879288268835622866146357452404495004988848002"
+        ],
+        [
+          "2464169607609680811766892668176463820774620821315409959445255609090982981216"
+        ]
+      ],
+      "ethBlock": "12182508",
+      "sourceCommit": "6d1d804e28ff3942a26d6eb48894193c1443b274",
+      "starkLoot": "0x1b6dac0858ed23fb3c2f545a8748b27f89617a685626b9422d2c36f06315f43"
+    },
+    "configure": "0x6cc9c86f4f469b772087daf17c7c0871fc27bb7977b526b304100c56b0afa07",
+    "preConsent": {
+      "reason": "Loot owner not linked",
+      "block": 18487274,
+      "blockHash": "0x64c1916f9f21005b5dd4a544e4d824cc839325c8e8787728999c63df42e090a",
+      "address": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+      "bag": 71,
+      "kind": "signed invoke fee simulation"
+    },
+    "pendingDenial": {
+      "reason": "Loot owner not linked",
+      "block": 18487361,
+      "blockHash": "0x6d5ae8cea1921b345c261ea897d8cea69a126b3716dde48f277ecbfe75428a0",
+      "address": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+      "bag": 71,
+      "kind": "signed invoke fee simulation"
+    },
+    "wrongAccountAcceptance": "AR_NO_L1_PROPOSAL",
+    "accept": {
+      "transaction": "0x5a16f1363cf43487c241d2f2d99b62ba2218bff2462b7f99dd7321d4d00ad4c",
+      "block": 18487362,
+      "blockHash": "0x3fc7df46754253e2ceb28fa05245cc9c7895eeef6d5aa50671608350385a298",
+      "timestamp": 1795272764
+    },
+    "claim": {
+      "transaction": "0x43ba6d3e7ad488939c652952accb9aa29bcfe5c254c6f650e36ef1ca3cdc19e",
+      "block": 18487364,
+      "blockHash": "0x50749f7681561bb0d57958868ae9a18d1429792de33e713bda216380dbaaa30",
+      "timestamp": 1795272768,
+      "entered": {
+        "data": [
+          "0xde8053cadcfe150428540e0c9284bfc9b1ffac68",
+          "0x1000000000000470000010000000001021c000001c88fbc011a1844001833c1",
+          "0x6b01b040",
+          "0x6b01b07c"
+        ],
+        "from_address": "0x7d73e4f3f93478de45016d03d70aacc4b841bb79b3f2c4fb5493898056a0a4a",
+        "keys": [
+          "0x24c54617ee37fdf9bfab4d978ff07b44e8e29ebf89a50a6af77a311bb83a389",
+          "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add",
+          "0x47"
+        ]
+      }
+    },
+    "minted": {
+      "tokenLow": "0x21c000001c88fbc011a1844001833c1",
+      "tokenHigh": "0x1000000000000470000010000000001",
+      "owner": "0xf6ea490870cc0c4d86ebb4a6cf92f8a94c29be93b350b9132d887a72718add"
+    },
+    "acceptedTimestamp": 1795272764,
+    "claimedTimestamp": 1795272768,
+    "wrongAccount": {
+      "reason": "Loot owner not linked",
+      "block": 18487365,
+      "blockHash": "0x12e74d86ae7e7c95df0a5c15e8884d9cfa1b37ef18fea84a6d85dcc0cb366f0",
+      "address": "0x64618fc2828cd90d81f2250912624d6e7d1d9283d21f797fa43959904e18270",
+      "bag": 72,
+      "kind": "signed invoke fee simulation"
+    },
+    "freshBagControl": {
+      "bag": 72,
+      "blockHash": "0x12e74d86ae7e7c95df0a5c15e8884d9cfa1b37ef18fea84a6d85dcc0cb366f0",
+      "validationEnabled": true,
+      "nominatedAccount": "fee estimate succeeded",
+      "otherAccount": "Loot owner not linked"
+    }
+  },
+  "handler": {
+    "hash": "0x4a30693a39542d56119886d6c072bce0a11fca0334a959ec3456676c7dc85eb",
+    "block": 18487349,
+    "timestamp": 1795272742,
+    "secondsFromL1": 202,
+    "pending": [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x6b0203ab"
+    ],
+    "associated": false,
+    "transaction": "0x4a30693a39542d56119886d6c072bce0a11fca0334a959ec3456676c7dc85eb",
+    "blockHash": "0x2a5f166ff990dec4c74890da01c9ba0650cf681aaba10706fd3ac9a421214ee"
+  },
+  "observedSeconds": {
+    "ethereumInclusionToPending": 202,
+    "pendingToConsent": 22,
+    "consentToEntry": 4,
+    "ethereumInclusionToEntry": 228
+  }
+}

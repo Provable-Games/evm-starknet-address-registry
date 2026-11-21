@@ -42,12 +42,10 @@ def configure_ci_fuzzer_seed():
     print(f"Foundry fuzzer seed: {seed}", file=sys.stderr, flush=True)
 
 
-def main():
-    configure_ci_fuzzer_seed()
-    command = ["scarb", "test"]
+def run_suite(package, command):
     chunks = []
     # Preserve partial diagnostics in CI even if the job is cancelled or times out.
-    with subprocess.Popen(command, cwd=ROOT / "contracts", stdout=subprocess.PIPE,
+    with subprocess.Popen(command, cwd=package, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT, text=True, bufsize=1) as process:
         assert process.stdout is not None
         for line in process.stdout:
@@ -57,7 +55,16 @@ def main():
     if status:
         raise subprocess.CalledProcessError(status, command)
     count = require_passing_tests("".join(chunks))
-    print(f"Nonempty Foundry suite verified: {count} passing tests.")
+    print(f"Nonempty Foundry suite verified in {package.relative_to(ROOT)}: {count} passing tests.")
+
+
+def main():
+    configure_ci_fuzzer_seed()
+    run_suite(ROOT / "contracts", ["scarb", "test"])
+    adapter = ROOT / "contracts/adapters/safe-allowlist"
+    subprocess.run(["scarb", "fmt", "--check"], cwd=adapter, check=True)
+    subprocess.run(["scarb", "lint", "--test", "--deny-warnings"], cwd=adapter, check=True)
+    run_suite(adapter, ["snforge", "test"])
 
 
 if __name__ == "__main__":
