@@ -8,6 +8,8 @@
   "registry": {
     "address": "0x5c6fa0c6a52a277b9f38099c1c65515134fc16e243c633b81c5bb65cf65a479",
     "classHash": "0x6266f1c64bc2a9900161112ef10d9ea2e901bd5344bbe3686ed7f52ab49e89e",
+    "abiSha256": "7a5bfdd9bab5b56c78a403d964534ec2a5b8711705152b59094d5939820224eb",
+    "class_abi_sha256": "f0e4abba80331c4f7ae63a810911edf4acb0416515f40d2351305731cfac8507",
     "declare": "0xbd8775430faacfc3285399db36a4fa4a6fbb85868fcd7defbe3123443c7ce6",
     "deploy": "0x5a58a570f58a95fdbe432ae760c970908928aa576e7f92f294aa5ad780fbfc2",
     "label": "Loot Survivor",

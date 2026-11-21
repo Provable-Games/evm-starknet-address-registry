@@ -172,7 +172,11 @@ The version is numeric 1. The handler validates both chains and its own full
 address, nonzero sender and destination, inclusive deadline and both current
 nonces. The sender must be unlinked. Delivery stores the proposal for the
 `(destination, E)` pair and changes no association or nonce. Delivery of another
-valid proposal for the same pair replaces that slot. Proposals for distinct
+valid proposal for the same pair replaces that slot. Delivery emits no Starknet
+event. To discover nominations, indexers can scan the Ethereum Core contract's
+`LogMessageToL2` events for this registry and handler selector, then read the
+corresponding pair on Starknet to confirm delivery before displaying a proposal.
+A client that already knows the pair can query it directly. Proposals for distinct
 destinations may coexist until an acceptance advances the shared Ethereum nonce.
 
 `get_l1_link_proposal(E, destination)` returns the last stored Ethereum nonce,

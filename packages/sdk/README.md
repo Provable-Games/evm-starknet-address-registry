@@ -50,7 +50,10 @@ submission still needs a funded Starknet relay account.
 ## Trust and reads
 
 `TrustedDeployment` binds both chains, the full registry address, expected class
-hash, immutable label, protocol revision, and ABI SHA-256. Each reader query checks
+hash, immutable label, protocol revision, and `abiSha256`. This digest identifies
+the frozen v1 interface shared by both registry classes. The native L1-link
+deployment record also gives `class_abi_sha256`, the digest of the full compiler
+ABI including the L1 extension. Each reader query checks
 the actual chain, class, signing domain, and contract version at a concrete block.
 The application remains responsible for choosing a trustworthy RPC and deployment.
 

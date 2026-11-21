@@ -660,9 +660,9 @@
     "reason": "constant-only return ASCII felt 49; no source-mapped statements emitted",
     "status": "approved",
     "source_sha256": "0a53a65d88dcedb7d1cdf4a8ca7a3a4cf6a7ebabd3a018e5f2e39538a7bb7c47",
-    "approval": "Supervisor and independent reviewer verified this sole exception: 40 authored functions, 39 mapped functions, and 201 mapped production lines covered at revision 49857b541e5e88e71c50ad713f14e698164a0114.",
-    "raw_lcov_sha256": "21f0844b8db95e73329716db2caed2ab1f201e5ff6aee4487449809c76074d32",
-    "filtered_lcov_sha256": "5aed5cd59380d4912da7fdcf6254d591ac2754624cd78f7e0bdf89d73fa00d08"
+    "approval": "The existing exception for the constant-only get_version body was revalidated at revision c5c14924c5cf9f92a1f1920348e5da29e587de14. Coverage reconciled 44 authored functions with 43 mapped functions and 222 mapped production lines, all covered.",
+    "raw_lcov_sha256": "a8c95f33ec4250498a7c663b378c0b03d56d334495b9782375378430552005df",
+    "filtered_lcov_sha256": "b9ad5ef35a9cc38b077ddd395e860c271e2d1924035d7ca852285945fbcc262b"
   },
   "excluded": {
     "contracts/src/lib.cairo": "module declarations only; no executable production functions"
