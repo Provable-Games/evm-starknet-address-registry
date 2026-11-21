@@ -24,6 +24,8 @@ is recorded separately.
 | `unlink`                      | Current linked account caller                             | Remove an association                                |
 | `invalidate_pending_incoming` | Destination account caller                                | Advance nonce for that account/Ethereum-address pair |
 
+The native L1-link class adds a message handler `propose_link_from_l1`, a pending proposal read `get_l1_link_proposal`, and the destination-only `accept_l1_link` transaction. Consumers continue to call `is_associated` to check consent.
+
 Read methods expose forward and reverse associations, nonces, the signing domain,
 and version. Reverse pages have a limit of 1–100; removal can reorder them, so
 clients should read all pages at one block. Failed calls leave storage unchanged

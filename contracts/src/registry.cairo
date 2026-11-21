@@ -10,7 +10,9 @@ pub mod EthereumAddressAssociationRegistry {
         ContractAddress, EthAddress, get_block_timestamp, get_caller_address, get_contract_address,
         get_tx_info,
     };
-    use crate::interface::{LinkRequest, MoveRequest, RevokeRequest, Signature, SigningDomain};
+    use crate::interface::{
+        L1LinkProposal, LinkRequest, MoveRequest, RevokeRequest, Signature, SigningDomain,
+    };
     use crate::{eip712, labels, signature, state};
     #[storage]
     struct Storage {
@@ -20,6 +22,7 @@ pub mod EthereumAddressAssociationRegistry {
         ethereum_index_plus_one: Map<EthAddress, u64>,
         ethereum_nonce: Map<EthAddress, u256>,
         recipient_nonce: Map<(ContractAddress, EthAddress), u256>,
+        l1_link_proposals: Map<(ContractAddress, EthAddress), L1LinkProposal>,
         ethereum_chain_id: u256,
         account_label: ByteArray,
         domain_separator: u256,
@@ -96,6 +99,29 @@ pub mod EthereumAddressAssociationRegistry {
             assert(get_caller_address() == account, 'AR_BAD_CALLER');
             assert(self.recipient_nonce.read((account, ethereum)) == nonce, 'AR_STALE_RECIP_NONCE');
         }
+        fn add_link(
+            ref self: ContractState,
+            ethereum: EthAddress,
+            account: ContractAddress,
+            ethereum_nonce: u256,
+            recipient_nonce: u256,
+        ) {
+            let nonce = state::next_nonce(ethereum_nonce);
+            let recipient = state::next_nonce(recipient_nonce);
+            let count = state::next_count(self.ethereum_count.read(account));
+            self.insert(ethereum, account, count);
+            self
+                .emit(
+                    AssociationChanged {
+                        ethereum_address: ethereum,
+                        previous_starknet_address: 0.try_into().unwrap(),
+                        new_starknet_address: account,
+                        operation: 1,
+                    },
+                );
+            self.advance_ethereum(ethereum, nonce);
+            self.advance_recipient(ethereum, account, recipient);
+        }
         fn insert(
             ref self: ContractState, ethereum: EthAddress, account: ContractAddress, count: u64,
         ) {
@@ -135,6 +161,63 @@ pub mod EthereumAddressAssociationRegistry {
         }
     }
 
+    #[l1_handler]
+    fn propose_link_from_l1(
+        ref self: ContractState,
+        from_address: felt252,
+        version: felt252,
+        ethereum_chain_id: u256,
+        account_chain_id: felt252,
+        registry_address: ContractAddress,
+        account_address: ContractAddress,
+        ethereum_nonce: u256,
+        recipient_nonce: u256,
+        deadline: u64,
+    ) {
+        let ethereum: EthAddress = from_address.try_into().expect('AR_BAD_L1_SENDER');
+        assert(version == 1, 'AR_BAD_L1_VERSION');
+        assert(ethereum_chain_id == self.ethereum_chain_id.read(), 'AR_BAD_CHAIN_PAIR');
+        assert(account_chain_id == get_tx_info().chain_id, 'AR_BAD_CHAIN_PAIR');
+        assert(registry_address == get_contract_address(), 'AR_BAD_REGISTRY');
+        self.check_signed(ethereum, ethereum_nonce, deadline);
+        assert(!account_address.is_zero(), 'AR_ZERO_ADDRESS');
+        assert(self.ethereum_to_starknet.read(ethereum).is_zero(), 'AR_ALREADY_LINKED');
+        let pair = (account_address, ethereum);
+        assert(self.recipient_nonce.read(pair) == recipient_nonce, 'AR_STALE_RECIP_NONCE');
+        self
+            .l1_link_proposals
+            .write(pair, L1LinkProposal { ethereum_nonce, recipient_nonce, deadline });
+    }
+
+    #[abi(embed_v0)]
+    impl L1LinkRegistry of crate::interface::IL1LinkRegistry<ContractState> {
+        fn get_l1_link_proposal(
+            self: @ContractState, ethereum_address: EthAddress, account_address: ContractAddress,
+        ) -> L1LinkProposal {
+            self.l1_link_proposals.read((account_address, ethereum_address))
+        }
+
+        fn accept_l1_link(
+            ref self: ContractState, ethereum_address: EthAddress, expected: L1LinkProposal,
+        ) {
+            let account = get_caller_address();
+            let pair = (account, ethereum_address);
+            let proposal = self.l1_link_proposals.read(pair);
+            assert(proposal.deadline != 0, 'AR_NO_L1_PROPOSAL');
+            assert(proposal == expected, 'AR_L1_PROPOSAL_CHANGED');
+            self.check_signed(ethereum_address, proposal.ethereum_nonce, proposal.deadline);
+            self.check_recipient(ethereum_address, account, proposal.recipient_nonce);
+            assert(self.ethereum_to_starknet.read(ethereum_address).is_zero(), 'AR_ALREADY_LINKED');
+            self
+                .l1_link_proposals
+                .write(pair, L1LinkProposal { ethereum_nonce: 0, recipient_nonce: 0, deadline: 0 });
+            self
+                .add_link(
+                    ethereum_address, account, proposal.ethereum_nonce, proposal.recipient_nonce,
+                );
+        }
+    }
+
     #[abi(embed_v0)]
     impl AddressRegistry of crate::interface::IAddressRegistry<ContractState> {
         fn link(ref self: ContractState, request: LinkRequest, signature: Signature) {
@@ -152,21 +235,7 @@ pub mod EthereumAddressAssociationRegistry {
             signature::verify(
                 eip712::envelope(self.domain_separator.read(), message), signature, ethereum,
             );
-            let nonce = state::next_nonce(request.ethereum_nonce);
-            let recipient = state::next_nonce(request.recipient_nonce);
-            let count = state::next_count(self.ethereum_count.read(account));
-            self.insert(ethereum, account, count);
-            self
-                .emit(
-                    AssociationChanged {
-                        ethereum_address: ethereum,
-                        previous_starknet_address: 0.try_into().unwrap(),
-                        new_starknet_address: account,
-                        operation: 1,
-                    },
-                );
-            self.advance_ethereum(ethereum, nonce);
-            self.advance_recipient(ethereum, account, recipient);
+            self.add_link(ethereum, account, request.ethereum_nonce, request.recipient_nonce);
         }
         fn move(ref self: ContractState, request: MoveRequest, signature: Signature) {
             let ethereum = request.ethereum_address;
