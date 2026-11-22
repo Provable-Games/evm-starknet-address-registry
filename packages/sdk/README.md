@@ -63,6 +63,15 @@ unique reverse pages at one block and rejects failed or inconsistent reads. Its
 u64 budget. `compareLinkedAddresses(snapshot, allowed)` computes an intersection
 without RPC or an eligibility decision.
 
+The v1.0.0 registry and the first native L1-link class accepted signatures for
+the keyless Ethereum address `0x3f17f1962b36e491b30a40b2405849e597ba5fb5`.
+SDK readers report what the registry stored. On either class, applications must
+exclude that address when using `getStarknetAddress` or `isAssociated` as proof
+of ownership. Apply the same exclusion to `getEthereumAddresses` and
+`listAllEthereumAddresses` results and to matches from `compareLinkedAddresses`
+before granting access. The [protocol specification](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/protocol/spec.md#eip-712-authorization)
+identifies both affected class hashes.
+
 Internal Ethereum addresses are lowercase 20-byte hex; account addresses and
 hashes use full 32-byte words with context-specific range checks. Numeric values
 are `bigint`. The exported address aliases are structural TypeScript types, so
