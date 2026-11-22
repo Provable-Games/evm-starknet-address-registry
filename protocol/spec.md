@@ -103,10 +103,14 @@ recovery, and recovered address `E` (`n` is the curve order).
 of `keccak256` of 64 zero bytes: Cairo core derives it for a signature that recovers
 to the point at infinity, and such a signature exists for every digest without a
 key. Link, move and revoke reject that address as a bad signature.
-This applies to classes built from this source. The recorded Mainnet and Sepolia
-deployments of class `0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156`
-do not enforce it, so consumers of those instances must not treat a link for that
-address as authorized.
+Two older classes lack this signature check. The recorded Mainnet and Sepolia
+deployments of v1.0.0 use class
+`0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156`.
+The first native L1-link class, `0x6266f1c64bc2a9900161112ef10d9ea2e901bd5344bbe3686ed7f52ab49e89e`,
+was deployed on Sepolia at `0x5c6fa0c6a52a277b9f38099c1c65515134fc16e243c633b81c5bb65cf65a479`.
+Consumers of either class must reject links for the keyless Ethereum address
+`0x3f17f1962b36e491b30a40b2405849e597ba5fb5`.
+[Sepolia L1-link deployment record](../deployments/sepolia-l1-link.json).
 
 ## State transitions
 
@@ -184,8 +188,16 @@ valid proposal for the same pair replaces that slot. Delivery emits no Starknet
 event. To discover nominations, indexers can scan the Ethereum Core contract's
 `LogMessageToL2` events for this registry and handler selector, then read the
 corresponding pair on Starknet to confirm delivery before displaying a proposal.
-A client that already knows the pair can query it directly. Proposals for distinct
-destinations may coexist until an acceptance advances the shared Ethereum nonce.
+A client that already knows the pair can query it directly. Once a nomination is
+delivered, the registry gives the Safe no way to withdraw it from Ethereum.
+Core's cancellation procedure applies only to a pending bridge message and
+cannot clear a proposal already stored on Starknet.
+
+Nominating a different destination leaves the first proposal actionable. Either
+nominee can accept through its own deadline while its nonces remain current.
+The first successful acceptance advances the shared Ethereum nonce and makes
+the other proposal stale. Choose a deadline that allows time for Safe approvals,
+bridge delivery and Starknet acceptance while limiting how long the nominee can act.
 
 `get_l1_link_proposal(E, destination)` returns the last stored Ethereum nonce,
 recipient nonce and deadline. Zero deadline means no stored proposal. Storage
