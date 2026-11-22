@@ -191,9 +191,9 @@ def redact(text, secrets):
 
 
 def failure_diagnostic(provider, stderr, prompt, secrets):
-    # Pinned Codex 0.156.1 event_processor_with_human_output.rs emits
-    # ServerNotification::Error / failed turns as eprintln!("ERROR: {}", error).
-    # https://github.com/openai/codex/blob/rust-v0.156.1/codex-rs/exec/src/event_processor_with_human_output.rs
+    # Pinned Codex event_processor_with_human_output.rs emits
+    # ServerNotification::Error and failed turns with an ERROR: prefix.
+    # https://github.com/openai/codex/blob/rust-v0.171.0/codex-rs/exec/src/event_processor_with_human_output.rs
     # Remove its echoed input before selection; never log arbitrary transcript tails.
     remaining = stderr.replace(prompt, "") if prompt else stderr
     remaining = redact(remaining, secrets)
@@ -254,7 +254,7 @@ def json_failure_diagnostic(stdout, stderr, prompt, secrets):
     # Pinned exec_events.rs: ThreadErrorEvent.message and
     # TurnFailedEvent.error.message are structured stdout events; pre-event
     # Rust main failures may still emit the recognized stderr Error: marker.
-    # https://github.com/openai/codex/blob/rust-v0.156.1/codex-rs/exec/src/exec_events.rs
+    # https://github.com/openai/codex/blob/rust-v0.171.0/codex-rs/exec/src/exec_events.rs
     diagnostic = {"terminal_error": "No recognized terminal diagnostic",
                   "stdout_bytes": len(stdout.encode()), "stdout_lines": len(stdout.splitlines()),
                   "stderr_bytes": len(stderr.encode()), "stderr_lines": len(stderr.splitlines())}
@@ -399,7 +399,7 @@ def execute(provider, role, context, output, credentials):
                     failed(completed, prompt)
                     raise ValueError(f"{provider} process failed with exit code {completed.returncode}")
             if provider == "codex" and len(prompt) <= transport.NATIVE_CHARS:
-                # Pinned 0.156 human output emits this line for ContextCompaction.
+                # Pinned Codex human output emits this line for ContextCompaction.
                 # Never accept a final verdict after the original context was compacted.
                 if "context compacted" in {line.strip() for line in completed.stderr.splitlines()}:
                     raise ValueError("Codex compacted the review context; review is incomplete")

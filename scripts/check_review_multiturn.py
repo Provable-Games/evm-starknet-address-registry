@@ -83,6 +83,9 @@ stream_max_retries = 0
                                              lambda result, prompt: failures.append(result.returncode), seconds=60)
             transport.require(json.loads(output) == {"findings": []} and not failures and len(requests) == 2,
                               "Synthetic multi-turn completion failed")
+            transport.require(all(request.get("model") == settings["codex"]["model"]
+                                  and request.get("reasoning", {}).get("effort") == settings["codex"]["effort"]
+                                  for request in requests), "Synthetic review model or effort changed")
             submitted = transport.chunks_for(original, identity)
             user_text = [part.get("text") for item in requests[-1]["input"] if item.get("role") == "user"
                          for part in item.get("content", []) if part.get("type") == "input_text"]
