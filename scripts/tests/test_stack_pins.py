@@ -142,6 +142,17 @@ checksum = "sha256:CHECKSUM"
         lock_path = self.root / "contracts/Scarb.lock"
         manifest_path.write_text(manifest)
         lock_path.write_text(lock)
+        adapter = self.root / "contracts/adapters/safe-allowlist"
+        adapter.mkdir(parents=True)
+        adapter_manifest = manifest.replace('name = "contracts"', 'name = "safe_allowlist"')
+        (adapter / "Scarb.toml").write_text(adapter_manifest)
+        plugin = lock.replace('name = "snforge_std"', 'name = "snforge_scarb_plugin"')
+        self.manifest["cairo_packages"]["snforge_scarb_plugin"] = self.manifest["cairo_packages"]["snforge_std"]
+        for drift in [plugin.replace("0.64.0", "0.64.1"), plugin.replace("a" * 64, "b" * 64)]:
+            (adapter / "Scarb.lock").write_text(lock + drift)
+            with self.assertRaisesRegex(ValueError, "Unapproved Cairo lock entry: snforge_scarb_plugin"):
+                self.check()
+        (adapter / "Scarb.lock").write_text(lock + plugin)
         self.check()
         lock_path.write_text(lock.replace("a" * 64, "b" * 64))
         with self.assertRaisesRegex(ValueError, "Unapproved Cairo lock entry"):
