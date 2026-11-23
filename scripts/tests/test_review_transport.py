@@ -17,6 +17,7 @@ import review_runtime as runtime
 THREAD = "00000000-0000-4000-8000-000000000001"
 TURN = "00000000-0000-4000-8000-000000000002"
 IDENTITY = {"base": "a" * 40, "head": "b" * 40}
+VERSION = "0.171.0"
 
 
 def row(kind, payload):
@@ -31,7 +32,8 @@ def fixture(auth, prepared, prompt):
                    "type": "restricted", "entries": [{"path": {"type": "path", "path": str(auth)}, "access": "deny"}, {"path": {"type": "path", "path": str(prepared)}, "access": "read"}, {"path": {"type": "path", "path": "/fixed/codex"}, "access": "read"}, {"path": {"type": "special", "value": {"kind": "minimal"}}, "access": "read"}]}}}
     user_event = {"type": "item_completed", "thread_id": THREAD, "turn_id": TURN,
                   "item": {"type": "UserMessage", "id": "event-user-id", "content": [{"type": "text", "text": prompt}]}}
-    return [row("session_meta", {"id": THREAD, "session_id": THREAD, "cwd": str(prepared), "cli_version": "0.156.0", "source": "exec"}),
+    return [row("session_meta", {"id": THREAD, "session_id": THREAD, "cwd": str(prepared), "cli_version": VERSION,
+                                 "model_provider": "openai", "source": "exec"}),
             row("event_msg", {"type": "task_started", "turn_id": TURN}),
             row("response_item", {"type": "message", "id": "engine-user-id", "role": "user", "content": [{"type": "input_text", "text": "<environment_context>synthetic</environment_context>"}]}),
             row("turn_context", context),
@@ -47,7 +49,7 @@ class HelperAliasTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); auth = root / "auth"; native = root / "codex"
             native.write_text("synthetic locked executable")
-            directory = auth / "tmp/arg0/codex-arg0Ab12cd"
+            directory = auth / "tmp/arg0-linux/codex-arg0Ab12cd"
             directory.mkdir(parents=True, mode=0o700)
             directory.parent.chmod(0o700)
             (directory / ".lock").touch()
@@ -113,14 +115,14 @@ class HistoryTests(unittest.TestCase):
     def check(self, rows=None, previous=b""):
         data = b"".join((json.dumps(value) + "\n").encode() for value in (self.rows if rows is None else rows))
         self.path.write_bytes(data)
-        return transport.validate_history(self.auth, THREAD, previous, [self.prompt], self.prepared, "gpt-6-astra", "medium", "0.156.0", Path("/fixed/codex"))
+        return transport.validate_history(self.auth, THREAD, previous, [self.prompt], self.prepared, "gpt-6-astra", "medium", VERSION, Path("/fixed/codex"))
 
     def test_only_verified_per_turn_helper_read_grant_is_accepted(self):
-        alias = self.auth / "tmp/arg0/codex-arg0Ab12cd"
+        alias = self.auth / "tmp/arg0-linux/codex-arg0Ab12cd"
         entry = {"path": {"type": "path", "path": str(alias)}, "access": "read"}
         self.rows[3]["payload"]["permission_profile"]["file_system"]["entries"].append(entry)
         self.path.write_text("".join(json.dumps(value) + "\n" for value in self.rows))
-        arguments = (self.auth, THREAD, b"", [self.prompt], self.prepared, "gpt-6-astra", "medium", "0.156.0", Path("/fixed/codex"))
+        arguments = (self.auth, THREAD, b"", [self.prompt], self.prepared, "gpt-6-astra", "medium", VERSION, Path("/fixed/codex"))
         transport.validate_history(*arguments, [alias])
         for wrong in [None, alias.parent, alias.with_name("codex-arg0Ef34gh")]:
             with self.assertRaises(ValueError):transport.validate_history(*arguments, [wrong])
@@ -135,6 +137,27 @@ class HistoryTests(unittest.TestCase):
         engine = rows.pop(2)
         rows.insert(5, engine)
         self.check(rows)
+
+    def test_cli_tool_declaration_and_matching_settings_snapshot_are_accepted(self):
+        tools = row("response_item", {"type": "additional_tools", "role": "developer", "tools": []})
+        settings = {**copy.deepcopy(self.rows[3]["payload"]), "model_provider_id": "openai",
+                    "runtime_workspace_roots": [str(self.prepared)], "reasoning_effort": "medium"}
+        event = row("event_msg", {"type": "thread_settings_applied", "thread_id": THREAD,
+                                  "thread_settings": settings})
+        rows = self.rows[:4] + [tools, event] + self.rows[4:]
+        self.check(rows)
+        for key, value in [("model", "other-model"), ("model_provider_id", "mock"),
+                           ("reasoning_effort", "low"), ("runtime_workspace_roots", ["/"]),
+                           ("permission_profile", {})]:
+            tampered = {**event, "payload": {**event["payload"], "thread_settings": {**settings, key: value}}}
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.check(self.rows[:4] + [tools, tampered] + self.rows[4:])
+        event["payload"]["thread_id"] = TURN
+        with self.assertRaises(ValueError):
+            self.check(rows)
+        tools["payload"]["tools"] = "malformed"
+        with self.assertRaises(ValueError):
+            self.check(self.rows[:4] + [tools] + self.rows[4:])
 
     def test_compaction_in_every_typed_location_rejects_completed_review(self):
         markers = [row("compacted", {}), row("response_item", {"type": "compaction", "encrypted_content": "x"}),
@@ -175,10 +198,10 @@ class HistoryTests(unittest.TestCase):
         for raw in [b'{"type":"session_meta"', b'null\n', b'{"type":"session_meta","type":"compacted"}\n']:
             self.path.write_bytes(raw)
             with self.assertRaises(ValueError):
-                transport.validate_history(self.auth, THREAD, b"", [self.prompt], self.prepared, "gpt-6-astra", "medium", "0.156.0", Path("/fixed/codex"))
+                transport.validate_history(self.auth, THREAD, b"", [self.prompt], self.prepared, "gpt-6-astra", "medium", VERSION, Path("/fixed/codex"))
         self.path.unlink(); self.path.symlink_to(self.prepared / "unrelated")
         with self.assertRaises(ValueError):
-            transport.validate_history(self.auth, THREAD, b"", [self.prompt], self.prepared, "gpt-6-astra", "medium", "0.156.0", Path("/fixed/codex"))
+            transport.validate_history(self.auth, THREAD, b"", [self.prompt], self.prepared, "gpt-6-astra", "medium", VERSION, Path("/fixed/codex"))
 
     def test_known_shell_record_shapes_do_not_treat_tool_text_as_lifecycle(self):
         tool = row("event_msg", {"type": "item_completed", "thread_id": THREAD, "turn_id": TURN,
@@ -226,7 +249,7 @@ class LifecycleTests(unittest.TestCase):
                 return result
             with mock.patch.object(transport.time, "monotonic", side_effect=lambda: clock[0]), mock.patch.object(transport, "run_bounded", side_effect=process), mock.patch.object(transport, "validate_events", return_value=THREAD), mock.patch.object(transport, "validate_history", return_value=b"history"):
                 with self.assertRaisesRegex(ValueError, "deadline"):
-                    transport.execute_turns(command, "x" * (2 * 1024 * 1024), IDENTITY, prepared, auth, {}, "0.156.0", "gpt-6-astra", "medium", lambda *_: None, seconds=7)
+                    transport.execute_turns(command, "x" * (2 * 1024 * 1024), IDENTITY, prepared, auth, {}, VERSION, "gpt-6-astra", "medium", lambda *_: None, seconds=7)
             self.assertEqual(len(calls), 2)
             self.assertEqual([deadline for _, deadline in calls], [7, 7])
             self.assertNotIn("--ephemeral", calls[0][0]); self.assertEqual(calls[1][0][-3:], ["resume", THREAD, "-"])
@@ -244,7 +267,7 @@ class LifecycleTests(unittest.TestCase):
                     return result
                 with mock.patch.object(transport, "run_bounded", side_effect=process) as run, mock.patch.object(transport, "validate_events", return_value=THREAD), mock.patch.object(transport, "validate_history", return_value=b"history"):
                     with self.assertRaises(ValueError):
-                        transport.execute_turns(command, "x" * (transport.NATIVE_CHARS + 1), IDENTITY, prepared, auth, {}, "0.156.0", "gpt-6-astra", "medium", lambda result, _: failures.append(result.returncode))
+                        transport.execute_turns(command, "x" * (transport.NATIVE_CHARS + 1), IDENTITY, prepared, auth, {}, VERSION, "gpt-6-astra", "medium", lambda result, _: failures.append(result.returncode))
                 self.assertEqual(run.call_count, 1)
                 self.assertEqual(failures, [code] if code else [])
 
@@ -283,7 +306,7 @@ class ResourceTests(unittest.TestCase):
             def fail(command, prompt, identity, prepared, auth, *args):
                 paths.append(auth.parent)
                 raise ValueError("Synthetic transport failure")
-            with mock.patch.object(runtime, "codex_native", return_value=Path('/fixed/codex')), mock.patch.object(runtime, "preflight_codex"), mock.patch.object(transport, "execute_turns", side_effect=fail):
+            with mock.patch.object(runtime, "codex_native", return_value=Path('/fixed/codex')), mock.patch.object(runtime, "codex_version", return_value=VERSION), mock.patch.object(runtime, "preflight_codex"), mock.patch.object(transport, "execute_turns", side_effect=fail):
                 self.assertFalse(runtime.execute("codex", "general", context, root / "output", '{"tokens":{"access_token":"dummy-token"}}'))
             self.assertTrue(paths)
             self.assertTrue(all(not path.exists() for path in paths))

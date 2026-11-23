@@ -376,7 +376,6 @@ class RuntimeTests(unittest.TestCase):
 class NativeRuntimeTests(unittest.TestCase):
     def fixture(self, directory, arch="x64", triple="x86_64"):
         root = Path(directory)
-        (root / "toolchain.json").write_text(json.dumps({"versions": {"codex": "0.156.0"}}))
         install = root / ".github/review/runtime"
         install.parent.mkdir(parents=True, exist_ok=True)
         (install.parent / "providers.json").write_bytes((runtime.ROOT / ".github/review/providers.json").read_bytes())
@@ -388,7 +387,9 @@ class NativeRuntimeTests(unittest.TestCase):
         binary.chmod(0o755)
         metadata = {"name": "@openai/codex", "version": f"0.156.0-linux-{arch}"}
         (package / "package.json").write_text(json.dumps(metadata))
-        (install / "package-lock.json").write_text(json.dumps({"packages": {key: metadata}}))
+        (install / "package-lock.json").write_text(json.dumps({"packages": {
+            "node_modules/@openai/codex": {"version": "0.156.0"}, key: metadata,
+        }}))
         return root, binary
 
     def test_both_native_architectures_and_exact_file_profile(self):
@@ -397,13 +398,14 @@ class NativeRuntimeTests(unittest.TestCase):
                 root, binary = self.fixture(directory, arch, triple)
                 with mock.patch.object(runtime, "ROOT", root), mock.patch.object(runtime.platform, "machine", return_value=machine), mock.patch.object(runtime.platform, "system", return_value="Linux"):
                     self.assertEqual(runtime.codex_native(), binary)
+                    self.assertEqual(runtime.codex_version(), "0.156.0")
                     config = tomllib.loads(runtime.codex_config(root / "prepared", root / "auth"))
                     profile = config["permissions"]["registry_review"]
                     self.assertEqual(profile["filesystem"], {":minimal": "read", str(root / "prepared"): "read", str(binary): "read", str(root / "auth"): "deny"})
                     self.assertFalse(profile["network"]["enabled"])
 
     def test_native_symlink_escape_wrong_version_and_invalid_file_fail(self):
-        for corruption in ["symlink", "version", "elf", "executable", "missing"]:
+        for corruption in ["symlink", "version", "lock-version", "prerelease", "elf", "executable", "missing"]:
             with self.subTest(corruption=corruption), tempfile.TemporaryDirectory() as directory:
                 root, binary = self.fixture(directory)
                 if corruption == "symlink":
@@ -412,6 +414,13 @@ class NativeRuntimeTests(unittest.TestCase):
                 elif corruption == "version":
                     metadata = binary.parents[3] / "package.json"
                     metadata.write_text('{"name":"@openai/codex","version":"0.0.0"}')
+                elif corruption in {"lock-version", "prerelease"}:
+                    lockfile = root / ".github/review/runtime/package-lock.json"
+                    lock = json.loads(lockfile.read_text())
+                    lock["packages"]["node_modules/@openai/codex"]["version"] = (
+                        "0.160.0" if corruption == "lock-version" else "0.156.0-alpha.1"
+                    )
+                    lockfile.write_text(json.dumps(lock))
                 elif corruption == "elf":
                     binary.write_text("#!/bin/sh")
                 elif corruption == "executable":

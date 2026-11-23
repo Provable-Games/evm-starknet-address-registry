@@ -43,13 +43,13 @@ jobs:
       - name: Install and probe optional local validation tools on ARM64
         run: python3 scripts/setup.py --components cairo-coverage starknet-devnet
       - run: .tools/bin/sncast --version
-      - name: Check pinned review CLI arguments without credentials
+      - name: Check latest review CLI arguments without credentials
         run: |
           export PATH="$PWD/.tools/bin:$PATH"
-          npm ci --prefix .github/review/runtime --ignore-scripts --no-audit --no-fund
-          node .github/review/runtime/node_modules/@anthropic-ai/claude-code/install.cjs
+          bash scripts/setup_review_runtime.sh resolve "$RUNNER_TEMP/runtime-lock.json"
+          bash scripts/setup_review_runtime.sh install "$RUNNER_TEMP/runtime-lock.json"
           python3 scripts/review_runtime.py --check-cli
-      - name: Exercise synthetic pinned Codex multi-turn review without credentials
+      - name: Exercise synthetic Codex multi-turn review without credentials
         run: python3 scripts/check_review_multiturn.py
       - name: Enable namespaces on the disposable hosted runner
         env:

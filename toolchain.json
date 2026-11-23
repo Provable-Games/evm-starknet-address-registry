@@ -10,8 +10,6 @@
     "node_lts": "24.21.0",
     "npm": "12.1.0",
     "actionlint": "1.7.12",
-    "codex": "0.156.1",
-    "claude": "2.1.281",
     "usc": "2.10.1",
     "python": "3.14.7",
     "cairo_coverage": "0.6.1",

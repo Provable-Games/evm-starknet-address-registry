@@ -147,13 +147,8 @@ def main():
             raise ValueError("Package metadata requires SHA-512 integrity")
     load_config(ROOT / ".github/review/agents.json")
     runtime = json.loads((ROOT / ".github/review/runtime/package.json").read_text())
-    lock = json.loads((ROOT / ".github/review/runtime/package-lock.json").read_text())
-    expected_dependencies = {"@openai/codex": versions["codex"], "@anthropic-ai/claude-code": versions["claude"]}
-    if runtime["dependencies"] != expected_dependencies or lock["packages"][""]["dependencies"] != expected_dependencies:
-        raise ValueError("Review CLI dependencies differ from authoritative pins")
-    for name, version in expected_dependencies.items():
-        if lock["packages"]["node_modules/" + name]["version"] != version:
-            raise ValueError("Review CLI lockfile has a different version")
+    if runtime["dependencies"] != {"@openai/codex": "latest", "@anthropic-ai/claude-code": "latest"}:
+        raise ValueError("The review runtime must resolve both CLIs from the npm latest tags")
     for workflow in (ROOT / ".github/workflows").glob("*.yml"):
         for repository, sha in re.findall(r"uses: ([\w/-]+)@([\w.-]+)", workflow.read_text()):
             action = repository.removesuffix("/restore").removesuffix("/save")

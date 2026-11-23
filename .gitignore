@@ -10,3 +10,4 @@ coverage/
 .snfoundry_cache/
 .ci-review-*/
 reviewed-source/
+/.github/review/runtime/package-lock.json

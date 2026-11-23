@@ -1,6 +1,6 @@
-"""Bounded private exec/resume transport for the pinned Codex 0.156.0 protocol.
+"""Bounded private exec/resume transport for Codex.
 
-Source: https://github.com/openai/codex/tree/rust-v0.156.0/codex-rs
+Source: https://github.com/openai/codex/tree/rust-v0.171.0/codex-rs
 See exec/exec_events, history/rollout_payload, protocol/items and rollout/policy.
 No transcript or history data is returned for publication.
 """
@@ -92,12 +92,13 @@ def read_bounded(path, limit=MAX_BYTES):
     return data
 
 
-HELPER_NAMES = {"apply_patch", "applypatch", "codex-linux-sandbox", "codex-execve-wrapper"}
+LINUX_HELPER_DIR = "arg0-linux"
+HELPER_NAMES = {"apply_patch", "applypatch", "codex-linux-sandbox"}
 
 
 def inspect_helper_alias(auth, native):
     """Return only a complete, private, source-shaped Linux helper directory."""
-    root = auth / "tmp" / "arg0"
+    root = auth / "tmp" / LINUX_HELPER_DIR
     if not root.exists():
         return None
     for directory in [auth, auth / "tmp", root]:
@@ -129,12 +130,11 @@ def inspect_helper_alias(auth, native):
 
 
 def capture_helper_alias(auth, native, environment, deadline, process):
-    # arg0_dispatch_or_else prepares aliases before exec reads stdin to EOF:
-    # arg0/src/lib.rs:230; exec/src/lib.rs:2219 (read_to_end). Keep stdin open
-    # until this complete snapshot is verified, so its TempDir cannot be dropped.
+    # arg0_dispatch_or_else prepares Linux aliases before exec reads stdin to EOF.
+    # Keep stdin open until the complete snapshot is verified, so its TempDir cannot be dropped.
     temporary = Path(environment.get("TMPDIR", "/tmp"))
     if auth.is_relative_to(temporary):
-        require(not (auth / "tmp" / "arg0").exists(), "Unexpected aliases under native temporary root")
+        require(not (auth / "tmp" / LINUX_HELPER_DIR).exists(), "Unexpected aliases under native temporary root")
         return None
     limit = min(deadline - 2, time.monotonic() + 5)
     while time.monotonic() < limit:
@@ -213,7 +213,7 @@ def run_bounded(command, prompt, prepared, environment, deadline, final, auth, v
     return result
 
 
-# Known exec ThreadItemDetails variants; unfamiliar pinned-protocol shapes fail closed.
+# Known exec ThreadItemDetails variants; unfamiliar protocol shapes fail closed.
 ITEM_FIELDS = {
     "agent_message": {"text": str}, "reasoning": {"text": str},
     "command_execution": {"command": str, "aggregated_output": str, "status": str},
@@ -226,7 +226,7 @@ ITEM_FIELDS = {
 
 def fields(value, shape):
     require(isinstance(value, dict) and all(isinstance(value.get(k), kind) for k, kind in shape.items()),
-            "Malformed pinned review record")
+            "Malformed review record")
 
 
 def validate_events(stdout, expected_uuid, final_text):
@@ -276,6 +276,7 @@ def validate_events(stdout, expected_uuid, final_text):
 
 
 RESPONSE_FIELDS = {
+    "additional_tools": {"role": str, "tools": list},
     "message": {"role": str, "content": list}, "agent_message": {"author": str, "recipient": str, "content": list},
     "reasoning": {"summary": list}, "local_shell_call": {"status": str, "action": dict},
     "function_call": {"name": str, "arguments": str, "call_id": str},
@@ -299,6 +300,28 @@ def input_text(content, kind):
     return None
 
 
+def validate_settings(settings, prepared, model, effort, native, auth, helper):
+    fields(settings, {"cwd": str, "model": str, "approval_policy": str, "permission_profile": dict})
+    profile = settings["permission_profile"]
+    require(settings["cwd"] == str(prepared) and settings["model"] == model
+            and settings.get("collaboration_mode", {}).get("settings", {}).get("reasoning_effort") == effort
+            and settings["approval_policy"] == "never" and settings.get("active_permission_profile") == {"id": "registry_review"}
+            and profile.get("type") == "managed" and profile.get("file_system", {}).get("type") == "restricted"
+            and profile.get("network") == "restricted", "Resumed review settings changed")
+    entries = profile["file_system"].get("entries", [])
+    expected = [{"path": {"type": "special", "value": {"kind": "minimal"}}, "access": "read"}]
+    paths = [(auth, "deny"), (prepared, "read"), (native, "read")]
+    if helper is not None:
+        paths.append((helper, "read"))
+    # The pinned engine explicitly makes its bundled shell executable readable.
+    shell = native.parent.parent / "codex-resources/zsh/bin/zsh"
+    if shell.is_file():
+        paths.append((shell, "read"))
+    expected.extend({"path": {"type": "path", "path": str(path)}, "access": access} for path, access in paths)
+    require(isinstance(entries, list) and sorted(json.dumps(entry, sort_keys=True) for entry in entries)
+            == sorted(json.dumps(entry, sort_keys=True) for entry in expected), "Review filesystem grants changed")
+
+
 def validate_history(auth, thread, previous, prompts, prepared, model, effort, version, native, helpers=None):
     helpers = [None] * len(prompts) if helpers is None else helpers
     require(len(helpers) == len(prompts), "Missing verified helper history")
@@ -315,7 +338,7 @@ def validate_history(auth, thread, previous, prompts, prepared, model, effort, v
     rows = [decode_json(line) for line in data.decode("utf-8").splitlines()]
     require(rows and isinstance(rows[0], dict) and rows[0].get("type") == "session_meta", "Missing review session metadata")
     metadata = rows[0].get("payload")
-    fields(metadata, {"id": str, "session_id": str, "cwd": str, "cli_version": str})
+    fields(metadata, {"id": str, "session_id": str, "cwd": str, "cli_version": str, "model_provider": str})
     require(metadata["id"] == thread == metadata["session_id"] and metadata["cwd"] == str(prepared)
             and metadata["cli_version"] == version and metadata.get("source") == "exec"
             and metadata.get("parent_thread_id") is None and metadata.get("forked_from_id") is None,
@@ -329,26 +352,9 @@ def validate_history(auth, thread, previous, prompts, prepared, model, effort, v
         if kind == "session_meta":
             require(index == 0, "Duplicate review session metadata")
         elif kind == "turn_context":
-            require(active is not None, "Review context outside turn")
-            fields(payload, {"cwd": str, "model": str, "approval_policy": str, "permission_profile": dict})
-            profile = payload["permission_profile"]
-            require(payload.get("turn_id") == active and payload.get("root_turn_id") == active
-                    and payload["cwd"] == str(prepared) and payload["model"] == model and payload.get("collaboration_mode", {}).get("settings", {}).get("reasoning_effort") == effort
-                    and payload["approval_policy"] == "never" and payload.get("active_permission_profile") == {"id": "registry_review"}
-                    and profile.get("type") == "managed" and profile.get("file_system", {}).get("type") == "restricted"
-                    and profile.get("network") == "restricted", "Resumed review settings changed")
-            entries = profile.get("file_system", {}).get("entries", [])
-            expected = [{"path": {"type": "special", "value": {"kind": "minimal"}}, "access": "read"}]
-            for path, access in [(auth, "deny"), (prepared, "read"), (native, "read")]:
-                expected.append({"path": {"type": "path", "path": str(path)}, "access": access})
-            if helpers[completed] is not None:
-                expected.append({"path": {"type": "path", "path": str(helpers[completed])}, "access": "read"})
-            # The pinned engine explicitly makes its bundled shell executable readable.
-            shell = native.parent.parent / "codex-resources/zsh/bin/zsh"
-            if shell.is_file():
-                expected.append({"path": {"type": "path", "path": str(shell)}, "access": "read"})
-            require(isinstance(entries, list) and sorted(json.dumps(e, sort_keys=True) for e in entries)
-                    == sorted(json.dumps(e, sort_keys=True) for e in expected), "Review filesystem grants changed")
+            require(active is not None and payload.get("turn_id") == active and payload.get("root_turn_id") == active,
+                    "Review context outside matching turn")
+            validate_settings(payload, prepared, model, effort, native, auth, helpers[completed])
             context_count += 1
         elif kind == "response_item":
             fields(payload, {"type": str})
@@ -393,7 +399,16 @@ def validate_history(auth, thread, previous, prompts, prepared, model, effort, v
                     require(input_text(item.get("content"), "text") == prompts[completed], "Review fragment differs from submitted input")
                     user_event += 1
             elif event == "thread_settings_applied":
-                require(active is None, "Unexpected mid-turn settings update")
+                # Exec records the first snapshot after turn_context and may record
+                # subsequent snapshots before the resumed turn begins.
+                require(completed < len(prompts) and payload.get("thread_id") == thread,
+                        "Thread settings outside matching review")
+                settings = payload.get("thread_settings")
+                fields(settings, {"model_provider_id": str, "reasoning_effort": str, "runtime_workspace_roots": list})
+                require(settings["model_provider_id"] == metadata["model_provider"]
+                        and settings["reasoning_effort"] == effort and settings["runtime_workspace_roots"] == [str(prepared)],
+                        "Thread settings differ from the review configuration")
+                validate_settings(settings, prepared, model, effort, native, auth, helpers[completed])
             elif event == "token_count":
                 require(active is not None, "Usage outside review turn")
             else:
