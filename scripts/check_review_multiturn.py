@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Synthetic loopback Responses smoke for actual pinned exec/resume; no provider review."""
+"""Synthetic loopback Responses smoke for the installed CLI; no provider review."""
 
 import http.server
 import json
@@ -14,7 +14,7 @@ import review_transport as transport
 
 def main(aliases=False):
     settings = runtime.offline_review_settings()
-    version = json.loads((runtime.ROOT / "toolchain.json").read_text())["versions"]["codex"]
+    version = runtime.codex_version()
     original = "Synthetic original input with α😀 and literal context_compacted text.\n" + "x" * transport.NATIVE_CHARS
     identity = {"base": "a" * 40, "head": "b" * 40}
     requests = []
@@ -117,7 +117,7 @@ stream_max_retries = 0
         server.shutdown()
         server.server_close()
         worker.join(timeout=5)
-    print("Synthetic pinned Codex multi-turn/resume, private history, configured effort and failure checks passed (no provider review).")
+    print(f"Synthetic Codex {version} multi-turn/resume, private history, configured effort and failure checks passed (no provider review).")
 
 
 if __name__ == "__main__":

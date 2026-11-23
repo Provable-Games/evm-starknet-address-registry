@@ -86,6 +86,12 @@ jobs:
           CLAUDE_REVIEW_MODEL: ${{ vars.CLAUDE_REVIEW_MODEL }}
           CLAUDE_REVIEW_EFFORT: ${{ vars.CLAUDE_REVIEW_EFFORT }}
         run: python3 scripts/review_ci.py prepare --directory "$RUNNER_TEMP/review-data" --source reviewed-source
+      - name: Resolve latest review runtime
+        if: steps.context.outputs.has_reviews == 'true'
+        run: |
+          python3 scripts/setup.py --components node npm
+          export PATH="$PWD/.tools/bin:$PATH"
+          bash scripts/setup_review_runtime.sh resolve "$RUNNER_TEMP/review-data/context/runtime-lock.json"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: review-context
@@ -111,14 +117,12 @@ jobs:
         with:
           name: review-context
           path: ${{ runner.temp }}/review-context
-      - name: Install pinned runtime before credentials
+      - name: Install resolved runtime before credentials
         run: |
           python3 scripts/setup.py --components node npm
           export PATH="$PWD/.tools/bin:$PATH"
-          npm ci --prefix .github/review/runtime --ignore-scripts --no-audit --no-fund
-          node .github/review/runtime/node_modules/@anthropic-ai/claude-code/install.cjs
-          .github/review/runtime/node_modules/.bin/codex --version
-          .github/review/runtime/node_modules/.bin/claude --version
+          bash scripts/setup_review_runtime.sh install "$RUNNER_TEMP/review-context/runtime-lock.json"
+          python3 scripts/review_runtime.py --check-cli
       - name: Enable namespaces on the disposable hosted runner
         if: matrix.provider == 'codex'
         env:

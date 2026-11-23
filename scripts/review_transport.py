@@ -1,4 +1,4 @@
-"""Bounded private exec/resume transport for the pinned Codex 0.171.0 protocol.
+"""Bounded private exec/resume transport for Codex.
 
 Source: https://github.com/openai/codex/tree/rust-v0.171.0/codex-rs
 See exec/exec_events, history/rollout_payload, protocol/items and rollout/policy.
@@ -213,7 +213,7 @@ def run_bounded(command, prompt, prepared, environment, deadline, final, auth, v
     return result
 
 
-# Known exec ThreadItemDetails variants; unfamiliar pinned-protocol shapes fail closed.
+# Known exec ThreadItemDetails variants; unfamiliar protocol shapes fail closed.
 ITEM_FIELDS = {
     "agent_message": {"text": str}, "reasoning": {"text": str},
     "command_execution": {"command": str, "aggregated_output": str, "status": str},
@@ -226,7 +226,7 @@ ITEM_FIELDS = {
 
 def fields(value, shape):
     require(isinstance(value, dict) and all(isinstance(value.get(k), kind) for k, kind in shape.items()),
-            "Malformed pinned review record")
+            "Malformed review record")
 
 
 def validate_events(stdout, expected_uuid, final_text):

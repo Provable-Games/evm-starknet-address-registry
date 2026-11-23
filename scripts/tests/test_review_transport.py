@@ -306,7 +306,7 @@ class ResourceTests(unittest.TestCase):
             def fail(command, prompt, identity, prepared, auth, *args):
                 paths.append(auth.parent)
                 raise ValueError("Synthetic transport failure")
-            with mock.patch.object(runtime, "codex_native", return_value=Path('/fixed/codex')), mock.patch.object(runtime, "preflight_codex"), mock.patch.object(transport, "execute_turns", side_effect=fail):
+            with mock.patch.object(runtime, "codex_native", return_value=Path('/fixed/codex')), mock.patch.object(runtime, "codex_version", return_value=VERSION), mock.patch.object(runtime, "preflight_codex"), mock.patch.object(transport, "execute_turns", side_effect=fail):
                 self.assertFalse(runtime.execute("codex", "general", context, root / "output", '{"tokens":{"access_token":"dummy-token"}}'))
             self.assertTrue(paths)
             self.assertTrue(all(not path.exists() for path in paths))
