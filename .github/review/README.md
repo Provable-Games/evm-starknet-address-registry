@@ -15,11 +15,11 @@ use that record, including when only failed jobs rerun. A missing or malformed
 variable fails preparation and the `review/required` status.
 
 The trusted workflow resolves the npm `latest` tags for Codex and Claude Code
-once during preparation. All reviewer jobs install from the generated lockfile
-and report the installed versions before loading credentials. Rerunning only
-failed reviewer jobs reuses that lockfile. A fresh workflow run resolves both tags
-again. Bootstrap CI checks the CLI arguments, Codex sandbox, and multi-turn
-transport without credentials.
+once during preparation and checks the CLI arguments and Codex multi-turn
+transport against those exact releases without credentials. All reviewer jobs
+install from the generated lockfile and report their versions before loading
+credentials. Rerunning only failed reviewer jobs reuses that lockfile. A fresh
+run resolves both tags again. Bootstrap CI also checks the Codex sandbox.
 
 Changes to the review workflow take effect after they reach `main`. The
 credential-free CLI and synthetic transport checks use explicit test fixtures.
