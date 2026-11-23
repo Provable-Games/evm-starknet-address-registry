@@ -23,6 +23,6 @@ def review_settings(environment):
 def offline_review_settings():
     """Explicit fixture for credential-free CLI, transport and unit tests."""
     return review_settings({
-        "CODEX_REVIEW_MODEL": "gpt-6-luna", "CODEX_REVIEW_EFFORT": "max",
+        "CODEX_REVIEW_MODEL": "gpt-6.2-sol", "CODEX_REVIEW_EFFORT": "high",
         "CLAUDE_REVIEW_MODEL": "claude-opus-5-5", "CLAUDE_REVIEW_EFFORT": "medium",
     })

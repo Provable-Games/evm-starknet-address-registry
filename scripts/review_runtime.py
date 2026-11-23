@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Run pinned reviewers with isolated configuration and validated final output."""
+"""Run reviewers with isolated configuration and validated final output."""
 
 import argparse
 import json
 import os
 import platform
 from pathlib import Path
+import re
 import shutil
 import socket
 import subprocess
@@ -18,7 +19,19 @@ from review_settings import offline_review_settings
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BIN = ROOT / ".github/review/runtime/node_modules/.bin"
+RUNTIME_PATH = ".github/review/runtime"
+BIN = ROOT / RUNTIME_PATH / "node_modules/.bin"
+
+
+def review_runtime_lock():
+    return json.loads((ROOT / RUNTIME_PATH / "package-lock.json").read_text())["packages"]
+
+
+def codex_version():
+    version = review_runtime_lock()["node_modules/@openai/codex"]["version"]
+    if not isinstance(version, str) or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
+        raise ValueError("The resolved Codex CLI version must be a stable release")
+    return version
 
 
 def codex_native():
@@ -27,21 +40,19 @@ def codex_native():
     if platform.system() != "Linux" or architecture is None:
         raise ValueError("Review sandbox requires a supported Linux architecture")
     arch, triple_arch = architecture
-    runtime = ROOT / ".github/review/runtime"
     package_key = f"node_modules/@openai/codex-linux-{arch}"
-    package = runtime / package_key
+    package = ROOT / RUNTIME_PATH / package_key
     native = package / f"vendor/{triple_arch}-unknown-linux-musl/bin/codex"
     # A fixed path, including every ancestor, must remain inside this trusted install.
     for path in [package / "package.json", native]:
         if path.resolve(strict=True) != path:
             raise ValueError("Codex native package must not redirect outside its fixed install path")
-    pin = json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"]
-    expected = pin + "-linux-" + arch
-    locked = json.loads((runtime / "package-lock.json").read_text())["packages"][package_key]
+    expected = codex_version() + "-linux-" + arch
+    locked = review_runtime_lock()[package_key]
     installed = json.loads((package / "package.json").read_text())
     if (locked.get("version") != expected or installed.get("version") != expected
             or installed.get("name") != "@openai/codex"):
-        raise ValueError("Codex native package differs from the pinned runtime")
+        raise ValueError("Codex native package differs from the resolved runtime")
     with native.open("rb") as executable:
         if executable.read(4) != b"\x7fELF" or not os.access(native, os.X_OK):
             raise ValueError("Codex native executable is missing or invalid")
@@ -191,9 +202,9 @@ def redact(text, secrets):
 
 
 def failure_diagnostic(provider, stderr, prompt, secrets):
-    # Pinned Codex 0.156.1 event_processor_with_human_output.rs emits
-    # ServerNotification::Error / failed turns as eprintln!("ERROR: {}", error).
-    # https://github.com/openai/codex/blob/rust-v0.156.1/codex-rs/exec/src/event_processor_with_human_output.rs
+    # Codex event_processor_with_human_output.rs emits
+    # ServerNotification::Error and failed turns with an ERROR: prefix.
+    # https://github.com/openai/codex/blob/rust-v0.171.0/codex-rs/exec/src/event_processor_with_human_output.rs
     # Remove its echoed input before selection; never log arbitrary transcript tails.
     remaining = stderr.replace(prompt, "") if prompt else stderr
     remaining = redact(remaining, secrets)
@@ -251,10 +262,10 @@ def claude_failure_diagnostic(stdout, stderr):
 
 
 def json_failure_diagnostic(stdout, stderr, prompt, secrets):
-    # Pinned exec_events.rs: ThreadErrorEvent.message and
+    # Codex exec_events.rs: ThreadErrorEvent.message and
     # TurnFailedEvent.error.message are structured stdout events; pre-event
     # Rust main failures may still emit the recognized stderr Error: marker.
-    # https://github.com/openai/codex/blob/rust-v0.156.1/codex-rs/exec/src/exec_events.rs
+    # https://github.com/openai/codex/blob/rust-v0.171.0/codex-rs/exec/src/exec_events.rs
     diagnostic = {"terminal_error": "No recognized terminal diagnostic",
                   "stdout_bytes": len(stdout.encode()), "stdout_lines": len(stdout.splitlines()),
                   "stderr_bytes": len(stderr.encode()), "stderr_lines": len(stderr.splitlines())}
@@ -317,7 +328,7 @@ def check_cli_arguments():
             if completed.returncode:
                 print(completed.stderr)
                 completed.check_returncode()
-            print(f"{provider}: pinned CLI accepts review arguments (offline help check).")
+            print(f"{provider}: installed CLI accepts review arguments (offline help check).")
 
 
 def check_sandbox():
@@ -385,9 +396,8 @@ def execute(provider, role, context, output, credentials):
                                      else json_failure_diagnostic(completed.stdout, completed.stderr, submitted, secrets) if json_events
                                      else failure_diagnostic(provider, completed.stderr, submitted, secrets))}))
             if provider == "codex" and len(prompt) > transport.NATIVE_CHARS:
-                version = json.loads((ROOT / "toolchain.json").read_text())["versions"]["codex"]
                 verdict = transport.execute_turns(command, prompt, identity, prepared, auth, environment,
-                                                  version, settings[provider]["model"], settings[provider]["effort"],
+                                                  codex_version(), settings[provider]["model"], settings[provider]["effort"],
                                                   lambda result, submitted: failed(result, submitted, json_events=True))
                 normalized = json.dumps({"findings": gate.parse_review(verdict)})
             else:
@@ -399,7 +409,7 @@ def execute(provider, role, context, output, credentials):
                     failed(completed, prompt)
                     raise ValueError(f"{provider} process failed with exit code {completed.returncode}")
             if provider == "codex" and len(prompt) <= transport.NATIVE_CHARS:
-                # Pinned 0.156 human output emits this line for ContextCompaction.
+                # Codex human output emits this line for ContextCompaction.
                 # Never accept a final verdict after the original context was compacted.
                 if "context compacted" in {line.strip() for line in completed.stderr.splitlines()}:
                     raise ValueError("Codex compacted the review context; review is incomplete")
