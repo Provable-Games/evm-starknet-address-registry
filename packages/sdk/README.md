@@ -50,7 +50,10 @@ submission still needs a funded Starknet relay account.
 ## Trust and reads
 
 `TrustedDeployment` binds both chains, the full registry address, expected class
-hash, immutable label, protocol revision, and ABI SHA-256. Each reader query checks
+hash, immutable label, protocol revision, and `abiSha256`. This digest identifies
+the frozen v1 interface shared by both registry classes. The native L1-link
+deployment record also gives `class_abi_sha256`, the digest of the full compiler
+ABI including the L1 extension. Each reader query checks
 the actual chain, class, signing domain, and contract version at a concrete block.
 The application remains responsible for choosing a trustworthy RPC and deployment.
 
@@ -59,6 +62,22 @@ unique reverse pages at one block and rejects failed or inconsistent reads. Its
 `maxAddresses` client budget defaults to 10,000; callers may choose a different
 u64 budget. `compareLinkedAddresses(snapshot, allowed)` computes an intersection
 without RPC or an eligibility decision.
+
+For a native L1 link, the bridge authenticates the Ethereum sender. The sender's
+own code and configuration determine who can authorize a nomination. Before
+granting access based on holdings, restrict eligibility to Ethereum addresses
+whose policy the application trusts. Exclude contracts that allow anyone to make
+arbitrary outbound calls. Enforce eligibility and check the current association
+in the contract granting access.
+
+The v1.0.0 registry and the first native L1-link class accepted signatures for
+the keyless Ethereum address `0x3f17f1962b36e491b30a40b2405849e597ba5fb5`.
+SDK readers report what the registry stored. On either class, applications must
+exclude that address when using `getStarknetAddress` or `isAssociated` for access
+decisions. Apply the same exclusion to `getEthereumAddresses` and
+`listAllEthereumAddresses` results and to matches from `compareLinkedAddresses`
+before granting access. The [protocol specification](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/protocol/spec.md#eip-712-authorization)
+identifies both affected class hashes.
 
 Internal Ethereum addresses are lowercase 20-byte hex; account addresses and
 hashes use full 32-byte words with context-specific range checks. Numeric values

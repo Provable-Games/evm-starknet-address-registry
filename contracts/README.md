@@ -5,14 +5,25 @@ maps each Ethereum address to at most one Starknet account. An account can recei
 many links. The class has no owner, upgrade path, asset policy, or external account
 verifier.
 
-**Mainnet class hash:**
+**v1.0.0 Mainnet class hash:**
 [0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156](https://voyager.online/class/0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156).
-The class is declared on Starknet Mainnet. The [Mainnet instance](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337)
+Build this class from release tag `v1.0.0`.
+The [Mainnet instance](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337)
 uses the `Loot Survivor` label at
 `0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337`.
 Each deployed instance has its own address and state. A
 [Sepolia instance](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/sepolia.json)
 is recorded separately.
+
+The [combined Sepolia pilot](../deployments/sepolia-safe-pilot.json) used the native
+L1-link registry with the signature guard, class
+`0x732a98ebf83f2fca98fad41f0a0af5dbcc8b56aa55adf21c7a598607d9a2838`.
+The manifest pins the registry and adapter build inputs and the SHA-256 digests
+of their Sierra and CASM artifacts.
+
+The historically deployed v1.0.0 and [first L1-link class](../deployments/sepolia-l1-link.json) predate the rejection of
+`0x3f17f1962b36e491b30a40b2405849e597ba5fb5`, so they accept a keyless link for that address. See the
+[protocol specification](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/protocol/spec.md).
 
 ## Interface
 
@@ -23,6 +34,14 @@ is recorded separately.
 | `revoke`                      | Ethereum EIP-712 signature; any account may relay         | Remove an association, if present                    |
 | `unlink`                      | Current linked account caller                             | Remove an association                                |
 | `invalidate_pending_incoming` | Destination account caller                                | Advance nonce for that account/Ethereum-address pair |
+
+The native L1-link class adds a message handler `propose_link_from_l1`, a pending proposal read `get_l1_link_proposal`, and the destination-only `accept_l1_link` transaction. Consumers continue to call `is_associated` to check the current link.
+
+For native L1 links, the registry authenticates the Ethereum sender. The sender's
+own code and configuration determine who can authorize a nomination. Before
+crediting assets, consumers must restrict eligible Ethereum addresses to those
+whose authorization policy they trust. Exclude contracts that let anyone make
+arbitrary outbound calls.
 
 Read methods expose forward and reverse associations, nonces, the signing domain,
 and version. Reverse pages have a limit of 1–100; removal can reorder them, so
@@ -40,6 +59,8 @@ defines the exact statements, signatures, state transitions, and label grammar.
 The [compiler ABI and vectors](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/protocol/README.md)
 fix the approved signing revision
 `5beae0d4f74dfc4ed9cc664db98d28e5c4f5b96a`.
+
+For a restricted Loot Dungeon pilot, see the [Safe allowlist adapter](adapters/safe-allowlist/README.md).
 
 ## Local checks
 

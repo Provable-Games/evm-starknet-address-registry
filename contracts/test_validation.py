@@ -53,6 +53,35 @@ class CoverageGateTests(unittest.TestCase):
     def test_complete_synthetic_inventory(self):
         self.assertEqual(self.validate()['authored_functions'], 2)
 
+    def test_adapter_requires_its_own_complete_mapped_inventory(self):
+        adapter = self.root / 'contracts/adapters/safe-allowlist'
+        source = adapter / 'src/lib.cairo'
+        source.parent.mkdir(parents=True)
+        source.write_text('fn lookup() { true }\nfn construct() { initialize(); }\n')
+        name = source.relative_to(self.root).as_posix()
+        with self.assertRaisesRegex(ValueError, 'source inventory differs'):
+            self.validate()
+        tests = adapter / 'tests/test_adapter.cairo'
+        tests.parent.mkdir()
+        tests.write_text('#[test] fn adapter_works() {}')
+        self.inventory['production_functions'][name] = [
+            {'function': f'safe_allowlist::{fn}', 'mapped': True, 'security': True,
+             'tests': [tests.relative_to(self.root).as_posix()]} for fn in ['lookup', 'construct']]
+        self.policy['cairo']['planned_production_files'][name] = 'security: adapter fixture'
+        (self.root / 'protocol/coverage-policy.json').write_text(json.dumps(self.policy))
+        report = (f'SF:{source}\nFN:1,safe_allowlist::lookup\nFNDA:1,safe_allowlist::lookup\n'
+                  'FN:2,safe_allowlist::construct\nFNDA:1,safe_allowlist::construct\n'
+                  'DA:1,1\nDA:2,1\nLF:2\nLH:2\nFNF:2\nFNH:2\nend_of_record\n')
+        self.assertEqual(check(report, self.inventory, self.root, adapter=True)['mapped_functions'], 2)
+        for incomplete, reason in [
+            (self.report, 'file omitted'),
+            (report.replace('DA:2,1', 'DA:2,0').replace('LH:2', 'LH:1'), 'below 100%'),
+            (report.replace('FN:2,safe_allowlist::construct\nFNDA:1,safe_allowlist::construct\n', '')
+                   .replace('FNF:2', 'FNF:1').replace('FNH:2', 'FNH:1'), 'Missing authored functions'),
+        ]:
+            with self.subTest(reason=reason), self.assertRaisesRegex(ValueError, reason):
+                check(incomplete, self.inventory, self.root, adapter=True)
+
     def test_missing_production_file(self):
         with self.assertRaisesRegex(ValueError, 'file omitted'):
             self.validate('')
@@ -289,7 +318,7 @@ class EvidenceFailureTests(unittest.TestCase):
                 failure = subprocess.CalledProcessError(7, ['snforge', 'test'])
                 invocations = 0
 
-                def failed_run(command, log, env):
+                def failed_run(command, log, env, *, cwd=None):
                     nonlocal invocations
                     invocations += 1
                     trace_dir.mkdir()

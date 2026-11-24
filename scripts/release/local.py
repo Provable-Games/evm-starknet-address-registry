@@ -109,7 +109,8 @@ def prepare(config):
     print(command(["npm", "run", "build"]), end="")
     identity = json.loads(command(["node", "scripts/release/identity.ts"]))
     artifacts = [ARTIFACT,
-                 "protocol/abi.json", "protocol/abi.provenance.json", "package-lock.json", "toolchain.json"]
+                 "protocol/abi.json", "protocol/abi.provenance.json", "protocol/abi.l1-link.json",
+                 "protocol/abi.l1-link.provenance.json", "package-lock.json", "toolchain.json"]
     return {
         "schema_version": 1,
         "kind": "local-deployment-plan",

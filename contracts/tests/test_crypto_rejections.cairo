@@ -1,13 +1,16 @@
 use contracts::eip712;
 use contracts::interface::{
     IAddressRegistryDispatcher, IAddressRegistryDispatcherTrait, IAddressRegistrySafeDispatcher,
-    IAddressRegistrySafeDispatcherTrait,
+    IAddressRegistrySafeDispatcherTrait, LinkRequest, MoveRequest, RevokeRequest, Signature,
 };
-use snforge_std::start_cheat_caller_address;
-use starknet::SyscallResultTrait;
-use starknet::secp256_trait::Secp256Trait;
+use contracts::signature::INFINITY_ETH_ADDRESS;
+use core::math::{u256_inv_mod, u256_mul_mod_n};
+use snforge_std::{map_entry_address, start_cheat_caller_address, store};
+use starknet::eth_signature::is_eth_signature_valid;
+use starknet::secp256_trait::{Secp256PointTrait, Secp256Trait, Signature as CoreSignature};
 use starknet::secp256k1::Secp256k1Point;
-use crate::helpers::{deploy, eth, link_request, sign};
+use starknet::{EthAddress, SyscallResultTrait};
+use crate::helpers::{deploy, eth, link, link_request, sign};
 #[test]
 #[feature("safe_dispatcher")]
 fn domain_fields_and_signature_ranges() {
@@ -190,4 +193,147 @@ fn noncurve_recovery_returns_stable_signature_error() {
         assert!(reader.get_ethereum_address_count(a) == 0);
         assert!(reader.get_starknet_address(eth(1)) == 0.try_into().unwrap());
     };
+}
+
+const CURVE_ORDER: u256 = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141;
+
+fn infinity_address() -> EthAddress {
+    INFINITY_ETH_ADDRESS.try_into().unwrap()
+}
+
+/// A signature over `digest` that recovers to the point at infinity: `r = (kG).x`, `s = digest /
+/// k`.
+/// It takes no private key.
+fn keyless_signature(digest: u256, k: u256) -> Signature {
+    let point = Secp256Trait::<Secp256k1Point>::get_generator_point().mul(k).unwrap_syscall();
+    let (r, y) = point.get_coordinates().unwrap_syscall();
+    let order: NonZero<u256> = CURVE_ORDER.try_into().unwrap();
+    let s = u256_mul_mod_n(digest, u256_inv_mod(k, order).unwrap().into(), order);
+    let odd = y.low % 2 == 1;
+    if s > CURVE_ORDER / 2 {
+        Signature { r, s: CURVE_ORDER - s, y_parity: !odd }
+    } else {
+        Signature { r, s, y_parity: odd }
+    }
+}
+
+#[test]
+#[feature("safe_dispatcher")]
+fn keyless_signature_passes_core_but_cannot_link() {
+    let registry = deploy('SN_MAIN', 1, "A");
+    let reader = IAddressRegistryDispatcher { contract_address: registry };
+    let safe = IAddressRegistrySafeDispatcher { contract_address: registry };
+    let account = 111.try_into().unwrap();
+    let ethereum = infinity_address();
+    let request = LinkRequest {
+        ethereum_address: ethereum,
+        account_address: account,
+        ethereum_nonce: 0,
+        recipient_nonce: 0,
+        deadline: 1000,
+    };
+    let domain = reader.get_signing_domain();
+    let digest = eip712::envelope(
+        domain.domain_separator,
+        eip712::link_hash(
+            @request, eip712::hash_text(@domain.link_statement), domain.account_chain_id, registry,
+        ),
+    );
+    let Signature { r, s, y_parity } = keyless_signature(digest, 0x1234567);
+    assert!(
+        is_eth_signature_valid(digest, CoreSignature { r, s, y_parity }, ethereum).is_ok(),
+        "core accepts the keyless signature",
+    );
+    start_cheat_caller_address(registry, account);
+    let error = safe.link(request, Signature { r, s, y_parity }).unwrap_err();
+    assert!(*error.at(0) == 'AR_BAD_SIGNATURE', "link error: {:?}", error);
+    assert!(reader.get_ethereum_nonce(ethereum) == 0);
+    assert!(reader.get_recipient_nonce(account, ethereum) == 0);
+    assert!(reader.get_ethereum_address_count(account) == 0);
+    assert!(reader.get_starknet_address(ethereum) == 0.try_into().unwrap());
+    // The twin: a signature from a real key still links through the same path.
+    link(registry, 1, account);
+    assert!(reader.is_associated(eth(1), account));
+}
+
+#[test]
+#[feature("safe_dispatcher")]
+fn keyless_signature_cannot_revoke_while_unlinked() {
+    let registry = deploy('SN_MAIN', 1, "A");
+    let reader = IAddressRegistryDispatcher { contract_address: registry };
+    let safe = IAddressRegistrySafeDispatcher { contract_address: registry };
+    let ethereum = infinity_address();
+    let request = RevokeRequest {
+        ethereum_address: ethereum,
+        current_account_address: 0.try_into().unwrap(),
+        ethereum_nonce: 0,
+        deadline: 1000,
+    };
+    let domain = reader.get_signing_domain();
+    let digest = eip712::envelope(
+        domain.domain_separator,
+        eip712::revoke_hash(
+            @request,
+            eip712::hash_text(@domain.revoke_statement),
+            domain.account_chain_id,
+            registry,
+        ),
+    );
+    let error = safe.revoke(request, keyless_signature(digest, 0x1234567)).unwrap_err();
+    assert!(*error.at(0) == 'AR_BAD_SIGNATURE', "revoke error: {:?}", error);
+    assert!(reader.get_ethereum_nonce(ethereum) == 0);
+}
+
+#[test]
+#[feature("safe_dispatcher")]
+fn keyless_signature_cannot_move_or_revoke_an_existing_link() {
+    let registry = deploy('SN_MAIN', 1, "A");
+    let reader = IAddressRegistryDispatcher { contract_address: registry };
+    let safe = IAddressRegistrySafeDispatcher { contract_address: registry };
+    let previous = 111.try_into().unwrap();
+    let account = 222.try_into().unwrap();
+    let ethereum = infinity_address();
+    // The link cannot be made through the contract, so write it directly: move and revoke must
+    // refuse this signer whatever the state.
+    store(
+        registry,
+        map_entry_address(selector!("ethereum_to_starknet"), array![ethereum.into()].span()),
+        array![previous.into()].span(),
+    );
+    let domain = reader.get_signing_domain();
+    let request = MoveRequest {
+        ethereum_address: ethereum,
+        account_address: account,
+        previous_account_address: previous,
+        ethereum_nonce: 0,
+        recipient_nonce: 0,
+        deadline: 1000,
+    };
+    let digest = eip712::envelope(
+        domain.domain_separator,
+        eip712::move_hash(
+            @request, eip712::hash_text(@domain.move_statement), domain.account_chain_id, registry,
+        ),
+    );
+    start_cheat_caller_address(registry, account);
+    let error = safe.move(request, keyless_signature(digest, 0x1234567)).unwrap_err();
+    assert!(*error.at(0) == 'AR_BAD_SIGNATURE', "move error: {:?}", error);
+    let request = RevokeRequest {
+        ethereum_address: ethereum,
+        current_account_address: previous,
+        ethereum_nonce: 0,
+        deadline: 1000,
+    };
+    let digest = eip712::envelope(
+        domain.domain_separator,
+        eip712::revoke_hash(
+            @request,
+            eip712::hash_text(@domain.revoke_statement),
+            domain.account_chain_id,
+            registry,
+        ),
+    );
+    let error = safe.revoke(request, keyless_signature(digest, 0x89ab)).unwrap_err();
+    assert!(*error.at(0) == 'AR_BAD_SIGNATURE', "revoke error: {:?}", error);
+    assert!(reader.get_starknet_address(ethereum) == previous);
 }

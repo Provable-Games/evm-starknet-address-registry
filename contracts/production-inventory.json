@@ -523,6 +523,50 @@
         "outcomes": [
           "Public call returns ASCII felt49; mapping exception approval recorded separately."
         ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::Internal::add_link",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_l1_link.cairo"
+        ],
+        "outcomes": [
+          "Both authorization paths add forward and reverse links and advance both nonces."
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::propose_link_from_l1",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_l1_link.cairo"
+        ],
+        "outcomes": [
+          "Native sender and wire-domain validation, present and in-flight cancellation, expiry, and delivery without association."
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::L1LinkRegistry::get_l1_link_proposal",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_l1_link.cairo"
+        ],
+        "outcomes": [
+          "The nominated pair exposes its delivered tuple, then an empty slot after acceptance."
+        ]
+      },
+      {
+        "function": "contracts::registry::EthereumAddressAssociationRegistry::L1LinkRegistry::accept_l1_link",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/tests/test_l1_link.cairo"
+        ],
+        "outcomes": [
+          "Matching consent only, atomic consumption and ordinary link effects; stale, expired, wrong-caller and replayed requests reject."
+        ]
       }
     ],
     "contracts/src/signature.cairo": [
@@ -537,7 +581,8 @@
         ],
         "outcomes": [
           "Independent valid signature verifies.",
-          "Zero/out-of-range/high-s/wrong parity/wrong signer/changed digest/non-point r reject."
+          "Zero/out-of-range/high-s/wrong parity/wrong signer/changed digest/non-point r reject.",
+          "A keyless signature recovering to the point at infinity rejects on link, move and revoke."
         ]
       }
     ],
@@ -609,16 +654,42 @@
           "Exact low/high r then s then canonical0/1 serialization; strict parity decode; all insufficient prefixes and out-of-range limbs reject; remainder preserved."
         ]
       }
+    ],
+    "contracts/adapters/safe-allowlist/src/lib.cairo": [
+      {
+        "function": "safe_allowlist::SafeAllowlistAdapter::constructor",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/adapters/safe-allowlist/tests/test_adapter.cairo"
+        ],
+        "outcomes": [
+          "Stores the registry and admitted Safes.",
+          "Rejects a zero registry or any zero Safe."
+        ]
+      },
+      {
+        "function": "safe_allowlist::SafeAllowlistAdapter::Lookup::is_associated",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/adapters/safe-allowlist/tests/test_adapter.cairo"
+        ],
+        "outcomes": [
+          "Admitted Safe with a current upstream link returns true.",
+          "Wrong destination, no upstream link, and linked but unadmitted address return false."
+        ]
+      }
     ]
   },
   "unmapped_exception_request": {
     "function": "contracts::registry::EthereumAddressAssociationRegistry::AddressRegistry::get_version",
     "reason": "constant-only return ASCII felt 49; no source-mapped statements emitted",
     "status": "approved",
-    "source_sha256": "cb3a153aeefd6823aa3d34c5ca17f80ef7bb6f63512f8e70a8065fd739ffd06c",
-    "approval": "Supervisor and independent reviewer verified this sole exception: 40 authored functions, 39 mapped functions, and 201 mapped production lines covered at revision 49857b541e5e88e71c50ad713f14e698164a0114.",
-    "raw_lcov_sha256": "21f0844b8db95e73329716db2caed2ab1f201e5ff6aee4487449809c76074d32",
-    "filtered_lcov_sha256": "5aed5cd59380d4912da7fdcf6254d591ac2754624cd78f7e0bdf89d73fa00d08"
+    "source_sha256": "0a53a65d88dcedb7d1cdf4a8ca7a3a4cf6a7ebabd3a018e5f2e39538a7bb7c47",
+    "approval": "The existing exception for the constant-only get_version body was revalidated at revision c5c14924c5cf9f92a1f1920348e5da29e587de14. Coverage reconciled 44 authored functions with 43 mapped functions and 222 mapped production lines, all covered.",
+    "raw_lcov_sha256": "a8c95f33ec4250498a7c663b378c0b03d56d334495b9782375378430552005df",
+    "filtered_lcov_sha256": "b9ad5ef35a9cc38b077ddd395e860c271e2d1924035d7ca852285945fbcc262b"
   },
   "excluded": {
     "contracts/src/lib.cairo": "module declarations only; no executable production functions"

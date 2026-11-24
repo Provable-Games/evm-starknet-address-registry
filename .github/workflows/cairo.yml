@@ -59,7 +59,9 @@ jobs:
           python3 test_validation.py
           python3 generate_golden_tests.py --check
           python3 generate_execution_tests.py --check
-          git diff --exit-code -- Scarb.lock
+          scarb --manifest-path adapters/safe-allowlist/Scarb.toml fmt --check
+          scarb --manifest-path adapters/safe-allowlist/Scarb.toml lint --deny-warnings --test
+          git diff --exit-code -- Scarb.lock adapters/safe-allowlist/Scarb.lock
   test:
     needs: scope
     if: needs.scope.outputs.cairo_validation_changed == 'true'
@@ -76,6 +78,7 @@ jobs:
           key: cairo-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('toolchain.json') }}
           restore-keys: cairo-tool-downloads-v1-${{ runner.os }}-${{ runner.arch }}-
       - run: test -f contracts/Scarb.toml && test -f contracts/Scarb.lock
+      - run: python3 scripts/check_bootstrap.py
       - run: python3 scripts/setup.py --components scarb foundry
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -99,7 +102,7 @@ jobs:
           unset UNIVERSAL_SIERRA_COMPILER
           scarb --manifest-path contracts/Scarb.toml build
           python3 contracts/observe_test_memory.py --output .tools/cairo-ci-memory -- python3 scripts/run_cairo_tests.py
-          git diff --exit-code -- contracts/Scarb.lock
+          git diff --exit-code -- contracts/Scarb.lock contracts/adapters/safe-allowlist/Scarb.lock
       - name: Retain actual runner and test-memory observations
         if: always() && needs.scope.outputs.cairo_validation_changed == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -137,6 +140,8 @@ jobs:
         run: python3 contracts/run_evidence.py resources --output .tools/cairo-evidence/resources
       - name: Audit fresh deterministic production coverage
         run: python3 contracts/run_evidence.py coverage --output .tools/cairo-evidence/coverage
+      - name: Audit fresh deterministic Safe adapter coverage
+        run: python3 contracts/run_evidence.py adapter-coverage --output .tools/cairo-evidence/adapter-coverage
       - name: Retain raw traces and audited evidence on success or failure
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -183,7 +188,7 @@ jobs:
           python3 scripts/integration/run.py
           mkdir -p .tools/release-records
           python3 scripts/release/local.py deploy-local --config scripts/release/local.example.json --output .tools/release-records/ci-local-deployment.json
-          git diff --exit-code -- contracts/Scarb.lock examples/consumer/Scarb.lock
+          git diff --exit-code -- contracts/Scarb.lock contracts/adapters/safe-allowlist/Scarb.lock examples/consumer/Scarb.lock
       - name: Exact older compiler and packed browser consumer
         run: |
           export PATH="$PWD/.tools/bin:/usr/bin:/bin"
@@ -239,12 +244,18 @@ jobs:
             .tools/integration-evidence/*/ConsumerForwarder-declare.stderr
             .tools/integration-evidence/*/ConsumerForwarder-deploy.stdout
             .tools/integration-evidence/*/ConsumerForwarder-deploy.stderr
+            .tools/integration-evidence/*/SafeAllowlistAdapter-declare.stdout
+            .tools/integration-evidence/*/SafeAllowlistAdapter-declare.stderr
+            .tools/integration-evidence/*/SafeAllowlistAdapter-deploy.stdout
+            .tools/integration-evidence/*/SafeAllowlistAdapter-deploy.stderr
             .tools/integration-evidence/*/unsupported-chain-pair.stdout
             .tools/integration-evidence/*/unsupported-chain-pair.stderr
             .tools/integration-evidence/*/empty-label.stdout
             .tools/integration-evidence/*/empty-label.stderr
             .tools/integration-evidence/*/invalid-label.stdout
             .tools/integration-evidence/*/invalid-label.stderr
+            .tools/integration-evidence/*/keyless-consumer-allowlist.stdout
+            .tools/integration-evidence/*/keyless-consumer-allowlist.stderr
             .tools/integration-evidence/*/lifecycle.stdout
             .tools/integration-evidence/*/lifecycle.stderr
             .tools/consumer-typescript/installation.json
@@ -269,14 +280,20 @@ jobs:
         run: |
           test "$SCOPE_RESULT" = success
           if [ "$CHANGED" = true ]; then
-            test "$LINT_RESULT" = success && test "$INTEGRATION_RESULT" = success
+            test "$LINT_RESULT" = success
+            test "$INTEGRATION_RESULT" = success
             if [ "$CAIRO_VALIDATION_CHANGED" = true ]; then
-              test "$TEST_RESULT" = success && test "$EVIDENCE_RESULT" = success
+              test "$TEST_RESULT" = success
+              test "$EVIDENCE_RESULT" = success
             else
-              test "$TEST_RESULT" = skipped && test "$EVIDENCE_RESULT" = skipped
+              test "$TEST_RESULT" = skipped
+              test "$EVIDENCE_RESULT" = skipped
             fi
           else
             test "$CHANGED" = false
             test "$CAIRO_VALIDATION_CHANGED" = false
-            test "$LINT_RESULT" = skipped && test "$TEST_RESULT" = skipped && test "$EVIDENCE_RESULT" = skipped && test "$INTEGRATION_RESULT" = skipped
+            test "$LINT_RESULT" = skipped
+            test "$TEST_RESULT" = skipped
+            test "$EVIDENCE_RESULT" = skipped
+            test "$INTEGRATION_RESULT" = skipped
           fi

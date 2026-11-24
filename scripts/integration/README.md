@@ -2,12 +2,15 @@
 
 The integration suite runs the built SDK and production registry on a fresh,
 private Starknet Devnet configured as `SN_SEPOLIA`. It declares and deploys the
-registry and consumer examples through account-signed transactions, then checks
+registry, consumer examples, and Safe allowlist adapter through account-signed
+transactions, then checks
 class/ABI identity and SDK-authenticated reads.
 
 The run exercises signed link, move, and revoke; account-authorized unlink and
 pending-consent cancellation; pagination; nonce and signature rejection; and
-consumer policy during execution. It uses disposable software keys.
+consumer policy during execution. Devnet delivers a native first-link proposal
+from an admitted Safe address. The suite checks the adapter at the delivery,
+nominee acceptance, and unlink blocks. It uses disposable software keys.
 
 ## Run locally
 

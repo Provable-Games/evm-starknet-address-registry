@@ -1,8 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { classHash } from './class-hash.mjs';
 import { object } from '../integration/transport.ts';
-import { checkSdkProtocolIdentity } from '../sdk-protocol-identity.ts';
+import {
+  checkClassAbiEntries,
+  checkSdkProtocolIdentity,
+} from '../sdk-protocol-identity.ts';
 import * as sdk from '@provable-games/evm-starknet-address-registry';
 
 export function artifactIdentity() {
@@ -28,10 +32,24 @@ export function artifactIdentity() {
     },
     sdk,
   );
-  assert.deepEqual(compiled.abi, JSON.parse(abi.toString()) as unknown);
+  checkClassAbiEntries(
+    compiled.abi,
+    JSON.parse(abi.toString('utf8')) as unknown,
+    JSON.parse(readFileSync('protocol/abi.l1-link.json', 'utf8')) as unknown,
+  );
+  const classProvenance = object(
+    JSON.parse(
+      readFileSync('protocol/abi.l1-link.provenance.json', 'utf8'),
+    ) as unknown,
+  );
+  const classAbiSha256 = createHash('sha256')
+    .update(JSON.stringify(compiled.abi, null, 2) + '\n')
+    .digest('hex');
+  assert.equal(classAbiSha256, classProvenance.abi_sha256);
   return {
     class_hash: classHash(compiled),
     abi_sha256: sdk.ABI_SHA256,
+    class_abi_sha256: classAbiSha256,
     protocol_revision: sdk.PROTOCOL_REVISION,
   };
 }

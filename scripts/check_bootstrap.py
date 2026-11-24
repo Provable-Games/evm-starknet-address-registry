@@ -89,29 +89,32 @@ def check_stack_pins(manifest):
                     or not isinstance(pin.get("sha256"), str)
                     or not re.fullmatch(r"[0-9a-f]{64}", pin["sha256"])):
                 raise ValueError(f"Invalid cairo_packages pin: {name}; require exact stable version, https://scarbs.xyz/ registry, and 64-character SHA-256")
-        if not (ROOT / "contracts/Scarb.lock").is_file():
-            raise ValueError("Cairo scaffold requires its committed Scarb.lock")
-        package = tomllib.loads(cairo_package.read_text())
-        lock = tomllib.loads((ROOT / "contracts/Scarb.lock").read_text())
-        if (package.get("package", {}).get("cairo-version") != "=" + versions["cairo"]
-                or package.get("dependencies", {}).get("starknet") != "=" + versions["cairo"]
-                or package.get("dev-dependencies", {}).get("snforge_std") != "=" + versions["starknet_foundry"]):
-            raise ValueError("Cairo compiler/dependency constraints differ from toolchain.json")
-        if package.get("cairo", {}).get("allow-warnings") is not False:
-            raise ValueError("Cairo compiler warnings must be fatal")
-        if package.get("scripts", {}).get("test") != "snforge test":
-            raise ValueError("Cairo test script must be exactly snforge test")
-        fuzz = package.get("tool", {}).get("snforge", {})
-        if fuzz.get("fuzzer_runs") != 256 or "fuzzer_seed" in fuzz:
-            raise ValueError("Cairo fuzz settings must use 256 runs and leave seed selection to CI")
-        for entry in lock["package"]:
-            if entry.get("name") == package.get("package", {}).get("name") and "source" not in entry:
-                continue
-            pin = cairo_pins.get(entry.get("name"))
-            if (pin is None or entry.get("version") != pin["version"]
-                    or entry.get("source") != "registry+" + pin["registry"]
-                    or entry.get("checksum") != "sha256:" + pin["sha256"]):
-                raise ValueError(f"Unapproved Cairo lock entry: {entry.get('name')}")
+        for directory in ("contracts", "contracts/adapters/safe-allowlist"):
+            manifest_path = ROOT / directory / "Scarb.toml"
+            lock_path = ROOT / directory / "Scarb.lock"
+            if not manifest_path.is_file() or not lock_path.is_file():
+                raise ValueError(f"{directory} requires a manifest and committed Scarb.lock")
+            package = tomllib.loads(manifest_path.read_text())
+            lock = tomllib.loads(lock_path.read_text())
+            if (package.get("package", {}).get("cairo-version") != "=" + versions["cairo"]
+                    or package.get("dependencies", {}).get("starknet") != "=" + versions["cairo"]
+                    or package.get("dev-dependencies", {}).get("snforge_std") != "=" + versions["starknet_foundry"]):
+                raise ValueError("Cairo compiler/dependency constraints differ from toolchain.json")
+            if package.get("cairo", {}).get("allow-warnings") is not False:
+                raise ValueError("Cairo compiler warnings must be fatal")
+            if package.get("scripts", {}).get("test") != "snforge test":
+                raise ValueError("Cairo test script must be exactly snforge test")
+            fuzz = package.get("tool", {}).get("snforge", {})
+            if directory == "contracts" and (fuzz.get("fuzzer_runs") != 256 or "fuzzer_seed" in fuzz):
+                raise ValueError("Cairo fuzz settings must use 256 runs and leave seed selection to CI")
+            for entry in lock["package"]:
+                if entry.get("name") == package.get("package", {}).get("name") and "source" not in entry:
+                    continue
+                pin = cairo_pins.get(entry.get("name"))
+                if (pin is None or entry.get("version") != pin["version"]
+                        or entry.get("source") != "registry+" + pin["registry"]
+                        or entry.get("checksum") != "sha256:" + pin["sha256"]):
+                    raise ValueError(f"Unapproved Cairo lock entry: {entry.get('name')} in {directory}/Scarb.lock")
 
 
 def main():

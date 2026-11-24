@@ -60,10 +60,13 @@ def local_deployment(*, registry_only=False, constructor_calldata=None, expected
         run(["scarb", "--manifest-path", str(ROOT / "examples/consumer/Scarb.toml"), "build"], "consumer-build")
     compiled_path = ROOT / "contracts/target/dev/contracts_EthereumAddressAssociationRegistry.contract_class.json"
     compiled = json.loads(compiled_path.read_text())
-    assert compiled["abi"] == json.loads((ROOT / "protocol/abi.json").read_text())
+    class_abi = (json.dumps(compiled["abi"], indent=2) + "\n").encode()
+    provenance = json.loads((ROOT / "protocol/abi.l1-link.provenance.json").read_text())
+    assert hashlib.sha256(class_abi).hexdigest() == provenance["abi_sha256"]
     (EVIDENCE / "artifact-hashes.json").write_text(json.dumps({
         str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in [compiled_path, ROOT / "protocol/abi.json", ROOT / "package-lock.json",
+        for path in [compiled_path, ROOT / "protocol/abi.json", ROOT / "protocol/abi.l1-link.json",
+                     ROOT / "protocol/abi.l1-link.provenance.json", ROOT / "package-lock.json",
                      ROOT / "scripts/integration/lifecycle.ts", ROOT / "scripts/integration/transport.ts",
                      ROOT / "examples/consumer/src/lib.cairo"]}, indent=2))
     devnet = shutil.which("starknet-devnet")
@@ -112,6 +115,7 @@ def local_deployment(*, registry_only=False, constructor_calldata=None, expected
             ("EthereumAddressAssociationRegistry", ROOT / "contracts", constructor_calldata),
             ("AssociationConsumer", ROOT / "examples/consumer", None),
             ("ConsumerForwarder", ROOT / "examples/consumer", []),
+            ("SafeAllowlistAdapter", ROOT / "contracts/adapters/safe-allowlist", []),
         ]
         for index, (name, cwd, calldata) in enumerate(contracts[:1] if registry_only else contracts):
             declared = response(run(base + ["declare", "--contract-name", name, "--url", url], name + "-declare", cwd))
@@ -122,6 +126,9 @@ def local_deployment(*, registry_only=False, constructor_calldata=None, expected
             if calldata is None:
                 calldata = [deployed["EthereumAddressAssociationRegistry"]["contract_address"], "2",
                             "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf", "0x123"]
+            if name == "SafeAllowlistAdapter":
+                calldata = [deployed["EthereumAddressAssociationRegistry"]["contract_address"], "1",
+                            "0x0000000000000000000000000000000000005afe"]
             args = base + ["deploy", "--class-hash", declared["class_hash"], "--salt", str(20260907 + index), "--url", url]
             if calldata:
                 args += ["--constructor-calldata", *calldata]
@@ -142,6 +149,13 @@ def local_deployment(*, registry_only=False, constructor_calldata=None, expected
         for name, calldata, reason in ([] if registry_only else rejections):
             run(base + ["deploy", "--class-hash", klass, "--salt", "20260999", "--url", url,
                         "--constructor-calldata", *calldata], name, ROOT / "contracts", rejection=reason)
+        if not registry_only:
+            consumer_class = deployed["AssociationConsumer"]["class_hash"]
+            registry = deployed["EthereumAddressAssociationRegistry"]["contract_address"]
+            run(base + ["deploy", "--class-hash", consumer_class, "--salt", "20260999", "--url", url,
+                        "--constructor-calldata", registry, "2", "0x123",
+                        "0x3f17f1962b36e491b30a40b2405849e597ba5fb5"],
+                "keyless-consumer-allowlist", ROOT / "examples/consumer", rejection="CONSUMER_KEYLESS_CANDIDATE")
         manifest = {"url": url, "chain_id": chain, "rpc_version": "0.10.2", "seed": 20260907,
                     "source_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
                     "source_revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),

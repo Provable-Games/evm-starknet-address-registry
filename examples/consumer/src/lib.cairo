@@ -24,6 +24,8 @@ pub mod AssociationConsumer {
     use starknet::{ContractAddress, EthAddress, get_caller_address};
     use super::{IRegistryDispatcher, IRegistryDispatcherTrait};
 
+    const KEYLESS_ETH_ADDRESS: felt252 = 0x3f17f1962b36e491b30a40b2405849e597ba5fb5;
+
     #[storage]
     struct Storage {
         registry: ContractAddress,
@@ -37,6 +39,7 @@ pub mod AssociationConsumer {
         self.registry.write(registry);
         for candidate in allowed {
             assert(!candidate.is_zero(), 'CONSUMER_ZERO_CANDIDATE');
+            assert((*candidate).into() != KEYLESS_ETH_ADDRESS, 'CONSUMER_KEYLESS_CANDIDATE');
             self.allowed.write(*candidate, true);
         }
     }
