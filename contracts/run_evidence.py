@@ -8,17 +8,17 @@ import shutil
 import subprocess
 import sys
 
-from check_coverage import COVERAGE_SKIPS
+from check_coverage import ADAPTER, COVERAGE_SKIPS
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = ROOT / 'contracts'
 
 
-def run(command, log, env):
+def run(command, log, env, *, cwd=None):
     with log.open('w') as output:
         output.write(json.dumps(command) + '\n')
         output.flush()
-        with subprocess.Popen(command, cwd=CONTRACTS, env=env, stdout=subprocess.PIPE,
+        with subprocess.Popen(command, cwd=cwd or CONTRACTS, env=env, stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT, text=True) as process:
             for line in process.stdout:
                 print(line, end='', flush=True)
@@ -33,10 +33,10 @@ def run(command, log, env):
         require_passing_tests(log.read_text())
 
 
-def source_identity():
-    paths = sorted((CONTRACTS / 'src').rglob('*.cairo'))
-    paths += sorted((CONTRACTS / 'tests').rglob('*.cairo'))
-    paths += [CONTRACTS / 'Scarb.toml', CONTRACTS / 'Scarb.lock', ROOT / 'toolchain.json',
+def source_identity(package):
+    paths = sorted((package / 'src').rglob('*.cairo'))
+    paths += sorted((package / 'tests').rglob('*.cairo'))
+    paths += [package / 'Scarb.toml', package / 'Scarb.lock', ROOT / 'toolchain.json',
               ROOT / 'protocol/coverage-policy.json', CONTRACTS / 'production-inventory.json',
               CONTRACTS / 'resource-cases.json']
     return {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
@@ -44,36 +44,39 @@ def source_identity():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', choices=['coverage', 'resources'])
+    parser.add_argument('mode', choices=['coverage', 'adapter-coverage', 'resources'])
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    before = source_identity()
+    adapter = args.mode == 'adapter-coverage'
+    package = ROOT / ADAPTER if adapter else CONTRACTS
+    before = source_identity(package)
     (output / 'source-identity.json').write_text(json.dumps(before, indent=2) + '\n')
     env = dict(os.environ)
     env.pop('UNIVERSAL_SIERRA_COMPILER', None)
     env['PATH'] = str(ROOT / '.tools/bin') + ':/usr/bin:/bin'
-    trace_dir = CONTRACTS / 'snfoundry_trace'
+    trace_dir = package / 'snfoundry_trace'
     # Retain prior output separately; never mix it with the new trace set.
     if trace_dir.exists():
         shutil.move(str(trace_dir), output / 'prior-traces-not-measured')
     trace_destination = output / 'traces'
     try:
-        if args.mode == 'coverage':
+        if args.mode != 'resources':
             env['SCARB_TARGET_DIR'] = str(output / 'target')
+            skips = () if adapter else COVERAGE_SKIPS
             run(['snforge', 'test', '--profile', 'coverage', '--coverage', '--save-trace-data',
-                 *[argument for skip in COVERAGE_SKIPS for argument in ('--skip', skip)],
-                 '--color', 'never'], output / 'run.log', env)
+                 *[argument for skip in skips for argument in ('--skip', skip)],
+                 '--color', 'never'], output / 'run.log', env, cwd=package)
             shutil.move(str(trace_dir), output / 'traces')
-            shutil.copyfile(CONTRACTS / 'coverage/coverage.lcov', output / 'raw.lcov')
+            shutil.copyfile(package / 'coverage/coverage.lcov', output / 'raw.lcov')
             traces = sorted(str(p) for p in (output / 'traces').glob('*.json'))
             if not traces:
                 raise ValueError('No deterministic coverage traces')
             run(['cairo-coverage', 'run', *traces, '--output-path', str(output / 'no-macros.lcov'),
-                 '--unstable', '--include'], output / 'mapping.log', env)
+                 '--unstable', '--include'], output / 'mapping.log', env, cwd=package)
             run([sys.executable, str(CONTRACTS / 'check_coverage.py'), str(output / 'no-macros.lcov'),
-                 '--output', str(output / 'audited.json')], output / 'gate.log', env)
+                 *(['--adapter'] if adapter else []), '--output', str(output / 'audited.json')], output / 'gate.log', env)
         else:
             for mode, tracked in [('gas', 'sierra-gas'), ('steps', 'cairo-steps')]:
                 directory = output / mode
@@ -98,7 +101,7 @@ def main():
         except Exception as error:
             cleanup_errors.append(error)
         try:
-            after = source_identity()
+            after = source_identity(package)
             if before != after:
                 raise ValueError('Source changed during evidence collection')
         except Exception as error:

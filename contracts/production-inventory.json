@@ -654,6 +654,32 @@
           "Exact low/high r then s then canonical0/1 serialization; strict parity decode; all insufficient prefixes and out-of-range limbs reject; remainder preserved."
         ]
       }
+    ],
+    "contracts/adapters/safe-allowlist/src/lib.cairo": [
+      {
+        "function": "safe_allowlist::SafeAllowlistAdapter::constructor",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/adapters/safe-allowlist/tests/test_adapter.cairo"
+        ],
+        "outcomes": [
+          "Stores the registry and admitted Safes.",
+          "Rejects a zero registry or any zero Safe."
+        ]
+      },
+      {
+        "function": "safe_allowlist::SafeAllowlistAdapter::Lookup::is_associated",
+        "security": true,
+        "mapped": true,
+        "tests": [
+          "contracts/adapters/safe-allowlist/tests/test_adapter.cairo"
+        ],
+        "outcomes": [
+          "Admitted Safe with a current upstream link returns true.",
+          "Wrong destination, no upstream link, and linked but unadmitted address return false."
+        ]
+      }
     ]
   },
   "unmapped_exception_request": {

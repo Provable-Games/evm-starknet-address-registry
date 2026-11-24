@@ -25,3 +25,15 @@ scarb lint --test --deny-warnings
 scarb build
 snforge test
 ```
+
+The Cairo evidence job measures this package separately from the registry. To
+reproduce it from the repository root with the pinned tools in `.tools/bin`, run
+
+```sh
+python3 contracts/run_evidence.py adapter-coverage --output .tools/cairo-evidence/adapter-coverage
+```
+
+The gate reconciles deterministic Foundry traces with
+`contracts/production-inventory.json` and requires hits on every mapped
+production line and both authored functions. The tests cover invalid constructor
+addresses, admitted and unadmitted addresses, and current registry membership.

@@ -6,6 +6,7 @@
     "security": { "reliably_mapped_lines": 100, "reliably_mapped_functions": 100, "explicit_outcome_inventory": true },
     "branch_percentage": null,
     "planned_production_files": {
+      "contracts/adapters/safe-allowlist/src/lib.cairo": "security: immutable allowlist construction and current registry membership lookup",
       "contracts/src/registry.cairo": "security: constructor, every entrypoint, state transitions, authorization",
       "contracts/src/state.cairo": "security: forward/reverse membership, checked counters and nonces",
       "contracts/src/eip712.cairo": "security: domain, exact types, string/word encoding and digest",

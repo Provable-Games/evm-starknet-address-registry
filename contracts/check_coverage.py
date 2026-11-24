@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
+ADAPTER = Path('contracts/adapters/safe-allowlist')
 
 
 # Shared with collection so resource-only pointers cannot masquerade as coverage.
@@ -82,13 +83,13 @@ def validate_policy(policy, inventory):
         raise ValueError('Cairo policy source/security classification differs from enforced inventory')
 
 
-def test_functions(path, root):
+def test_functions(path, root, package):
     """Recognize top-level #[test] functions; reject unsupported test syntax."""
     source = root / path
-    if source.parent != root / 'contracts/tests' or not source.is_file():
+    if source.parent != root / package / 'tests' or not source.is_file():
         raise ValueError('Coverage test pointer is absent or outside integration tests')
     text = source_tokens(source.read_text())
-    if re.search(r'\bmod\s', text):
+    if package != ADAPTER and re.search(r'\bmod\s', text):
         raise ValueError('Nested test module syntax requires explicit collector review')
     pattern = r'((?:#\s*\[[^\[\]]*\]\s*)+)fn\s+(\w+)\s*\(([^)]*)\)\s*\{'
     tests = []
@@ -97,21 +98,25 @@ def test_functions(path, root):
         attributes = re.findall(r'#\s*\[\s*(\w+)', match[1])
         if 'test' not in attributes:
             continue
+        # The adapter's inline fixture contract is compiled alongside top-level tests.
+        if package == ADAPTER and text.count('{', 0, match.start()) != text.count('}', 0, match.start()):
+            raise ValueError('Nested test module syntax requires explicit collector review')
         recognized += attributes.count('test')
         if set(attributes) - {'test', 'fuzzer', 'feature', 'ignore', 'should_panic', 'available_gas'}:
             raise ValueError('Unsupported test attribute requires explicit collector review')
-        function = 'contracts_integrationtest::' + source.stem + '::' + match[2]
+        package_name = package.name.replace('-', '_')
+        function = f'{package_name}_integrationtest::{source.stem}::{match[2]}'
         tests.append({'function': function, 'fuzz': 'fuzzer' in attributes or bool(match[3].strip()),
                       'ignored': 'ignore' in attributes,
-                      'skipped': any(skip in function for skip in COVERAGE_SKIPS)})
+                      'skipped': package != ADAPTER and any(skip in function for skip in COVERAGE_SKIPS)})
     if recognized != len(re.findall(r'#\s*\[\s*test\s*\]', text)):
         raise ValueError('Unrecognized authored test syntax requires explicit collector review')
     return tests
 
 
-def validate_test_references(inventory, root):
+def validate_test_references(production_functions, root, package):
     selected = {'deterministic': {}, 'fuzz': {}, 'resource': {}}
-    for items in inventory['production_functions'].values():
+    for items in production_functions.values():
         for item in items:
             if not item.get('tests'):
                 raise ValueError('Missing deterministic coverage test pointers')
@@ -120,7 +125,7 @@ def validate_test_references(inventory, root):
                 for path in item.get(field, []):
                     if path in selected[category]:
                         continue
-                    tests = test_functions(path, root)
+                    tests = test_functions(path, root, package)
                     if category == 'deterministic':
                         eligible = [test for test in tests if not test['fuzz'] and not test['ignored']
                                     and not test['skipped']]
@@ -183,23 +188,32 @@ def parse_record(lines, source):
     return line_hits, function_hits
 
 
-def check(report, inventory, root=ROOT):
+def check(report, inventory, root=ROOT, *, adapter=False):
     validate_policy(json.loads((root / 'protocol/coverage-policy.json').read_text()), inventory)
-    test_evidence = validate_test_references(inventory, root)
-    expected_files = set(inventory['production_functions'])
+    production = inventory['production_functions']
     all_sources = {p.relative_to(root).as_posix() for p in (root/'contracts/src').rglob('*.cairo')}
-    if all_sources != expected_files | set(inventory['excluded']):
+    adapter_sources = {p.relative_to(root) for p in (root / 'contracts/adapters').glob('*/src/**/*.cairo')}
+    if any(not path.is_relative_to(ADAPTER / 'src') for path in adapter_sources):
+        raise ValueError('New adapter package requires an explicit coverage gate')
+    all_sources.update(path.as_posix() for path in adapter_sources)
+    if all_sources != set(production) | set(inventory['excluded']):
         raise ValueError('Production source inventory differs; new files require classification')
     for name in inventory['excluded']:
         if hashlib.sha256((root/name).read_bytes()).hexdigest() != inventory['excluded_source_sha256'][name]:
             raise ValueError(f'Excluded source changed; review executable-code classification: {name}')
-    expected = {item['function']: (name, item) for name, items in inventory['production_functions'].items() for item in items}
-    for name, items in inventory['production_functions'].items():
+    package = ADAPTER if adapter else Path('contracts')
+    functions = {name: items for name, items in production.items() if Path(name).is_relative_to(package / 'src')}
+    if not functions:
+        raise ValueError(f'Empty production file inventory for {package}')
+    expected_files = set(functions)
+    test_evidence = validate_test_references(functions, root, package)
+    expected = {item['function']: (name, item) for name, items in functions.items() for item in items}
+    for name, items in functions.items():
         declarations = authored_functions((root/name).read_text())
         if sorted(declarations) != sorted(item['function'].split('::')[-1] for item in items):
             raise ValueError(f'Authored function inventory differs: {name}')
-    exception = inventory['unmapped_exception_request']
-    if hashlib.sha256((root/'contracts/src/registry.cairo').read_bytes()).hexdigest() != exception['source_sha256']:
+    exception = None if adapter else inventory['unmapped_exception_request']
+    if exception and hashlib.sha256((root/'contracts/src/registry.cairo').read_bytes()).hexdigest() != exception['source_sha256']:
         raise ValueError('Exception source changed; review the constant-only function again')
     seen_files, seen_functions, counts = set(), set(), {}
     for block in report.split('end_of_record'):
@@ -228,22 +242,29 @@ def check(report, inventory, root=ROOT):
         counts[name] = {'mapped_lines': len(line_hits), 'hit_lines': len(line_hits), 'mapped_functions': len(function_hits), 'hit_functions': len(function_hits)}
     if seen_files != expected_files:
         raise ValueError('Required production file omitted from LCOV')
-    if not set(expected)-seen_functions:
+    missing = set(expected) - seen_functions
+    if exception and not missing:
         raise ValueError('Previously unmapped constant function now maps; review calibration and remove exception')
-    if set(expected)-seen_functions != {exception['function']}:
-        raise ValueError('Missing authored functions beyond the single reviewed constant-body exception')
-    if any(not item['mapped'] for name,item in expected.values() if item['function'] != exception['function']):
+    allowed_missing = {exception['function']} if exception else set()
+    if missing != allowed_missing:
+        raise ValueError('Missing authored functions outside the reviewed mapping exceptions')
+    if any(not item['mapped'] for _, item in expected.values() if item['function'] not in allowed_missing):
         raise ValueError('Unreviewed mapping exclusion')
-    if exception['status'] != 'approved':
+    if exception and exception['status'] != 'approved':
         raise ValueError('The specific unmapped-function exception still requires review')
-    return {'test_evidence':test_evidence,'files':counts,'authored_functions':len(expected),'mapped_functions':len(seen_functions),'unmapped_constant_function':exception['function'],'branch_coverage':None}
+    return {
+        'test_evidence': test_evidence, 'files': counts, 'authored_functions': len(expected),
+        'mapped_functions': len(seen_functions), 'branch_coverage': None,
+        'unmapped_constant_function': exception['function'] if exception else None,
+    }
 
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('report',type=Path)
+    parser.add_argument('--adapter', action='store_true')
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args()
-    result=check(args.report.read_text(),json.loads((ROOT/'contracts/production-inventory.json').read_text()))
+    result=check(args.report.read_text(),json.loads((ROOT/'contracts/production-inventory.json').read_text()), adapter=args.adapter)
     args.output.write_text(json.dumps(result,indent=2)+'\n')
     print('Production mapped security coverage 100%; complete authored inventory reconciled')
 

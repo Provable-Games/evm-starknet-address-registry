@@ -23,3 +23,11 @@ test = "snforge test"
 
 [tool.scarb]
 allow-prebuilt-plugins = ["snforge_std"]
+
+[profile.coverage]
+inherits = "dev"
+
+[profile.coverage.cairo]
+unstable-add-statements-code-locations-debug-info = true
+unstable-add-statements-functions-debug-info = true
+inlining-strategy = "avoid"
