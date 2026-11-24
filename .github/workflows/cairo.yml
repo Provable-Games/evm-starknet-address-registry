@@ -244,12 +244,18 @@ jobs:
             .tools/integration-evidence/*/ConsumerForwarder-declare.stderr
             .tools/integration-evidence/*/ConsumerForwarder-deploy.stdout
             .tools/integration-evidence/*/ConsumerForwarder-deploy.stderr
+            .tools/integration-evidence/*/SafeAllowlistAdapter-declare.stdout
+            .tools/integration-evidence/*/SafeAllowlistAdapter-declare.stderr
+            .tools/integration-evidence/*/SafeAllowlistAdapter-deploy.stdout
+            .tools/integration-evidence/*/SafeAllowlistAdapter-deploy.stderr
             .tools/integration-evidence/*/unsupported-chain-pair.stdout
             .tools/integration-evidence/*/unsupported-chain-pair.stderr
             .tools/integration-evidence/*/empty-label.stdout
             .tools/integration-evidence/*/empty-label.stderr
             .tools/integration-evidence/*/invalid-label.stdout
             .tools/integration-evidence/*/invalid-label.stderr
+            .tools/integration-evidence/*/keyless-consumer-allowlist.stdout
+            .tools/integration-evidence/*/keyless-consumer-allowlist.stderr
             .tools/integration-evidence/*/lifecycle.stdout
             .tools/integration-evidence/*/lifecycle.stderr
             .tools/consumer-typescript/installation.json
@@ -274,14 +280,20 @@ jobs:
         run: |
           test "$SCOPE_RESULT" = success
           if [ "$CHANGED" = true ]; then
-            test "$LINT_RESULT" = success && test "$INTEGRATION_RESULT" = success
+            test "$LINT_RESULT" = success
+            test "$INTEGRATION_RESULT" = success
             if [ "$CAIRO_VALIDATION_CHANGED" = true ]; then
-              test "$TEST_RESULT" = success && test "$EVIDENCE_RESULT" = success
+              test "$TEST_RESULT" = success
+              test "$EVIDENCE_RESULT" = success
             else
-              test "$TEST_RESULT" = skipped && test "$EVIDENCE_RESULT" = skipped
+              test "$TEST_RESULT" = skipped
+              test "$EVIDENCE_RESULT" = skipped
             fi
           else
             test "$CHANGED" = false
             test "$CAIRO_VALIDATION_CHANGED" = false
-            test "$LINT_RESULT" = skipped && test "$TEST_RESULT" = skipped && test "$EVIDENCE_RESULT" = skipped && test "$INTEGRATION_RESULT" = skipped
+            test "$LINT_RESULT" = skipped
+            test "$TEST_RESULT" = skipped
+            test "$EVIDENCE_RESULT" = skipped
+            test "$INTEGRATION_RESULT" = skipped
           fi

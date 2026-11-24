@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -49,7 +50,20 @@ class ScopeTests(unittest.TestCase):
     def test_cairo_runner_and_required_gate_skip_unrelated_changes(self):
         workflow = (ci_scope.ROOT / ".github/workflows/cairo.yml").read_text()
         self.assertIn("if: needs.scope.outputs.cairo_validation_changed == 'true'", workflow)
-        self.assertIn('test "$TEST_RESULT" = skipped && test "$EVIDENCE_RESULT" = skipped', workflow)
+        step = workflow.split("- name: Require selected Cairo jobs\n", 1)[1]
+        gate = re.search(r"(?m)^        run: \|\n((?: {10}[^\n]*\n)+)", step).group(1)
+        jobs = ["LINT_RESULT", "INTEGRATION_RESULT", "TEST_RESULT", "EVIDENCE_RESULT"]
+        for changed, validated, expected in [
+            ("false", "false", ["skipped", "skipped", "skipped", "skipped"]),
+            ("true", "false", ["success", "success", "skipped", "skipped"]),
+            ("true", "true", ["success", "success", "success", "success"]),
+        ]:
+            env = {"SCOPE_RESULT": "success", "CHANGED": changed, "CAIRO_VALIDATION_CHANGED": validated,
+                   **dict(zip(jobs, expected, strict=True))}
+            self.assertEqual(subprocess.run(["bash", "-ec", gate], env=env).returncode, 0)
+            for job in ["SCOPE_RESULT", *jobs]:
+                with self.subTest(changed=changed, validated=validated, failed=job):
+                    self.assertNotEqual(subprocess.run(["bash", "-ec", gate], env={**env, job: "failure"}).returncode, 0)
 
     def test_renaming_out_of_stack_still_runs_checks_and_bad_history_fails(self):
         with tempfile.TemporaryDirectory() as directory:
