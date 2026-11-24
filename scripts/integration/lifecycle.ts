@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { privateKeyToAccount } from 'viem/accounts';
 import { hashTypedData } from 'viem';
+import { nativeSelector } from './starknet-runtime.mjs';
 import {
   ABI_SHA256,
   PROTOCOL_REVISION,
@@ -215,6 +216,63 @@ async function preview(account = accountA) {
   assert(ready.canAddWallet);
   return ready;
 }
+// Devnet Postman executes the production L1 handler with the admitted Safe as sender.
+const allowlist = object(deployed.SafeAllowlistAdapter);
+const safe = ethereumAddress('0x0000000000000000000000000000000000005afe');
+const allowlistAddress = accountAddress(hex(allowlist.contract_address));
+const deadline = (await transport(rpc).getBlock()).timestamp + 3600n;
+const expectedProposal = [0n, 0n, 0n, 0n, deadline];
+const message = object(
+  await rpc('devnet_postmanSendMessageToL2', {
+    l1_contract_address: safe,
+    l2_contract_address: deployment.registryAddress,
+    entry_point_selector: nativeSelector('propose_link_from_l1'),
+    payload: [
+      1n,
+      deployment.ethereumChainId,
+      0n,
+      CHAIN_ID,
+      deployment.registryAddress,
+      accountA,
+      ...expectedProposal,
+    ].map((felt) => `0x${BigInt(felt).toString(16)}`),
+    paid_fee_on_l1: '0x1',
+    nonce: '0x0',
+  }),
+);
+const delivered = await receipt(rpc, hex(message.transaction_hash));
+assert.equal(delivered.status, 'succeeded');
+const pendingProposal = await transport(rpc).call(
+  {
+    contractAddress: deployment.registryAddress,
+    entrypoint: 'get_l1_link_proposal',
+    calldata: [safe, accountA],
+  },
+  delivered.blockHash,
+);
+assert.deepEqual(pendingProposal.map(BigInt), expectedProposal);
+async function adapterAllows(blockHash: typeof delivered.blockHash) {
+  return (
+    await transport(rpc).call(
+      {
+        contractAddress: allowlistAddress,
+        entrypoint: 'is_associated',
+        calldata: [safe, accountA],
+      },
+      blockHash,
+    )
+  ).map(BigInt);
+}
+assert.deepEqual(await adapterAllows(delivered.blockHash), [0n]);
+const accepted = await rawCall(0, 'accept_l1_link', [safe, ...pendingProposal]);
+assert.deepEqual(await adapterAllows(accepted.blockHash), [1n]);
+const unlinked = await rawCall(0, 'unlink', [safe]);
+assert.deepEqual(await adapterAllows(unlinked.blockHash), [0n]);
+results.push({
+  name: 'native-safe-nomination-consent-and-unlink',
+  result: { delivered, accepted, unlinked },
+});
+
 const initial = await preview();
 assert(initial.promptRegistration);
 assert.equal(initial.comparison.matches.length, 0);

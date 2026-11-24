@@ -115,6 +115,7 @@ def local_deployment(*, registry_only=False, constructor_calldata=None, expected
             ("EthereumAddressAssociationRegistry", ROOT / "contracts", constructor_calldata),
             ("AssociationConsumer", ROOT / "examples/consumer", None),
             ("ConsumerForwarder", ROOT / "examples/consumer", []),
+            ("SafeAllowlistAdapter", ROOT / "contracts/adapters/safe-allowlist", []),
         ]
         for index, (name, cwd, calldata) in enumerate(contracts[:1] if registry_only else contracts):
             declared = response(run(base + ["declare", "--contract-name", name, "--url", url], name + "-declare", cwd))
@@ -125,6 +126,9 @@ def local_deployment(*, registry_only=False, constructor_calldata=None, expected
             if calldata is None:
                 calldata = [deployed["EthereumAddressAssociationRegistry"]["contract_address"], "2",
                             "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf", "0x123"]
+            if name == "SafeAllowlistAdapter":
+                calldata = [deployed["EthereumAddressAssociationRegistry"]["contract_address"], "1",
+                            "0x0000000000000000000000000000000000005afe"]
             args = base + ["deploy", "--class-hash", declared["class_hash"], "--salt", str(20260907 + index), "--url", url]
             if calldata:
                 args += ["--constructor-calldata", *calldata]
