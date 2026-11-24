@@ -187,9 +187,13 @@ nonces. The sender must be unlinked. Delivery stores the proposal for the
 valid proposal for the same pair replaces that slot. Delivery emits no Starknet
 event. To discover nominations, indexers can scan the Ethereum Core contract's
 `LogMessageToL2` events for this registry and handler selector, then read the
-corresponding pair on Starknet to confirm delivery before displaying a proposal.
-A client that already knows the pair can query it directly. Once a nomination is
-delivered, the registry gives the Safe no way to withdraw it from Ethereum.
+corresponding pair on Starknet. Before displaying a nomination from an Ethereum
+event, match its Ethereum nonce, recipient nonce and deadline against the stored
+tuple. A slot for the same pair can still contain an earlier nomination. To track
+delivery of an individual bridge message, verify its matching successful Starknet
+L1 handler receipt, since multiple messages can carry the same tuple. A client
+that already knows the pair can query it directly. Once a nomination is delivered,
+the registry gives the Safe no way to withdraw it from Ethereum.
 Core's cancellation procedure applies only to a pending bridge message and
 cannot clear a proposal already stored on Starknet.
 
