@@ -149,6 +149,13 @@ def local_deployment(*, registry_only=False, constructor_calldata=None, expected
         for name, calldata, reason in ([] if registry_only else rejections):
             run(base + ["deploy", "--class-hash", klass, "--salt", "20260999", "--url", url,
                         "--constructor-calldata", *calldata], name, ROOT / "contracts", rejection=reason)
+        if not registry_only:
+            consumer_class = deployed["AssociationConsumer"]["class_hash"]
+            registry = deployed["EthereumAddressAssociationRegistry"]["contract_address"]
+            run(base + ["deploy", "--class-hash", consumer_class, "--salt", "20260999", "--url", url,
+                        "--constructor-calldata", registry, "2", "0x123",
+                        "0x3f17f1962b36e491b30a40b2405849e597ba5fb5"],
+                "keyless-consumer-allowlist", ROOT / "examples/consumer", rejection="CONSUMER_KEYLESS_CANDIDATE")
         manifest = {"url": url, "chain_id": chain, "rpc_version": "0.10.2", "seed": 20260907,
                     "source_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
                     "source_revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
