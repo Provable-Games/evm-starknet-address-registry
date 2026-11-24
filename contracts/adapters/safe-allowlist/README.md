@@ -1,9 +1,15 @@
 # Loot Dungeon Safe allowlist adapter
 
 Deploy this read-only contract with the verified address registry and the Ethereum
-addresses of the Safes admitted to the pilot. Verify the Safe's implementation,
-threshold and enabled modules before admitting it. The adapter records addresses;
-the Safe controls its own signing policy on Ethereum.
+addresses of the Safes admitted to the pilot. A native L1 link reflects the
+Ethereum sender's own authorization policy. Before admitting an address, verify
+on Ethereum that a trusted Safe proxy factory deployed the proxy. Check its
+current implementation, owners, threshold, enabled modules, guard and fallback
+handler against the pilot's approval requirements. Exclude contracts that permit arbitrary outbound
+calls by anyone. Also exclude EIP-7702 delegated EOAs, even if they delegate to
+Safe code. Their EOA signing key retains independent authority to sign registry
+requests. The adapter enforces the configured list, so these checks belong to
+the pilot operator.
 
 Send nominations and Starknet acceptances to the upstream registry. Configure
 Loot Dungeon's `set_registry_address` with the adapter address. For an admitted

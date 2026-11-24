@@ -63,11 +63,17 @@ unique reverse pages at one block and rejects failed or inconsistent reads. Its
 u64 budget. `compareLinkedAddresses(snapshot, allowed)` computes an intersection
 without RPC or an eligibility decision.
 
+A native L1 link authenticates the sender under its own authorization policy.
+Before granting access based on holdings, restrict eligible Ethereum addresses
+to those whose policy the application trusts. Exclude contracts that allow
+anyone to make arbitrary outbound calls. Enforce eligibility and check the
+current association in the contract granting access.
+
 The v1.0.0 registry and the first native L1-link class accepted signatures for
 the keyless Ethereum address `0x3f17f1962b36e491b30a40b2405849e597ba5fb5`.
 SDK readers report what the registry stored. On either class, applications must
-exclude that address when using `getStarknetAddress` or `isAssociated` as proof
-of ownership. Apply the same exclusion to `getEthereumAddresses` and
+exclude that address when using `getStarknetAddress` or `isAssociated` for access
+decisions. Apply the same exclusion to `getEthereumAddresses` and
 `listAllEthereumAddresses` results and to matches from `compareLinkedAddresses`
 before granting access. The [protocol specification](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/protocol/spec.md#eip-712-authorization)
 identifies both affected class hashes.

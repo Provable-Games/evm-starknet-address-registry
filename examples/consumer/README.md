@@ -6,6 +6,11 @@ confirms that `candidate` is in the consumer's allowed set, and calls
 `registry.is_associated(candidate, caller)` during execution before incrementing
 `accepted`. The caller and eligibility result are never supplied by the client.
 
+Choose the allowlist before deployment. A native L1 association reflects the
+Ethereum sender's own authorization policy. If the consumer grants access based
+on holdings, admit only addresses whose policy meets the application's approval
+requirements. Exclude contracts that let anyone make arbitrary outbound calls.
+
 The v1.0.0 registry and the first Sepolia L1-link class can report a link for
 the keyless Ethereum address `0x3f17f1962b36e491b30a40b2405849e597ba5fb5`.
 The consumer constructor rejects any allowlist containing this address.

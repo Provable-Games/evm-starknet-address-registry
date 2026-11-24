@@ -35,7 +35,13 @@ The historically deployed v1.0.0 and [first L1-link class](../deployments/sepoli
 | `unlink`                      | Current linked account caller                             | Remove an association                                |
 | `invalidate_pending_incoming` | Destination account caller                                | Advance nonce for that account/Ethereum-address pair |
 
-The native L1-link class adds a message handler `propose_link_from_l1`, a pending proposal read `get_l1_link_proposal`, and the destination-only `accept_l1_link` transaction. Consumers continue to call `is_associated` to check consent.
+The native L1-link class adds a message handler `propose_link_from_l1`, a pending proposal read `get_l1_link_proposal`, and the destination-only `accept_l1_link` transaction. Consumers continue to call `is_associated` to check the current link.
+
+For native L1 links, the registry authenticates the Ethereum sender. The sender's
+own code and configuration determine who can authorize a nomination. Before
+crediting assets, consumers must restrict eligible Ethereum addresses to those
+whose authorization policy they trust. Exclude contracts that let anyone make
+arbitrary outbound calls.
 
 Read methods expose forward and reverse associations, nonces, the signing domain,
 and version. Reverse pages have a limit of 1–100; removal can reorder them, so
