@@ -63,11 +63,12 @@ unique reverse pages at one block and rejects failed or inconsistent reads. Its
 u64 budget. `compareLinkedAddresses(snapshot, allowed)` computes an intersection
 without RPC or an eligibility decision.
 
-A native L1 link authenticates the sender under its own authorization policy.
-Before granting access based on holdings, restrict eligible Ethereum addresses
-to those whose policy the application trusts. Exclude contracts that allow
-anyone to make arbitrary outbound calls. Enforce eligibility and check the
-current association in the contract granting access.
+For a native L1 link, the bridge authenticates the Ethereum sender. The sender's
+own code and configuration determine who can authorize a nomination. Before
+granting access based on holdings, restrict eligibility to Ethereum addresses
+whose policy the application trusts. Exclude contracts that allow anyone to make
+arbitrary outbound calls. Enforce eligibility and check the current association
+in the contract granting access.
 
 The v1.0.0 registry and the first native L1-link class accepted signatures for
 the keyless Ethereum address `0x3f17f1962b36e491b30a40b2405849e597ba5fb5`.
