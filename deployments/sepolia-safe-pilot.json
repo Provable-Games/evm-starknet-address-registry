@@ -1,6 +1,8 @@
 {
   "purpose": "Combined native L1 link, signed EOA guard, and Safe-only Loot Dungeon pilot rehearsal on Sepolia.",
   "source": {
+    "combinedSourceRevision": "f6cc5f80244a51fcd964ba124e0f621427124098",
+    "rebasedRevisionWithIdenticalBuildInputs": "06f420b825a7a77806b3c20123c8917167c5f9cc",
     "pr6": "4548e4e7797b32ff0c082b61dd24b43fab56a77c",
     "pr7": "234d62b12d33a9b21ab5513c2198b16a1e5525a2"
   },
@@ -9,12 +11,19 @@
     "starknetChainId": "SN_SEPOLIA"
   },
   "registry": {
+    "buildRevision": "b41eaaa015207f8de64ffc250960561e05066e3c",
+    "packageAtBuildRevision": "contracts",
+    "sierraFileSha256": "b293f52ad9d31c3bf401639e5cb0208facb1f5aaf7448898d28c93df06361435",
+    "casmFileSha256": "0763a65664a712fea336a4f6b1b8ab1d035a8b9826815fbd7b438a084ebc7060",
     "address": "0x570c440917e5fe1d90ffffc7a66391ebab91ee480344e78f2ac2fc31d1f7d50",
     "classHash": "0x732a98ebf83f2fca98fad41f0a0af5dbcc8b56aa55adf21c7a598607d9a2838",
     "declare": "0x2ebe5156e0d768ddb886ac6631bafe44fa8704dfdcedb930a9fc19eb165e7e8",
     "deploy": "0xe1549c4816cc50658a8c2fdf7f9513aeb5335a6388a39c60c7d19f5d848429"
   },
   "adapter": {
+    "packageAtCombinedRevision": "adapters/safe-allowlist",
+    "sierraFileSha256": "789636532b32bb17ffa73013ea34407d9c5199ee8adcaa0c06b0149d3571ccfc",
+    "casmFileSha256": "1fff72df773df2fb094254f3a0cbd692643287ee3f4e7a96add89ed375baca82",
     "address": "0x57fffc9cbe6ae01ac8224a974278bf63459b40181e4ed86e8510e9b908a8316",
     "classHash": "0x691db971ec0c9b8b118b59152593131f36ffddcd13c7f02f2eaadca0aa970df",
     "deploy": "0x42b475a551335e8729ccc6bdf97b82e894ece3ca43abe4ce29a08845acd27b0",

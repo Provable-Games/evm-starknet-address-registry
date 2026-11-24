@@ -5,11 +5,9 @@ maps each Ethereum address to at most one Starknet account. An account can recei
 many links. The class has no owner, upgrade path, asset policy, or external account
 verifier.
 
-**Mainnet class hash:**
+**v1.0.0 Mainnet class hash:**
 [0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156](https://voyager.online/class/0x0125d11441d1e4971f3e327474fcd6878ca80c9941017cbacd643383ee227156).
-Build this class from release tag `v1.0.0`. The current source builds the
-native L1-link class with the signature guard,
-`0x732a98ebf83f2fca98fad41f0a0af5dbcc8b56aa55adf21c7a598607d9a2838`.
+Build this class from release tag `v1.0.0`.
 The [Mainnet instance](https://voyager.online/contract/0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337)
 uses the `Loot Survivor` label at
 `0x00c865a977617dc70027c0a7b455ed5a34d1ad615267d8bf5359747a56b31337`.
@@ -17,9 +15,14 @@ Each deployed instance has its own address and state. A
 [Sepolia instance](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/deployments/sepolia.json)
 is recorded separately.
 
-The historically deployed v1.0.0 and first L1-link classes predate the rejection of
-`0x3f17f1962b36e491b30a40b2405849e597ba5fb5`, so this source no longer builds their
-class hash and they accept a keyless link for that address. See the
+The [combined Sepolia pilot](../deployments/sepolia-safe-pilot.json) used the native
+L1-link registry with the signature guard, class
+`0x732a98ebf83f2fca98fad41f0a0af5dbcc8b56aa55adf21c7a598607d9a2838`.
+The manifest pins the registry and adapter build inputs and the SHA-256 digests
+of their Sierra and CASM artifacts.
+
+The historically deployed v1.0.0 and [first L1-link class](../deployments/sepolia-l1-link.json) predate the rejection of
+`0x3f17f1962b36e491b30a40b2405849e597ba5fb5`, so they accept a keyless link for that address. See the
 [protocol specification](https://github.com/Provable-Games/evm-starknet-address-registry/blob/main/protocol/spec.md).
 
 ## Interface
