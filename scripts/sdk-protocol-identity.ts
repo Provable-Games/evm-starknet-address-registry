@@ -18,3 +18,20 @@ export function checkSdkProtocolIdentity(
     'SDK signing revision drift',
   );
 }
+
+export function checkClassAbiEntries(
+  compiled: unknown,
+  frozen: unknown,
+  extension: unknown,
+): void {
+  const encodedEntries = (entries: unknown) => {
+    assert(Array.isArray(entries), 'Expected an ABI array');
+    return entries.map((entry: unknown) => JSON.stringify(entry));
+  };
+  // The compiler may interleave top-level type definitions across interfaces.
+  assert.deepEqual(
+    encodedEntries(compiled).sort(),
+    [...encodedEntries(frozen), ...encodedEntries(extension)].sort(),
+    'Compiled ABI differs from the frozen and native L1 agreements',
+  );
+}

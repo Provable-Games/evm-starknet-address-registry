@@ -2,7 +2,10 @@ import { expect, test } from 'vitest';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { checkSdkProtocolIdentity } from '../../../scripts/sdk-protocol-identity.ts';
+import {
+  checkClassAbiEntries,
+  checkSdkProtocolIdentity,
+} from '../../../scripts/sdk-protocol-identity.ts';
 import {
   sourceFunctions,
   checkFunctionInventory,
@@ -50,6 +53,24 @@ test('SDK exported identities are tied to actual frozen ABI bytes and provenance
     });
   }).toThrow('SDK signing revision drift');
 });
+test('release identity preserves native L1 entry contents and multiplicity across compiler ordering', () => {
+  const frozen = { type: 'interface', name: 'Registry' };
+  const first = { name: 'get_l1_link_proposal' };
+  const second = { name: 'accept_l1_link' };
+  const extension = { type: 'interface', items: [first, second] };
+  const compiled = [extension, frozen];
+  checkClassAbiEntries(compiled, [frozen], [extension]);
+  for (const altered of [
+    [{ ...extension, items: [second, first] }],
+    [extension, extension],
+    [],
+  ]) {
+    expect(() => {
+      checkClassAbiEntries(compiled, [frozen], altered);
+    }).toThrow('Compiled ABI differs');
+  }
+});
+
 test('inventory checks detect source-position drift without writing and explicit regeneration is repeatable', () => {
   const temporary = mkdtempSync(join(tmpdir(), 'sdk-inventory-'));
   try {

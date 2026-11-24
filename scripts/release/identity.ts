@@ -3,7 +3,10 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { classHash } from './class-hash.mjs';
 import { object } from '../integration/transport.ts';
-import { checkSdkProtocolIdentity } from '../sdk-protocol-identity.ts';
+import {
+  checkClassAbiEntries,
+  checkSdkProtocolIdentity,
+} from '../sdk-protocol-identity.ts';
 import * as sdk from '@provable-games/evm-starknet-address-registry';
 
 export function artifactIdentity() {
@@ -28,6 +31,11 @@ export function artifactIdentity() {
       approved_signing_revision: provenance.approved_signing_revision as string,
     },
     sdk,
+  );
+  checkClassAbiEntries(
+    compiled.abi,
+    JSON.parse(abi.toString('utf8')) as unknown,
+    JSON.parse(readFileSync('protocol/abi.l1-link.json', 'utf8')) as unknown,
   );
   const classProvenance = object(
     JSON.parse(
